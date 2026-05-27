@@ -57,5 +57,3 @@ struct ContentView: View {
         showOnboarding = prefs?.onboardingComplete != true
     }
 }
-
-extension ZoneID: Identifiable {}
