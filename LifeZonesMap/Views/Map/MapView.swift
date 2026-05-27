@@ -248,9 +248,9 @@ struct MapView: View {
             RadarMap(
                 scores: scores,
                 size: 342,
-                stroke: LZ.tealDeep,
                 fill: LZ.teal,
                 fillOpacity: 0.16,
+                stroke: LZ.tealDeep,
                 ringColor: Color(hex: "#C2B79C")
             )
             .padding(.top, 10)
