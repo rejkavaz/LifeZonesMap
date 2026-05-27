@@ -1,6 +1,5 @@
 name: Cloud iOS Build
 
-
 on:
   push:
     branches: [ master ]
@@ -67,35 +66,33 @@ jobs:
 
     - name: Package Into iPhone App (.IPA)
       run: |
-        mkdir -p build/LifeZonesMap.app
-        cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
+        mkdir -p Payload/LifeZonesMap.app
+        cp .build/arm64-apple-ios/release/LifeZonesMap Payload/LifeZonesMap.app/LifeZonesMap
         
         # Pulls your file securely using a find sweep instruction 
-        find . -name "GoogleService-Info.plist" -exec cp {} build/LifeZonesMap.app/Info.plist \; 2>/dev/null || true
+        find . -name "GoogleService-Info.plist" -exec cp {} Payload/LifeZonesMap.app/Info.plist \; 2>/dev/null || true
         
-        mkdir -p payload/Payload
-        cp -r build/LifeZonesMap.app payload/Payload/
-        cd payload && zip -r ../LifeZonesMap.ipa Payload
+        # Zips the folder relative to the root path so Apple handles it correctly
+        zip -r LifeZonesMap.ipa Payload
 
     - name: Ship to Firebase App Distribution
       env:
         FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Uses your Firebase Management Token
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
       run: |
         # Install the official Firebase command line utility natively on macOS
         npm install -g firebase-tools
         
-        # Push your zipped binary artifact directly to your designated testers group
+        # Push your zipped binary artifact directly from the root path
         if [ ! -z "$FIREBASE_TOKEN" ]; then
-          firebase appdistribution:distribute payload/LifeZonesMap.ipa \
+          firebase appdistribution:distribute LifeZonesMap.ipa \
             --app "$FIREBASE_APP_ID" \
             --groups testers \
             --token "$FIREBASE_TOKEN"
         else
-          # Fallback authentication if you choose to use the Service Credentials JSON method instead
           echo "${{ secrets.FIREBASE_CREDENTIAL_FILE }}" > firebase-key.json
           export GOOGLE_APPLICATION_CREDENTIALS=firebase-key.json
-          firebase appdistribution:distribute payload/LifeZonesMap.ipa \
+          firebase appdistribution:distribute LifeZonesMap.ipa \
             --app "$FIREBASE_APP_ID" \
             --groups testers
         fi
