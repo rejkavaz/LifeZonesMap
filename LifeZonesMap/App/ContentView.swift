@@ -5,7 +5,7 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var prefsArray: [UserPreferences]
 
-    @State private var activeTab: AppTab = .map
+    @State private var activeTab: AppTab = PreviewSeeder.isActive ? PreviewSeeder.initialTab() : .map
     @State private var showOnboarding = false
     @State private var showSettings = false
     @State private var mapVM = MapViewModel()

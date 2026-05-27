@@ -1,0 +1,119 @@
+name: App Preview
+
+on:
+  push:
+    branches: [master, main]
+    paths-ignore:
+      - 'docs/**'
+      - 'README.md'
+      - 'design/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: preview-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVICE_NAME: "iPhone 16"
+  BUNDLE_ID: "com.rejkavaz.LifeZonesMap"
+
+jobs:
+  capture:
+    name: Capture iOS Simulator screenshots
+    runs-on: macos-15
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history so the auto-commit step can push without conflicts.
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Build app for simulator
+        id: build
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LifeZonesMap.xcodeproj \
+            -scheme LifeZonesMap \
+            -configuration Debug \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath build \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build
+          APP_PATH="build/Build/Products/Debug-iphonesimulator/LifeZonesMap.app"
+          ls -la "$APP_PATH"
+          echo "app_path=$APP_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Boot simulator
+        id: sim
+        run: |
+          # Pick the highest-iOS iPhone 16 (no Pro/Plus/Max for the canonical shot)
+          UDID=$(xcrun simctl list devices available --json \
+            | jq -r '[.devices | to_entries | sort_by(.key) | reverse | .[].value[] | select(.name == "iPhone 16")] | .[0].udid')
+          if [ -z "$UDID" ] || [ "$UDID" = "null" ]; then
+            echo "::error::No iPhone 16 simulator available"; exit 1
+          fi
+          echo "Booting $UDID"
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Install app
+        run: xcrun simctl install ${{ steps.sim.outputs.udid }} ${{ steps.build.outputs.app_path }}
+
+      - name: Wait for SpringBoard
+        run: sleep 4
+
+      - name: Capture each tab
+        run: |
+          mkdir -p screenshots
+          UDID=${{ steps.sim.outputs.udid }}
+          for TAB in map check pulse; do
+            echo "=== Capturing $TAB ==="
+            xcrun simctl terminate "$UDID" ${{ env.BUNDLE_ID }} || true
+            sleep 1
+            xcrun simctl launch "$UDID" ${{ env.BUNDLE_ID }} --ui-preview "--tab=$TAB"
+            sleep 6  # let the view tree, charts, and topo texture settle
+            xcrun simctl io "$UDID" screenshot --type=png "screenshots/preview-$TAB.png"
+            file "screenshots/preview-$TAB.png"
+          done
+
+      - name: Show screenshot sizes
+        run: ls -la screenshots/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-previews-${{ github.run_id }}
+          path: screenshots/*.png
+          retention-days: 14
+
+      - name: Commit previews to docs/app-previews/
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p docs/app-previews
+          cp screenshots/preview-*.png docs/app-previews/
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/app-previews/
+          if git diff --cached --quiet; then
+            echo "No screenshot changes to commit."
+          else
+            git commit -m "Auto-update app preview screenshots [skip ci]
+
+Co-Authored-By: github-actions[bot] <github-actions[bot]@users.noreply.github.com>"
+            git push
+          fi
