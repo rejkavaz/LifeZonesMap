@@ -2,6 +2,39 @@
 
 A weekly self-reflection iOS app that visualizes life balance as an interactive island map, detects patterns across zones, and surfaces personal insights over time.
 
+![Map · Check-In · Pulse](docs/screenshots/08-hifi-three.png)
+
+## Design
+
+The visual identity, palette, and screen design come from a Claude Design handoff (`design/life-zones/`). The Swift code reimplements each screen pixel-by-pixel in SwiftUI + Canvas.
+
+### The three tabs
+
+| Map | Check-In | Pulse |
+|:---:|:---:|:---:|
+| ![Map](docs/screenshots/01-map.png) | ![Check-In](docs/screenshots/02-checkin.png) | ![Pulse](docs/screenshots/03-pulse.png) |
+| 7-zone radar, corner ticks, center avg badge, topo backdrop | Custom slider with tick marks, tag pills, serif-italic notes | Stat cards, line chart, insight feed, connection web |
+
+### Onboarding — 4 screens
+
+| Welcome | Zones | Schedule | First check-in |
+|:---:|:---:|:---:|:---:|
+| ![Welcome](docs/screenshots/04-onboard-welcome.png) | ![Zones](docs/screenshots/05-onboard-zones.png) | ![Schedule](docs/screenshots/06-onboard-schedule.png) | ![First](docs/screenshots/07-onboard-first.png) |
+
+### Widgets
+
+![Widgets](docs/screenshots/09-widgets.png)
+
+Small (radar + avg), medium (7-zone bars), lock-screen rectangular ("Needs care").
+
+### Visual identity
+
+![Identity](docs/screenshots/10-identity.png)
+
+App icon (7-point polygon), Inter Medium wordmark, cream + ink + 7 muted earthy zone colors.
+
+---
+
 ## Overview
 
 Life Zones Map lets you check in once a week on 7 life zones — each rated 1–10. The map updates visually as scores change. After 3+ weeks, the app surfaces correlations, trends, and patterns. No streaks, no gamification, fully private by default.

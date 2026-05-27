@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Life Zones · Capture</title>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: #F2EBDC; font-family: 'Inter', system-ui, sans-serif; }
+  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 32px; box-sizing: border-box; }
+  body.dark { background: #2C3741; }
+  body.row { gap: 28px; }
+  body.scroll { align-items: flex-start; padding: 0; }
+  #root { display: contents; }
+  .label { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: #9A9182; margin-top: 12px; text-align: center; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" src="phone.jsx"></script>
+<script type="text/babel" src="map-screen.jsx"></script>
+<script type="text/babel" src="checkin-screen.jsx"></script>
+<script type="text/babel" src="pulse-screen.jsx"></script>
+<script type="text/babel" src="onboarding.jsx"></script>
+<script type="text/babel" src="widgets.jsx"></script>
+<script type="text/babel" src="identity.jsx"></script>
+
+<script type="text/babel" data-presets="react">
+const params = new URLSearchParams(location.search);
+const which = params.get('screen') || 'map';
+
+const SINGLE = {
+  map:       () => <MapScreen/>,
+  checkin:   () => <CheckInScreen/>,
+  pulse:     () => <PulseScreen/>,
+  welcome:   () => <OnboardWelcome/>,
+  zones:     () => <OnboardZones/>,
+  schedule:  () => <OnboardSchedule/>,
+  first:     () => <OnboardFirstCheckin/>,
+  widgets:   () => <WidgetsBoard/>,
+  identity:  () => <IdentitySheet/>,
+};
+
+const ROWS = {
+  hifi:        ['map', 'checkin', 'pulse'],
+  onboarding1: ['welcome', 'zones'],
+  onboarding2: ['schedule', 'first'],
+};
+
+function Mount() {
+  React.useEffect(() => {
+    if (params.get('dark') === '1') document.body.classList.add('dark');
+    const wrap = params.get('layout');
+    if (wrap === 'row') document.body.classList.add('row');
+    if (wrap === 'scroll') document.body.classList.add('scroll');
+    // Signal ready for headless screenshot tools waiting on document.title
+    setTimeout(() => { document.title = 'READY · ' + which; }, 1200);
+  }, []);
+
+  if (ROWS[which]) {
+    return <>{ROWS[which].map(k => React.createElement(SINGLE[k], { key: k }))}</>;
+  }
+  const F = SINGLE[which];
+  return F ? <F/> : <div style={{padding: 40}}>Unknown screen: {which}</div>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Mount/>);
+</script>
+</body>
+</html>
