@@ -15,8 +15,7 @@ jobs:
 
     - name: Preprocess Multi-Target @main Conflict
       run: |
-        # Since we compile raw folders, we comment out the Widget's entry point 
-        # to prevent duplicate entry points, while leaving your app @main intact.
+        # Comment out the Widget bundle main entry point so folder compiling focuses on the core app
         if [ -f LifeZonesWidget/LifeZonesWidget.swift ]; then
           sed -i '' 's/@main/\/\/ @main/' LifeZonesWidget/LifeZonesWidget.swift
         fi
@@ -39,7 +38,7 @@ jobs:
                     dependencies: [
                         .product(name: "FirebaseCore", package: "firebase-ios-sdk")
                     ],
-                    path: "LifeZonesMap" # Targets your app folder and isolates the widget structure
+                    path: "LifeZonesMap"
                 )
             ]
         )
@@ -49,7 +48,6 @@ jobs:
       run: |
         SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # We add -strict-concurrency=minimal to ignore non-breaking UserNotifications warnings
         swift build -c release \
           --triple arm64-apple-ios \
           -Xswiftc -sdk -Xswiftc "$SDK_PATH" \
