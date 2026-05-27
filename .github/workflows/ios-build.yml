@@ -2,9 +2,8 @@ name: Cloud iOS Build
 
 on:
   push:
-    branches: [ master ] # Triggers every time you push code to your repository
-    workflow_dispatch:
-    
+    branches: [ master ]
+  workflow_dispatch:
 
 jobs:
   build-and-distribute:
@@ -16,8 +15,6 @@ jobs:
 
     - name: Dynamically Generate Build Configuration
       run: |
-        # This writes a temporary compilation manifest directly on the cloud Mac 
-        # so we don't have to change any of your repository files.
         cat << 'EOF' > Package.swift
         // swift-tools-version: 6.0
         import PackageDescription
@@ -42,17 +39,14 @@ jobs:
 
     - name: Compile App Binary
       run: |
-# Explicitly targets the iOS SDK path to fix the Darwin Foundation module conflict
         swift build -c release --triple arm64-apple-ios -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphoneos --show-sdk-path)
 
-    - name: Package Into iPhone App (.IPA)
+    - name: Package Into iPhone App
       run: |
-        # Creates the standard payload architecture an iPhone expects
         mkdir -p build/LifeZonesMap.app
         cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
         cp GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
         
-        # Compresses it into a clean, deployable iOS package
         mkdir -p payload/Payload
         cp -r build/LifeZonesMap.app payload/Payload/
         cd payload && zip -r ../LifeZonesMap.ipa Payload
