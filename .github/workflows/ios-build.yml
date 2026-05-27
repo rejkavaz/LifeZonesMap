@@ -42,8 +42,8 @@ jobs:
 
     - name: Compile App Binary
       run: |
-        # Compiles your raw Swift files for real iPhone processors (arm64)
-        swift build -c release --triple arm64-apple-ios
+# Explicitly targets the iOS SDK path to fix the Darwin Foundation module conflict
+        swift build -c release --triple arm64-apple-ios -Xswiftc -sdk -Xswiftc $(xcrun --sdk iphoneos --show-sdk-path)
 
     - name: Package Into iPhone App (.IPA)
       run: |
