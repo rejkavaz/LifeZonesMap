@@ -63,7 +63,9 @@ jobs:
       run: |
         mkdir -p build/LifeZonesMap.app
         cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
-        cp LifeZonesMap/GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
+        
+        # Corrected copy path to grab the file from your root folder location
+        cp GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
         
         mkdir -p payload/Payload
         cp -r build/LifeZonesMap.app payload/Payload/
