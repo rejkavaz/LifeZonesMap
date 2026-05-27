@@ -26,24 +26,20 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Install XcodeGen
-        run: brew install xcodegen
+      - name: Install XcodeGen and xcbeautify
+        run: |
+          brew install xcodegen xcbeautify
 
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Resolve a working simulator
+      - name: Pick a simulator
         id: sim
         run: |
-          xcrun simctl list devices available
-          DEVICE=$(xcrun simctl list devices available --json \
-            | python3 -c "import sys, json, re; \
-data = json.load(sys.stdin)['devices']; \
-ios_keys = sorted([k for k in data if 'iOS' in k]); \
-key = ios_keys[-1] if ios_keys else ''; \
-devs = data.get(key, []); \
-pref = next((d for d in devs if re.match(r'iPhone (1[5-9]|2[0-9])( Pro)?$', d['name'])), None); \
-print(pref['name'] if pref else (devs[0]['name'] if devs else 'iPhone 15'))")
+          DEVICE=$(xcrun simctl list devices available | grep -E '^\s+iPhone (1[5-9]|2[0-9])( Pro)?\s' | head -1 | sed -E 's/^\s+(iPhone [0-9]+( Pro)?).*/\1/')
+          if [ -z "$DEVICE" ]; then
+            DEVICE="iPhone 16"
+          fi
           echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
           echo "Picked simulator: $DEVICE"
 
