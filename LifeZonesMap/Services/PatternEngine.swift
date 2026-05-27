@@ -7,7 +7,7 @@ final class PatternEngine {
     // MARK: - Public API
 
     func analyze(_ checkIns: [WeeklyCheckIn]) -> [ZoneInsight] {
-        guard checkIns.count >= 2 else { return [] }
+        guard !checkIns.isEmpty else { return [] }
         let sorted = checkIns.sorted { $0.weekStartDate < $1.weekStartDate }
 
         var insights: [ZoneInsight] = []
