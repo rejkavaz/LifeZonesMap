@@ -13,11 +13,16 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Preprocess Multi-Target @main Conflict
+    - name: Preprocess Compilation Flags and Conflicts
       run: |
-        # Comment out the Widget bundle main entry point so folder compiling focuses on the core app
+        # 1. Comment out the Widget bundle main entry point so folder compiling focuses on the core app
         if [ -f LifeZonesWidget/LifeZonesWidget.swift ]; then
           sed -i '' 's/@main/\/\/ @main/' LifeZonesWidget/LifeZonesWidget.swift
+        fi
+        
+        # 2. Add @preconcurrency to the UserNotifications import to downgrade strict Sendable thread errors
+        if [ -f LifeZonesMap/Services/NotificationScheduler.swift ]; then
+          sed -i '' 's/import UserNotifications/@preconcurrency import UserNotifications/' LifeZonesMap/Services/NotificationScheduler.swift
         fi
 
     - name: Dynamically Generate Build Configuration
