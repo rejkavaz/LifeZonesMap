@@ -1,10 +1,6 @@
-# Xcode
-*.xcodeproj/*
-!*.xcodeproj/project.pbxproj
-!*.xcodeproj/xcshareddata/
-!*.xcodeproj/project.xcworkspace/
-*.xcworkspace/*
-!*.xcworkspace/contents.xcworkspacedata
+# Xcode — fully generated from project.yml by XcodeGen; nothing to track.
+*.xcodeproj/
+*.xcworkspace/
 **/.xcode.env.local
 DerivedData/
 build/

@@ -1,0 +1,99 @@
+# XcodeGen project spec — generates LifeZonesMap.xcodeproj
+# Run `xcodegen generate` (after `brew install xcodegen`) before opening in Xcode.
+# CI does this automatically; on Windows you never touch the .xcodeproj.
+
+name: LifeZonesMap
+
+options:
+  bundleIdPrefix: com.rejkavaz
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: false
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    # Allow CI builds without a paid Apple Developer account.
+    CODE_SIGN_STYLE: Automatic
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+    DEVELOPMENT_TEAM: ""
+
+targets:
+  # ───────────────────────────── iOS App ─────────────────────────────
+  LifeZonesMap:
+    type: application
+    platform: iOS
+    sources:
+      - path: LifeZonesMap
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rejkavaz.LifeZonesMap
+        TARGETED_DEVICE_FAMILY: "1,2"   # iPhone + iPad
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_PREVIEWS: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
+        INFOPLIST_KEY_CFBundleDisplayName: "Life Zones"
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - target: LifeZonesWidget
+
+  # ──────────────────────── WidgetKit extension ─────────────────────
+  LifeZonesWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: LifeZonesWidget
+      # Share core types + visual primitives with the app target.
+      # Each file gets compiled twice (once per target). Communication
+      # across the boundary is JSON in App Group UserDefaults, so no
+      # cross-module Swift coupling exists.
+      - path: LifeZonesMap/Models/Models.swift
+      - path: LifeZonesMap/Models/Theme.swift
+      - path: LifeZonesMap/Models/ZoneDefinition.swift
+      - path: LifeZonesMap/Models/ZoneRegistry.swift
+      - path: LifeZonesMap/Services/WidgetDataProvider.swift
+      - path: LifeZonesMap/Views/Components/IconMark.swift
+      - path: LifeZonesMap/Views/Components/ZoneGlyph.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.rejkavaz.LifeZonesMap.Widget
+        INFOPLIST_KEY_CFBundleDisplayName: "Life Zones"
+        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
+        GENERATE_INFOPLIST_FILE: YES
+        SKIP_INSTALL: YES
+
+  # ───────────────────────────── Tests ──────────────────────────────
+  LifeZonesMapTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: LifeZonesMapTests
+    dependencies:
+      - target: LifeZonesMap
+    settings:
+      base:
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/LifeZonesMap.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/LifeZonesMap"
+
+schemes:
+  LifeZonesMap:
+    build:
+      targets:
+        LifeZonesMap: all
+        LifeZonesWidget: all
+    test:
+      targets:
+        - LifeZonesMapTests
+      gatherCoverageData: true
+    run:
+      config: Debug
+    archive:
+      config: Release

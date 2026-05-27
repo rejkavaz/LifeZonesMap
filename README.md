@@ -1,5 +1,7 @@
 # Life Zones Map
 
+[![iOS](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ios.yml/badge.svg)](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ios.yml)
+
 A weekly self-reflection iOS app that visualizes life balance as an interactive island map, detects patterns across zones, and surfaces personal insights over time.
 
 ![Map · Check-In · Pulse](docs/screenshots/08-hifi-three.png)
@@ -83,30 +85,32 @@ LifeZonesMapTests/          ← Swift Testing unit tests (PatternEngine)
 
 ## Getting Started
 
-### Prerequisites
+### On a Mac (the easy path)
 
-- macOS 14+ with Xcode 15+
-- iOS 17+ device or simulator
+```bash
+git clone https://github.com/rejkavaz/LifeZonesMap.git
+cd LifeZonesMap
+brew install xcodegen
+xcodegen generate
+open LifeZonesMap.xcodeproj
+```
 
-### Xcode Setup
+The `.xcodeproj` is generated from [`project.yml`](project.yml) — it's gitignored and regenerated whenever the spec changes. **Don't commit it.**
 
-1. Open Xcode → **File → New → Project** → App
-2. Set:
-   - **Product Name:** LifeZonesMap
-   - **Team:** your team
-   - **Bundle ID:** com.yourteam.lifezonesmap
-   - **Interface:** SwiftUI
-   - **Language:** Swift
-   - **Storage:** SwiftData
-3. Delete the auto-generated files (`ContentView.swift`, `Item.swift`)
-4. **File → Add Files to "LifeZonesMap"** → select all folders from this repo's `LifeZonesMap/` directory
-5. Add a new **Widget Extension** target named `LifeZonesWidget`
-6. Add the `LifeZonesWidget/` files to that target
-7. Configure an **App Group** (`group.com.yourteam.lifezonesmap`) for both targets in Signing & Capabilities
+### On Windows (no Mac required)
 
-### App Group Setup
+This entire repo was built on Windows. The setup:
 
-In `WidgetDataProvider.swift` and `LifeZonesWidget.swift`, replace `group.com.yourteam.lifezonesmap` with your actual App Group identifier.
+1. **Write Swift code** in VS Code with the [Swift extension](https://marketplace.visualstudio.com/items?itemName=sswg.swift-lang). Syntax highlighting, autocomplete, and you can compile/test the pure-logic layer locally with [Swift for Windows](https://www.swift.org/install/windows/).
+2. **Push to GitHub.** [`.github/workflows/ios.yml`](.github/workflows/ios.yml) spins up a `macos-15` runner with Xcode 16, installs XcodeGen, generates the project, and runs a full **iOS Simulator build + unit tests**. Status: badge above.
+3. **Iterate from the Actions log.** Compiler errors, test failures, warnings all show up in the run summary. On failure, the workflow uploads the `.xcresult` bundle as an artifact you can download.
+4. **For SwiftUI previews and live UI work** you'll still want a Mac (cloud Mac or a used Mac mini). But the build is *verifiable* without one.
+
+What this means in practice:
+- Code review happens before merge because CI catches compile errors
+- The widget extension and main app stay in sync because both are built every run
+- Swift Testing's `@Test` macros run in CI without any extra config
+- The Anthropic API integration's compile-time checks are validated even though you can't run the app
 
 ### Anthropic API (optional)
 

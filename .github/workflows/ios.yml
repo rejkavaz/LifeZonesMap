@@ -1,0 +1,83 @@
+name: iOS
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+  workflow_dispatch:
+
+concurrency:
+  group: ios-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Test (iOS Simulator)
+    runs-on: macos-15
+    timeout-minutes: 25
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          swift --version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Resolve a working simulator
+        id: sim
+        run: |
+          xcrun simctl list devices available
+          DEVICE=$(xcrun simctl list devices available --json \
+            | python3 -c "import sys, json, re; \
+data = json.load(sys.stdin)['devices']; \
+ios_keys = sorted([k for k in data if 'iOS' in k]); \
+key = ios_keys[-1] if ios_keys else ''; \
+devs = data.get(key, []); \
+pref = next((d for d in devs if re.match(r'iPhone (1[5-9]|2[0-9])( Pro)?$', d['name'])), None); \
+print(pref['name'] if pref else (devs[0]['name'] if devs else 'iPhone 15'))")
+          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
+          echo "Picked simulator: $DEVICE"
+
+      - name: Build for iOS Simulator
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LifeZonesMap.xcodeproj \
+            -scheme LifeZonesMap \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            build | xcbeautify
+
+      - name: Run unit tests
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project LifeZonesMap.xcodeproj \
+            -scheme LifeZonesMap \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            test | xcbeautify
+
+      - name: Upload xcresult on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult-${{ github.run_id }}
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/Logs/**/*.xcresult
+          retention-days: 7
