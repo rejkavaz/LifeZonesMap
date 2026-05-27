@@ -2,7 +2,7 @@ name: Cloud iOS Build
 
 on:
   push:
-    branches: [ main ] # Triggers every time you push code to your repository
+    branches: [ master ] # Triggers every time you push code to your repository
 
 jobs:
   build-and-distribute:
