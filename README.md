@@ -143,18 +143,86 @@ One call per month after 4+ check-ins. Sends only zone scores (no notes, no tags
 
 ## Design System
 
-Colors, spacing, radii, and animation presets live in `DS` enum inside `ZoneRegistry.swift`.
+Color tokens live in `LZ` (`Theme.swift`); typography helpers in `LZType`; spacing/radii in `DS`. All zone colors are pulled from worn cartography — muted, earthy, never neon.
 
 | Token | Value |
 |---|---|
-| Accent | `#1D9E75` (teal) |
-| Vitality | `#E24B4A` |
-| Deep Work | `#378ADD` |
-| Connection | `#1D9E75` |
-| Inner World | `#7F77DD` |
-| Creation | `#D85A30` |
-| Foundation | `#BA7517` |
-| Growth | `#639922` |
+| Cream / paper | `#F2EBDC` / `#FAF6EB` |
+| Ink / ink soft / ink mute | `#262320` / `#5B554A` / `#9A9182` |
+| Brand teal / teal deep | `#1D9E75` / `#15795A` |
+| Vitality (terracotta) | `#BE5A45` |
+| Deep Work (ink blue) | `#3C6E91` |
+| Connection (moss) | `#2D9474` |
+| Inner World (dusky violet) | `#6E5B8A` |
+| Creation (burnt orange) | `#CC8A4A` |
+| Foundation (amber ochre) | `#B6913E` |
+| Growth (forest green) | `#5E8C5A` |
+
+Typography is Inter (humanist sans, all UI) + Source Serif 4 italic (notes, quotes, page subtitles — the "field guide" voice).
+
+---
+
+## Roadmap
+
+Beyond the manual weekly ritual, the obvious next step is letting the iPhone *quietly inform* each zone without ever filling in the score for you. Every integration below is **opt-in**, **on-device by default**, and **read-only** unless explicitly noted.
+
+### HealthKit — `Vitality` becomes data-aware
+Pull last 7 days of:
+- Sleep duration + consistency (HKCategoryTypeIdentifierSleepAnalysis)
+- Steps / active energy
+- Resting heart rate, HRV
+- Mindful minutes
+
+These don't *set* your Vitality score — they appear as a small "Suggested: 7.4" chip beside the slider that you can accept or ignore. The weekly note can auto-include a one-line sleep summary ("Avg 7h12m, two short nights") if you opt in.
+
+### Screen Time (Family Controls) — `Deep Work` and `Inner World`
+With user-granted access to `DeviceActivityCenter`:
+- Total productive vs. distracting app time → suggested Deep Work range
+- Late-night phone use → could nudge a lower Inner World score
+- Picks Up count → trends shown in Pulse
+
+Family Controls runs in an isolated extension; raw app names never leave the device.
+
+### Calendar / EventKit — `Connection` and `Deep Work`
+- Read-only access to the user's calendar
+- Count of meeting hours, # distinct people met → seeds a Connection suggestion
+- Detected "focus blocks" (≥ 90min uninterrupted) → Deep Work hint
+- Never reads event titles or attendee details — just durations + counts
+
+### Focus Filters & iOS Focus modes
+- Custom Focus Filter so the app can auto-mute non-essential notifications during the check-in
+- Reflect the user's current Focus state on the Map header ("Currently: Reading")
+
+### Journaling Suggestions API (iOS 17.2+)
+- After a notable workout, photo cluster, or significant location visit, iOS proposes a "moment"
+- App can opt into receiving relevance signals (no content) so the weekly note prompt is contextual
+
+### App Intents & Shortcuts
+- `Log my Vitality at 7` via Siri
+- Home screen "Quick check-in" widget that drops you into the rating flow for a single zone
+- Shortcuts can read the latest pulse insight for use in routines ("Good morning, Vitality is trending up")
+
+### CloudKit private sync
+- Opt-in iCloud sync of check-ins across iPhone / iPad / Apple Watch
+- End-to-end encrypted (CloudKit Private Database)
+- Sync excludes API keys and never touches a shared zone
+
+### watchOS companion
+- Complication showing this week's lowest zone
+- Tap to log a one-zone quick update from the wrist
+- Mirror of the lock-screen "Needs care" widget
+
+### Apple Intelligence (iOS 18.1+)
+- On-device summarization of the past month's notes ("This month you mentioned 'tired' across 3 weeks")
+- Writing Tools support inside the note field
+- Visual Intelligence integration is explicitly **out of scope** — this app stays text-first
+
+### What's intentionally **not** on the roadmap
+- Social features, sharing, leaderboards
+- Streaks, badges, gamification
+- Advertising, growth loops, retention nudges
+- Background location tracking
+- AI-generated reflections that don't cite the user's own data
 
 ## Milestones
 
