@@ -4,6 +4,7 @@ on:
   push:
     branches: [ master ] # Triggers every time you push code to your repository
     workflow_dispatch:
+    
 
 jobs:
   build-and-distribute:
