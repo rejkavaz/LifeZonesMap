@@ -13,6 +13,14 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    - name: Preprocess Multi-Target @main Conflict
+      run: |
+        # Since we compile raw folders, we comment out the Widget's entry point 
+        # to prevent duplicate entry points, while leaving your app @main intact.
+        if [ -f LifeZonesWidget/LifeZonesWidget.swift ]; then
+          sed -i '' 's/@main/\/\/ @main/' LifeZonesWidget/LifeZonesWidget.swift
+        fi
+
     - name: Dynamically Generate Build Configuration
       run: |
         cat << 'EOF' > Package.swift
@@ -31,7 +39,7 @@ jobs:
                     dependencies: [
                         .product(name: "FirebaseCore", package: "firebase-ios-sdk")
                     ],
-                    path: "."
+                    path: "LifeZonesMap" # Targets your app folder and isolates the widget structure
                 )
             ]
         )
@@ -39,20 +47,20 @@ jobs:
 
     - name: Compile App Binary
       run: |
-        # Fetch the precise iOS SDK framework paths
         SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # Explicitly targets iOS 17 architectures and cuts off macOS system headers
+        # We add -strict-concurrency=minimal to ignore non-breaking UserNotifications warnings
         swift build -c release \
           --triple arm64-apple-ios \
           -Xswiftc -sdk -Xswiftc "$SDK_PATH" \
-          -Xcc -isysroot -Xcc "$SDK_PATH"
+          -Xcc -isysroot -Xcc "$SDK_PATH" \
+          -Xswiftc -strict-concurrency=minimal
 
     - name: Package Into iPhone App (.IPA)
       run: |
         mkdir -p build/LifeZonesMap.app
         cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
-        cp GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
+        cp LifeZonesMap/GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
         
         mkdir -p payload/Payload
         cp -r build/LifeZonesMap.app payload/Payload/
