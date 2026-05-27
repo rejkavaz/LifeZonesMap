@@ -11,6 +11,11 @@ concurrency:
   group: ios-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Guaranteed available on macos-15 (Xcode 16.x); xcodebuild picks the
+  # highest-iOS simulator that matches the deployment target.
+  DESTINATION: "platform=iOS Simulator,name=iPhone 16"
+
 jobs:
   build:
     name: Build & Test (iOS Simulator)
@@ -26,22 +31,11 @@ jobs:
           xcodebuild -version
           swift --version
 
-      - name: Install XcodeGen and xcbeautify
-        run: |
-          brew install xcodegen xcbeautify
+      - name: Install XcodeGen + xcbeautify
+        run: brew install xcodegen xcbeautify
 
       - name: Generate Xcode project
         run: xcodegen generate
-
-      - name: Pick a simulator
-        id: sim
-        run: |
-          DEVICE=$(xcrun simctl list devices available | grep -E '^\s+iPhone (1[5-9]|2[0-9])( Pro)?\s' | head -1 | sed -E 's/^\s+(iPhone [0-9]+( Pro)?).*/\1/')
-          if [ -z "$DEVICE" ]; then
-            DEVICE="iPhone 16"
-          fi
-          echo "device=$DEVICE" >> "$GITHUB_OUTPUT"
-          echo "Picked simulator: $DEVICE"
 
       - name: Build for iOS Simulator
         run: |
@@ -50,7 +44,7 @@ jobs:
             -project LifeZonesMap.xcodeproj \
             -scheme LifeZonesMap \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "$DESTINATION" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -63,7 +57,7 @@ jobs:
             -project LifeZonesMap.xcodeproj \
             -scheme LifeZonesMap \
             -configuration Debug \
-            -destination "platform=iOS Simulator,name=${{ steps.sim.outputs.device }}" \
+            -destination "$DESTINATION" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY="" \
