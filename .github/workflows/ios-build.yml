@@ -64,7 +64,14 @@ jobs:
         mkdir -p LifeZonesMap.app
         cp .build/arm64-apple-ios-simulator/release/LifeZonesMap LifeZonesMap.app/LifeZonesMap
         
+        # Find your GoogleService-Info.plist configuration file
         find . -name "GoogleService-Info.plist" -exec cp {} LifeZonesMap.app/Info.plist \; 2>/dev/null || true
+        
+        # INJECT REQUIRED APPLE IDENTITY PROFILE (Fixes the Sideloadly CFBundleIdentifier Error)
+        /usr/libexec/PlistBuddy -c "Add :CFBundleIdentifier string com.rejkavaz.LifeZonesMap" LifeZonesMap.app/Info.plist 2>/dev/null || /usr/libexec/PlistBuddy -c "Set :CFBundleIdentifier com.rejkavaz.LifeZonesMap" LifeZonesMap.app/Info.plist
+        /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string LifeZonesMap" LifeZonesMap.app/Info.plist 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 1.0" LifeZonesMap.app/Info.plist 2>/dev/null || true
+        /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string 1" LifeZonesMap.app/Info.plist 2>/dev/null || true
         
         zip -r LifeZonesMap.zip LifeZonesMap.app
 
