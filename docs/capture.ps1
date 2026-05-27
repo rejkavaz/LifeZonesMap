@@ -7,7 +7,7 @@ New-Item -ItemType Directory -Force -Path $out | Out-Null
 $jobs = @(
     @{ s = "map";        w = 460;  h = 920;  f = "01-map.png" },
     @{ s = "checkin";    w = 460;  h = 920;  f = "02-checkin.png" },
-    @{ s = "pulse";      w = 460;  h = 1400; f = "03-pulse.png" },
+    @{ s = "pulse";      w = 460;  h = 920;  f = "03-pulse.png" },
     @{ s = "welcome";    w = 460;  h = 920;  f = "04-onboard-welcome.png" },
     @{ s = "zones";      w = 460;  h = 920;  f = "05-onboard-zones.png" },
     @{ s = "schedule";   w = 460;  h = 920;  f = "06-onboard-schedule.png" },
