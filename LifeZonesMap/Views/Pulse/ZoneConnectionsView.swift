@@ -1,90 +1,106 @@
 import SwiftUI
 
+/// Circular zone connection web. Line thickness encodes correlation strength.
 struct ZoneConnectionsView: View {
     let correlationStrength: (ZoneID, ZoneID) -> Double
 
-    private let zones = ZoneID.allCases
     private let threshold: Double = 0.4
+    private let zones = ZoneID.allCases
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.s8) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text("Zone connections")
-                    .font(.headline)
-                Text("Line weight shows correlation strength")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-
+        VStack(spacing: 0) {
             Canvas { ctx, size in
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let radius = min(size.width, size.height) * 0.38
+                let cx = size.width / 2
+                let cy = size.height / 2
+                let R = min(size.width, size.height) * 0.36
 
-                // Draw edges
-                for i in 0..<zones.count {
-                    for j in (i+1)..<zones.count {
-                        let strength = correlationStrength(zones[i], zones[j])
-                        guard strength >= threshold else { continue }
+                // Faint dashed ring
+                let ring = Path(ellipseIn: CGRect(x: cx - R, y: cy - R, width: R * 2, height: R * 2))
+                ctx.stroke(ring, with: .color(LZ.rule), style: StrokeStyle(lineWidth: 0.6, dash: [2, 4]))
 
-                        let ptA = nodePoint(index: i, center: center, radius: radius)
-                        let ptB = nodePoint(index: j, center: center, radius: radius)
-                        var path = Path()
-                        path.move(to: ptA)
-                        path.addLine(to: ptB)
-                        let def = ZoneRegistry.definition(for: zones[i])
+                // Positions
+                let n = zones.count
+                var pts: [CGPoint] = []
+                for i in 0..<n {
+                    let a = -CGFloat.pi / 2 + (CGFloat(i) / CGFloat(n)) * .pi * 2
+                    pts.append(CGPoint(x: cx + cos(a) * R, y: cy + sin(a) * R))
+                }
+
+                // Edges
+                for i in 0..<n {
+                    for j in (i + 1)..<n {
+                        let w = correlationStrength(zones[i], zones[j])
+                        guard w >= threshold else { continue }
+                        var p = Path()
+                        p.move(to: pts[i])
+                        p.addLine(to: pts[j])
                         ctx.stroke(
-                            path,
-                            with: .color(def.color.opacity(0.3 + strength * 0.4)),
-                            style: StrokeStyle(lineWidth: CGFloat(0.5 + strength * 4))
+                            p,
+                            with: .color(LZ.inkSoft.opacity(0.18 + w * 0.5)),
+                            style: StrokeStyle(lineWidth: 0.6 + CGFloat(w) * 2.2, lineCap: .round)
                         )
                     }
                 }
 
-                // Draw nodes
+                // Nodes
                 for (i, zone) in zones.enumerated() {
-                    let pt   = nodePoint(index: i, center: center, radius: radius)
-                    let def  = ZoneRegistry.definition(for: zone)
-                    let rect = CGRect(x: pt.x - 10, y: pt.y - 10, width: 20, height: 20)
-                    ctx.fill(Path(ellipseIn: rect), with: .color(def.color))
-                }
-            }
-            .frame(height: 220)
-            .accessibilityLabel("Zone correlation web")
-
-            // Node labels overlay
-            GeometryReader { geo in
-                let size   = geo.size
-                let center = CGPoint(x: size.width / 2, y: size.height / 2)
-                let radius = min(size.width, size.height) * 0.38
-
-                ForEach(Array(zones.enumerated()), id: \.element) { i, zone in
-                    let pt  = nodePoint(index: i, center: center, radius: radius)
                     let def = ZoneRegistry.definition(for: zone)
-                    Text(def.name)
-                        .font(.system(size: 9, weight: .medium))
-                        .foregroundStyle(def.color)
-                        .position(labelPosition(index: i, center: center, radius: radius))
+                    let pt = pts[i]
+                    let outerR: CGFloat = 9
+                    ctx.fill(
+                        Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR, width: outerR * 2, height: outerR * 2)),
+                        with: .color(LZ.paper)
+                    )
+                    ctx.stroke(
+                        Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR, width: outerR * 2, height: outerR * 2)),
+                        with: .color(def.color), lineWidth: 1.4
+                    )
+                    let innerR: CGFloat = 4
+                    ctx.fill(
+                        Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR, width: innerR * 2, height: innerR * 2)),
+                        with: .color(def.color)
+                    )
                 }
             }
-            .frame(height: 40)
+            .frame(height: 280)
+            .overlay(labelsOverlay)
+
+            Text("Thicker lines mean a stronger pull between two zones over the last twelve weeks.")
+                .font(LZType.serifItalic(11.5))
+                .foregroundStyle(LZ.inkSoft)
+                .lineSpacing(2)
+                .padding(.horizontal, 8)
+                .padding(.bottom, 14)
+                .padding(.top, 6)
         }
-        .padding()
-        .background(.background, in: RoundedRectangle(cornerRadius: DS.Radius.lg))
+        .padding(.horizontal, 12)
+        .background(
+            RoundedRectangle(cornerRadius: 14, style: .continuous).fill(LZ.paper)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+        )
     }
 
-    private func angle(for index: Int) -> Double {
-        let step = (2 * Double.pi) / Double(zones.count)
-        return -Double.pi / 2 + step * Double(index)
-    }
-
-    private func nodePoint(index: Int, center: CGPoint, radius: CGFloat) -> CGPoint {
-        let a = angle(for: index)
-        return CGPoint(x: center.x + radius * cos(a), y: center.y + radius * sin(a))
-    }
-
-    private func labelPosition(index: Int, center: CGPoint, radius: CGFloat) -> CGPoint {
-        let a = angle(for: index)
-        let offset = radius + 20
-        return CGPoint(x: center.x + offset * cos(a), y: center.y + offset * sin(a))
+    // Place labels in SwiftUI (easier than Canvas text)
+    @ViewBuilder private var labelsOverlay: some View {
+        GeometryReader { geo in
+            let cx = geo.size.width / 2
+            let cy = geo.size.height / 2
+            let R = min(geo.size.width, geo.size.height) * 0.36
+            ForEach(Array(zones.enumerated()), id: \.element) { i, zone in
+                let a = -CGFloat.pi / 2 + (CGFloat(i) / CGFloat(zones.count)) * .pi * 2
+                let isRight = cos(a) > 0.2
+                let isLeft  = cos(a) < -0.2
+                let dx: CGFloat = isRight ? 14 : (isLeft ? -14 : 0)
+                let dy: CGFloat = sin(a) > 0.2 ? 18 : (sin(a) < -0.2 ? -10 : 4)
+                Text(ZoneRegistry.definition(for: zone).name)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(LZ.ink)
+                    .frame(width: 72, alignment: isRight ? .leading : (isLeft ? .trailing : .center))
+                    .position(x: cx + cos(a) * R + dx, y: cy + sin(a) * R + dy)
+            }
+        }
     }
 }

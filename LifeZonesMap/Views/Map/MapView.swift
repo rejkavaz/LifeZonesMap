@@ -1,161 +1,362 @@
 import SwiftUI
 
+// MARK: - The radar polygon itself (used at many sizes)
+
+struct RadarMap: View {
+    let scores: [ZoneID: Int]
+    var size: CGFloat = 342
+    var showNodes = true
+    var showLabels = true
+    var showRings = true
+    var showGrid = true
+    var fill: Color = LZ.teal
+    var fillOpacity: Double = 0.16
+    var stroke: Color = LZ.tealDeep
+    var ringColor: Color = Color(hex: "#C2B79C")
+    var dotRadius: CGFloat = 5.5
+
+    private let zones = ZoneID.allCases
+
+    var body: some View {
+        ZStack {
+            Canvas { ctx, _ in
+                let center = CGPoint(x: size / 2, y: size / 2)
+                let inset  = size * 0.18
+                let R      = size / 2 - inset
+
+                // Rings — 4 dashed 7-sided polygons at 0.25, 0.5, 0.75, 1.0
+                if showRings {
+                    let ringScales: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
+                    for (i, scale) in ringScales.enumerated() {
+                        var path = Path()
+                        for k in 0..<zones.count {
+                            let pt = radialPoint(center: center, index: k, radius: R * scale)
+                            if k == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+                        }
+                        path.closeSubpath()
+                        let isOuter = i == ringScales.count - 1
+                        ctx.stroke(
+                            path,
+                            with: .color(ringColor.opacity(0.55)),
+                            style: StrokeStyle(
+                                lineWidth: isOuter ? 0.9 : 0.7,
+                                dash: isOuter ? [] : [3, 4]
+                            )
+                        )
+                    }
+                }
+
+                // Axis spokes
+                if showGrid {
+                    for k in 0..<zones.count {
+                        var p = Path()
+                        p.move(to: center)
+                        p.addLine(to: radialPoint(center: center, index: k, radius: R))
+                        ctx.stroke(p, with: .color(ringColor.opacity(0.55)), lineWidth: 0.6)
+                    }
+                }
+
+                // Score polygon
+                var poly = Path()
+                for (i, z) in zones.enumerated() {
+                    let v = CGFloat(scores[z] ?? 5) / 10
+                    let pt = radialPoint(center: center, index: i, radius: R * v)
+                    if i == 0 { poly.move(to: pt) } else { poly.addLine(to: pt) }
+                }
+                poly.closeSubpath()
+                ctx.fill(poly, with: .color(fill.opacity(fillOpacity)))
+                ctx.stroke(poly, with: .color(stroke), style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
+
+                // Nodes (white halo + colored center)
+                if showNodes {
+                    for (i, z) in zones.enumerated() {
+                        let v = CGFloat(scores[z] ?? 5) / 10
+                        let pt = radialPoint(center: center, index: i, radius: R * v)
+                        let def = ZoneRegistry.definition(for: z)
+                        let outerR = dotRadius + 2
+                        let innerR = max(dotRadius - 1, 1.5)
+                        ctx.fill(
+                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                                   width: outerR * 2, height: outerR * 2)),
+                            with: .color(LZ.paper)
+                        )
+                        ctx.stroke(
+                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                                   width: outerR * 2, height: outerR * 2)),
+                            with: .color(def.color), lineWidth: 1.2
+                        )
+                        ctx.fill(
+                            Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR,
+                                                   width: innerR * 2, height: innerR * 2)),
+                            with: .color(def.color)
+                        )
+                    }
+                }
+            }
+            .frame(width: size, height: size)
+
+            // Labels — SwiftUI Text so it picks up dynamic type if needed
+            if showLabels {
+                labels
+            }
+        }
+        .frame(width: size, height: size)
+    }
+
+    // MARK: - Labels
+
+    @ViewBuilder private var labels: some View {
+        let center = CGPoint(x: size / 2, y: size / 2)
+        let inset  = size * 0.18
+        let R      = size / 2 - inset
+
+        ForEach(Array(zones.enumerated()), id: \.element) { i, z in
+            let angle = angleFor(index: i)
+            let pt    = CGPoint(x: center.x + cos(angle) * (R + inset * 0.62),
+                                y: center.y + sin(angle) * (R + inset * 0.62))
+            let def   = ZoneRegistry.definition(for: z)
+            let score = scores[z] ?? 5
+            let isRight = cos(angle) > 0.2
+            let isLeft  = cos(angle) < -0.2
+            let alignment: HorizontalAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
+            let frameAlign: Alignment = isRight ? .leading : (isLeft ? .trailing : .center)
+
+            VStack(alignment: alignment, spacing: 1) {
+                Text(def.name)
+                    .font(.system(size: size * 0.034, weight: .medium))
+                    .tracking(0.2)
+                    .foregroundStyle(LZ.ink)
+                Text(String(format: "%.1f", Double(score)))
+                    .font(.system(size: size * 0.038, weight: .semibold).monospacedDigit())
+                    .foregroundStyle(def.color)
+            }
+            .frame(width: 90, alignment: frameAlign)
+            .position(x: pt.x + (isRight ? 38 : (isLeft ? -38 : 0)),
+                      y: pt.y)
+        }
+    }
+
+    // MARK: - Geometry
+
+    private func angleFor(index: Int) -> CGFloat {
+        let n = CGFloat(zones.count)
+        return -CGFloat.pi / 2 + (CGFloat(index) / n) * .pi * 2
+    }
+
+    private func radialPoint(center: CGPoint, index: Int, radius: CGFloat) -> CGPoint {
+        let a = angleFor(index: index)
+        return CGPoint(x: center.x + cos(a) * radius, y: center.y + sin(a) * radius)
+    }
+}
+
+// MARK: - The Map screen
+
 struct MapView: View {
     let scores: [ZoneID: Int]
     var onZoneTap: (ZoneID) -> Void = { _ in }
+    var onSettingsTap: () -> Void = {}
 
-    @State private var pulseScale: CGFloat = 1.0
-    @State private var animatedScores: [ZoneID: Double] = [:]
-
-    private let zones = ZoneID.allCases
-    private let nodeMinRadius: CGFloat = 8
-    private let nodeMaxRadius: CGFloat = 22
+    private var overallAverage: Double {
+        let vals = scores.values
+        guard !vals.isEmpty else { return 0 }
+        return Double(vals.reduce(0, +)) / Double(vals.count)
+    }
 
     var body: some View {
-        GeometryReader { geo in
-            let size   = min(geo.size.width, geo.size.height)
-            let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
-            let maxR   = size * 0.42
+        VStack(spacing: 0) {
+            header
+            canvasCard
+            zoneList
+        }
+        .background(LZ.paper.ignoresSafeArea())
+    }
 
-            ZStack {
-                Canvas { ctx, _ in
-                    drawGrid(ctx: ctx, center: center, maxR: maxR)
-                    drawSpokes(ctx: ctx, center: center, maxR: maxR)
-                    drawFilledPolygon(ctx: ctx, center: center, maxR: maxR)
-                }
-                .accessibilityHidden(true)
+    // MARK: - Header
 
-                ForEach(Array(zones.enumerated()), id: \.element) { idx, zone in
-                    let angle  = angle(for: idx)
-                    let score  = animatedScores[zone] ?? 5
-                    let pt     = point(center: center, angle: angle, score: score, maxR: maxR)
-                    let def    = ZoneRegistry.definition(for: zone)
-                    let radius = nodeRadius(for: score)
+    private var header: some View {
+        HStack(alignment: .firstTextBaseline) {
+            Text("Life Zones")
+                .font(.system(size: 19, weight: .medium))
+                .tracking(-0.34)
+                .foregroundStyle(LZ.ink)
+            Spacer()
+            Text(currentWeekLabel())
+                .uppercaseCaption(size: 11)
+            Button(action: onSettingsTap) {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(LZ.inkMute)
+            }
+            .padding(.leading, DS.Spacing.s8)
+        }
+        .padding(.horizontal, 24)
+        .padding(.top, DS.Spacing.s4)
+        .padding(.bottom, DS.Spacing.s8)
+    }
 
-                    ZStack {
+    private func currentWeekLabel() -> String {
+        let monday = Date().isoWeekMonday
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return "Week of \(f.string(from: monday))"
+    }
+
+    // MARK: - Canvas card
+
+    private var canvasCard: some View {
+        ZStack {
+            // Card background
+            RoundedRectangle(cornerRadius: DS.Radius.xl, style: .continuous)
+                .fill(LZ.cream)
+                .overlay(
+                    RoundedRectangle(cornerRadius: DS.Radius.xl, style: .continuous)
+                        .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+                )
+
+            // Faint topo
+            TopoTexture(
+                lines: 14,
+                palette: TopoPalette.mapHint,
+                seed: 3,
+                opacity: 0.55,
+                lineWidth: 0.8
+            )
+            .blendMode(.multiply)
+            .opacity(0.20)
+            .clipShape(RoundedRectangle(cornerRadius: DS.Radius.xl, style: .continuous))
+
+            CornerTicks()
+
+            // Top-left "THIS WEEK" pin
+            VStack {
+                HStack {
+                    HStack(spacing: 6) {
                         Circle()
-                            .fill(def.color.opacity(0.25))
-                            .frame(width: radius * 2.6, height: radius * 2.6)
-                        Circle()
-                            .fill(def.color)
-                            .frame(width: radius * 2, height: radius * 2)
-                            .scaleEffect(pulseScale)
+                            .fill(LZ.tealDeep.opacity(0.7))
+                            .frame(width: 6, height: 6)
+                        Text("This week").uppercaseCaption(size: 9.5, tracking: 1.5)
                     }
-                    .position(pt)
-                    .onTapGesture { onZoneTap(zone) }
-                    .accessibilityLabel("\(def.name): \(Int(score)) out of 10")
-                    .accessibilityAddTraits(.isButton)
+                    Spacer()
+                    Text("Scale 0 — 10").uppercaseCaption(size: 9.5, tracking: 1.5)
+                }
+                .padding(.horizontal, 14)
+                .padding(.top, 12)
+                Spacer()
+            }
 
-                    Text(labelText(zone: def.name, score: score))
-                        .font(.caption2)
-                        .fontWeight(.medium)
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(.secondary)
-                        .position(labelPosition(center: center, angle: angle, score: score, maxR: maxR, size: size))
-                        .allowsHitTesting(false)
+            // The radar
+            RadarMap(
+                scores: scores,
+                size: 342,
+                stroke: LZ.tealDeep,
+                fill: LZ.teal,
+                fillOpacity: 0.16,
+                ringColor: Color(hex: "#C2B79C")
+            )
+            .padding(.top, 10)
+            .padding(.bottom, 6)
+
+            // Center avg badge
+            VStack(spacing: 0) {
+                Text("Avg").uppercaseCaption(size: 9, tracking: 2.0)
+                Text(String(format: "%.1f", overallAverage))
+                    .font(.system(size: 26, weight: .medium).monospacedDigit())
+                    .tracking(-0.5)
+                    .foregroundStyle(LZ.ink)
+            }
+            .offset(y: -4)
+            .allowsHitTesting(false)
+        }
+        .frame(height: 372)
+        .padding(.horizontal, 18)
+    }
+
+    // MARK: - Zone list
+
+    private var zoneList: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 0) {
+                HStack {
+                    Text("By zone").uppercaseCaption()
+                    Spacer()
+                }
+                .padding(.bottom, 10)
+
+                ForEach(Array(ZoneRegistry.all.enumerated()), id: \.element.id) { idx, def in
+                    Button(action: { onZoneTap(def.id) }) {
+                        ZoneRow(
+                            definition: def,
+                            score: scores[def.id] ?? 5,
+                            isLast: idx == ZoneRegistry.all.count - 1
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-        }
-        .onAppear {
-            syncAnimatedScores(animated: false)
-            startPulse()
-        }
-        .onChange(of: scores) {
-            syncAnimatedScores(animated: true)
+            .padding(.horizontal, 24)
+            .padding(.top, 20)
+            .padding(.bottom, 32)
         }
     }
+}
 
-    // MARK: - Canvas drawing
+// MARK: - Zone row
 
-    private func drawGrid(ctx: GraphicsContext, center: CGPoint, maxR: CGFloat) {
-        for scale in [0.3, 0.6, 1.0] as [Double] {
-            var path = Path()
-            let r = maxR * scale
-            for i in 0..<zones.count {
-                let pt = radialPoint(center: center, angle: angle(for: i), radius: r)
-                i == 0 ? path.move(to: pt) : path.addLine(to: pt)
+struct ZoneRow: View {
+    let definition: ZoneDefinition
+    let score: Int
+    let isLast: Bool
+
+    var body: some View {
+        VStack(spacing: 0) {
+            HStack(alignment: .center, spacing: 12) {
+                // Color dot with halo
+                ZStack {
+                    Circle().fill(definition.color.opacity(0.13)).frame(width: 14, height: 14)
+                    Circle().fill(definition.color).frame(width: 8, height: 8)
+                }
+                .frame(width: 14)
+
+                VStack(alignment: .leading, spacing: 7) {
+                    HStack {
+                        Text(definition.name)
+                            .font(.system(size: 15, weight: .medium))
+                            .tracking(-0.075)
+                            .foregroundStyle(LZ.ink)
+                        Spacer()
+                        Text(definition.blurb)
+                            .font(.system(size: 10.5, weight: .medium))
+                            .tracking(0.4)
+                            .foregroundStyle(LZ.inkMute)
+                    }
+                    GeometryReader { geo in
+                        ZStack(alignment: .leading) {
+                            Capsule().fill(Color(hex: "#E2D8C0")).frame(height: 4)
+                            Capsule().fill(definition.color)
+                                .frame(width: geo.size.width * CGFloat(score) / 10, height: 4)
+                        }
+                    }
+                    .frame(height: 4)
+                }
+
+                Text(String(format: "%.1f", Double(score)))
+                    .font(.system(size: 18, weight: .medium).monospacedDigit())
+                    .tracking(-0.18)
+                    .foregroundStyle(LZ.ink)
+                    .frame(minWidth: 34, alignment: .trailing)
             }
-            path.closeSubpath()
-            ctx.stroke(path, with: .color(.secondary.opacity(0.2)), style: StrokeStyle(lineWidth: 0.8, dash: [4, 4]))
-        }
-    }
+            .padding(.vertical, 14)
 
-    private func drawSpokes(ctx: GraphicsContext, center: CGPoint, maxR: CGFloat) {
-        for i in 0..<zones.count {
-            var path = Path()
-            path.move(to: center)
-            path.addLine(to: radialPoint(center: center, angle: angle(for: i), radius: maxR))
-            ctx.stroke(path, with: .color(.secondary.opacity(0.15)), lineWidth: 0.5)
-        }
-    }
-
-    private func drawFilledPolygon(ctx: GraphicsContext, center: CGPoint, maxR: CGFloat) {
-        var path = Path()
-        for (i, zone) in zones.enumerated() {
-            let score = animatedScores[zone] ?? 5
-            let pt = point(center: center, angle: angle(for: i), score: score, maxR: maxR)
-            i == 0 ? path.move(to: pt) : path.addLine(to: pt)
-        }
-        path.closeSubpath()
-        ctx.fill(path, with: .color(Color(hex: "#1D9E75").opacity(0.12)))
-        ctx.stroke(path, with: .color(Color(hex: "#1D9E75").opacity(0.35)), lineWidth: 1.5)
-    }
-
-    // MARK: - Geometry helpers
-
-    private func angle(for index: Int) -> Double {
-        let step = (2 * Double.pi) / Double(zones.count)
-        return -Double.pi / 2 + step * Double(index)
-    }
-
-    private func radialPoint(center: CGPoint, angle: Double, radius: CGFloat) -> CGPoint {
-        CGPoint(
-            x: center.x + radius * cos(angle),
-            y: center.y + radius * sin(angle)
-        )
-    }
-
-    private func point(center: CGPoint, angle: Double, score: Double, maxR: CGFloat) -> CGPoint {
-        radialPoint(center: center, angle: angle, radius: maxR * (score / 10))
-    }
-
-    private func nodeRadius(for score: Double) -> CGFloat {
-        nodeMinRadius + (nodeMaxRadius - nodeMinRadius) * CGFloat(score - 1) / 9
-    }
-
-    private func labelPosition(center: CGPoint, angle: Double, score: Double, maxR: CGFloat, size: CGFloat) -> CGPoint {
-        let offset: CGFloat = nodeRadius(for: score) + 18
-        let nodePt = point(center: center, angle: angle, score: score, maxR: maxR)
-        return CGPoint(
-            x: nodePt.x + offset * cos(angle),
-            y: nodePt.y + offset * sin(angle)
-        )
-    }
-
-    private func labelText(zone: String, score: Double) -> String {
-        "\(zone)\n\(Int(score))"
-    }
-
-    // MARK: - Animation
-
-    private func syncAnimatedScores(animated: Bool) {
-        for zone in zones {
-            let target = Double(scores[zone] ?? 5)
-            if animated {
-                withAnimation(DS.Anim.spring) { animatedScores[zone] = target }
-            } else {
-                animatedScores[zone] = target
+            if !isLast {
+                Rectangle().fill(LZ.ruleSoft).frame(height: 0.5)
             }
         }
-    }
-
-    private func startPulse() {
-        withAnimation(DS.Anim.pulse) { pulseScale = 1.03 }
     }
 }
 
 #Preview {
-    MapView(scores: MapViewModel.demoScores())
-        .frame(height: 340)
-        .padding()
+    MapView(scores: [
+        .vitality: 6, .deepWork: 8, .connection: 7,
+        .innerWorld: 5, .creation: 7, .foundation: 8, .growth: 6
+    ])
 }

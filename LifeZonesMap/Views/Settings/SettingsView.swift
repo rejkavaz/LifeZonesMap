@@ -26,6 +26,9 @@ struct SettingsView: View {
                 dataSection
                 aboutSection
             }
+            .scrollContentBackground(.hidden)
+            .background(LZ.paper.ignoresSafeArea())
+            .tint(LZ.tealDeep)
             .navigationTitle("Settings")
             .alert("Delete all data?", isPresented: $showDeleteAlert) {
                 Button("Delete", role: .destructive) { deleteAll() }

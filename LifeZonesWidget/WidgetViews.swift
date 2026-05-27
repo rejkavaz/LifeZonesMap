@@ -14,135 +14,193 @@ struct LifeZonesWidgetView: View {
         }
     }
 
-    // MARK: - Small: Radar + avg score
-
+    // MARK: - Small (2×2) — mini radar + avg
     private var smallWidget: some View {
-        VStack(spacing: 6) {
+        ZStack {
+            LinearGradient(
+                colors: [Color(hex: "#F2EBDC"), Color(hex: "#E6E4DC")],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Life Zones")
+                        .uppercaseCaption(color: LZ.inkMute, size: 9, tracking: 1.6)
+                    Spacer()
+                    IconMark(size: 14, color: LZ.tealDeep, bg: .clear, rounded: 3)
+                }
+                Spacer()
+                HStack(alignment: .firstTextBaseline) {
+                    Text(entry.snapshot.map { String(format: "%.1f", $0.overallAverage) } ?? "—")
+                        .font(.system(size: 26, weight: .medium).monospacedDigit())
+                        .tracking(-0.65)
+                        .foregroundStyle(LZ.ink)
+                    Spacer()
+                    Text("avg").uppercaseCaption(color: LZ.inkMute, size: 9, tracking: 1.8)
+                }
+            }
+            .padding(10)
+
             if let snap = entry.snapshot {
-                MiniRadarView(scores: snap.scores)
-                    .frame(height: 80)
-                Text(String(format: "%.1f", snap.overallAverage))
-                    .font(.system(size: 22, weight: .thin))
-                    .foregroundStyle(Color(hex: "#1D9E75"))
-                Text("avg")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-            } else {
-                emptyRadar
+                MiniRadar(scores: snap.scores)
+                    .frame(width: 108, height: 108)
+                    .offset(y: -8)
             }
         }
     }
 
-    // MARK: - Medium: Zone bars
-
+    // MARK: - Medium (4×2) — seven rows
     private var mediumWidget: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text("Life Zones")
-                .font(.caption2)
-                .fontWeight(.semibold)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                Text("Life Zones")
+                    .font(.system(size: 11.5, weight: .medium))
+                    .tracking(-0.05)
+                    .foregroundStyle(LZ.ink)
+                Spacer()
+                Text(monthDayLabel())
+                    .uppercaseCaption(color: LZ.inkMute, size: 9, tracking: 1.6)
+            }
+            .padding(.bottom, 6)
 
             if let snap = entry.snapshot {
-                ForEach(ZoneID.allCases) { zone in
-                    let def   = ZoneRegistry.definition(for: zone)
-                    let score = snap.scores[zone.rawValue] ?? 5
-                    HStack(spacing: 6) {
-                        Circle().fill(def.color).frame(width: 6, height: 6)
-                        Text(def.name).font(.system(size: 9)).lineLimit(1).frame(width: 56, alignment: .leading)
-                        GeometryReader { geo in
-                            ZStack(alignment: .leading) {
-                                Capsule().fill(def.color.opacity(0.15))
-                                Capsule().fill(def.color).frame(width: geo.size.width * CGFloat(score) / 10)
+                VStack(spacing: 1) {
+                    ForEach(ZoneID.allCases) { zone in
+                        let def = ZoneRegistry.definition(for: zone)
+                        let score = snap.scores[zone.rawValue] ?? 5
+                        HStack(spacing: 8) {
+                            Circle().fill(def.color).frame(width: 5, height: 5)
+                            Text(def.name)
+                                .font(.system(size: 9.5, weight: .medium))
+                                .foregroundStyle(LZ.ink)
+                                .frame(width: 60, alignment: .leading)
+                            GeometryReader { geo in
+                                ZStack(alignment: .leading) {
+                                    Capsule().fill(Color(hex: "#E8DFC8")).frame(height: 3)
+                                    Capsule().fill(def.color)
+                                        .frame(width: geo.size.width * CGFloat(score) / 10, height: 3)
+                                }
                             }
+                            .frame(height: 3)
+                            Text(String(format: "%.1f", Double(score)))
+                                .font(.system(size: 10, weight: .medium).monospacedDigit())
+                                .foregroundStyle(LZ.ink)
+                                .frame(width: 22, alignment: .trailing)
                         }
-                        .frame(height: 5)
-                        Text("\(score)").font(.system(size: 9)).frame(width: 12)
                     }
                 }
             } else {
-                emptyRadar
+                emptyHint
             }
         }
-        .padding(8)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(LZ.paper)
     }
 
-    // MARK: - Lock screen
-
+    // MARK: - Lock screen rectangular
     private var lockScreenWidget: some View {
         VStack(alignment: .leading, spacing: 2) {
             if let snap = entry.snapshot {
-                let low = ZoneID.allCases
+                let needsCare = ZoneID.allCases
                     .sorted { (snap.scores[$0.rawValue] ?? 5) < (snap.scores[$1.rawValue] ?? 5) }
                     .prefix(3)
 
                 Text("Needs care")
-                    .font(.caption2).fontWeight(.semibold)
+                    .font(.system(size: 9, weight: .bold))
+                    .tracking(1.6)
+                    .textCase(.uppercase)
+                    .opacity(0.85)
 
-                ForEach(Array(low), id: \.self) { zone in
-                    let def   = ZoneRegistry.definition(for: zone)
-                    let score = snap.scores[zone.rawValue] ?? 5
-                    HStack(spacing: 4) {
-                        Circle().fill(def.color).frame(width: 5, height: 5)
-                        Text(def.name).font(.system(size: 10))
-                        Spacer()
-                        Text("\(score)").font(.system(size: 10, weight: .medium))
+                HStack(spacing: 8) {
+                    ForEach(Array(needsCare), id: \.self) { zone in
+                        let def = ZoneRegistry.definition(for: zone)
+                        let score = snap.scores[zone.rawValue] ?? 5
+                        HStack(spacing: 4) {
+                            Circle().fill(def.color).frame(width: 6, height: 6)
+                            Text(def.name).font(.system(size: 11, weight: .semibold))
+                            Text(String(format: "%.1f", Double(score)))
+                                .font(.system(size: 11, weight: .medium).monospacedDigit())
+                                .opacity(0.85)
+                        }
                     }
                 }
             } else {
-                Text("No data yet").font(.caption2)
+                Text("Check in to see your map").font(.caption2)
             }
         }
     }
 
-    private var emptyRadar: some View {
+    private var emptyHint: some View {
         VStack(spacing: 4) {
-            Image(systemName: "map").foregroundStyle(.quaternary)
-            Text("Check in to\nupdate your map")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            Spacer()
+            Image(systemName: "map").foregroundStyle(LZ.inkMute.opacity(0.45))
+            Text("Check in to update your map")
+                .font(.system(size: 10))
+                .foregroundStyle(LZ.inkMute)
                 .multilineTextAlignment(.center)
+            Spacer()
         }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func monthDayLabel() -> String {
+        let f = DateFormatter(); f.dateFormat = "MMM d"
+        return f.string(from: entry.date).uppercased()
     }
 }
 
-// MARK: - Mini radar for small widget
+// MARK: - Mini radar for small widget — matches MapView visual
 
-struct MiniRadarView: View {
+struct MiniRadar: View {
     let scores: [String: Int]
 
     var body: some View {
         Canvas { ctx, size in
-            let center = CGPoint(x: size.width / 2, y: size.height / 2)
-            let maxR   = min(size.width, size.height) * 0.44
-            let zones  = ZoneID.allCases
+            let cx = size.width / 2
+            let cy = size.height / 2
+            let R = min(size.width, size.height) * 0.44
+            let zones = ZoneID.allCases
+            let n = zones.count
 
-            // Grid
+            // Faint grid rings
             for scale in [0.33, 0.66, 1.0] as [Double] {
                 var path = Path()
-                for i in 0..<zones.count {
-                    let a = angle(i, count: zones.count)
-                    let pt = CGPoint(x: center.x + maxR * scale * cos(a), y: center.y + maxR * scale * sin(a))
-                    i == 0 ? path.move(to: pt) : path.addLine(to: pt)
+                for k in 0..<n {
+                    let a = -CGFloat.pi / 2 + (CGFloat(k) / CGFloat(n)) * .pi * 2
+                    let pt = CGPoint(x: cx + R * CGFloat(scale) * cos(a),
+                                     y: cy + R * CGFloat(scale) * sin(a))
+                    if k == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
                 }
                 path.closeSubpath()
-                ctx.stroke(path, with: .color(.secondary.opacity(0.2)), style: StrokeStyle(lineWidth: 0.5))
+                ctx.stroke(path, with: .color(Color(hex: "#C2B79C").opacity(0.55)),
+                           style: StrokeStyle(lineWidth: 0.5, dash: [3, 4]))
             }
 
             // Filled polygon
             var poly = Path()
             for (i, zone) in zones.enumerated() {
-                let s  = Double(scores[zone.rawValue] ?? 5) / 10
-                let a  = angle(i, count: zones.count)
-                let pt = CGPoint(x: center.x + maxR * s * cos(a), y: center.y + maxR * s * sin(a))
-                i == 0 ? poly.move(to: pt) : poly.addLine(to: pt)
+                let s = CGFloat(scores[zone.rawValue] ?? 5) / 10
+                let a = -CGFloat.pi / 2 + (CGFloat(i) / CGFloat(n)) * .pi * 2
+                let pt = CGPoint(x: cx + R * s * cos(a), y: cy + R * s * sin(a))
+                if i == 0 { poly.move(to: pt) } else { poly.addLine(to: pt) }
             }
             poly.closeSubpath()
-            ctx.fill(poly, with: .color(Color(hex: "#1D9E75").opacity(0.2)))
-            ctx.stroke(poly, with: .color(Color(hex: "#1D9E75").opacity(0.6)), lineWidth: 1.5)
-        }
-    }
+            ctx.fill(poly, with: .color(LZ.teal.opacity(0.20)))
+            ctx.stroke(poly, with: .color(LZ.tealDeep), lineWidth: 1.4)
 
-    private func angle(_ i: Int, count: Int) -> Double {
-        -Double.pi / 2 + (2 * Double.pi / Double(count)) * Double(i)
+            // Nodes
+            for (i, zone) in zones.enumerated() {
+                let def = ZoneRegistry.definition(for: zone)
+                let s = CGFloat(scores[zone.rawValue] ?? 5) / 10
+                let a = -CGFloat.pi / 2 + (CGFloat(i) / CGFloat(n)) * .pi * 2
+                let pt = CGPoint(x: cx + R * s * cos(a), y: cy + R * s * sin(a))
+                ctx.fill(
+                    Path(ellipseIn: CGRect(x: pt.x - 3, y: pt.y - 3, width: 6, height: 6)),
+                    with: .color(def.color)
+                )
+            }
+        }
     }
 }

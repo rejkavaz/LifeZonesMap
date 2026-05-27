@@ -6,171 +6,174 @@ struct PulseView: View {
     @State private var vm = PulseViewModel()
 
     var body: some View {
-        NavigationStack {
-            Group {
+        ScrollView {
+            VStack(spacing: 0) {
+                header
+                    .padding(.horizontal, 24)
+                    .padding(.top, 6)
+                    .padding(.bottom, 8)
+
                 if vm.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    ProgressView().padding(.top, 60).tint(LZ.tealDeep)
                 } else if vm.checkIns.isEmpty {
                     emptyState
                 } else {
-                    pulseContent
+                    content
                 }
             }
-            .navigationTitle("Pulse")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                if !vm.checkIns.isEmpty {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        ShareLink(
-                            item: ExportService().exportJSON(checkIns: vm.checkIns),
-                            preview: SharePreview("Life Zones Export", image: Image(systemName: "map.fill"))
-                        ) {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                    }
-                }
-            }
+            .padding(.bottom, 100)
         }
+        .background(LZ.paper.ignoresSafeArea())
         .onAppear { vm.load(modelContext: modelContext) }
     }
 
-    // MARK: - Content
+    // MARK: - Header
 
-    private var pulseContent: some View {
-        ScrollView {
-            VStack(spacing: DS.Spacing.s16) {
-                // Period header
-                periodHeader
-                    .padding(.horizontal)
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text("Pulse Report").uppercaseCaption()
+            HStack(alignment: .firstTextBaseline) {
+                Text(vm.periodLabel.isEmpty ? "—" : monthName(vm.periodLabel))
+                    .font(.system(size: 30, weight: .medium))
+                    .tracking(-0.66)
+                    .foregroundStyle(LZ.ink)
+                Spacer()
+                Text("\(vm.checkIns.count) check-in\(vm.checkIns.count == 1 ? "" : "s") · \(currentYear())")
+                    .font(.system(size: 12))
+                    .foregroundStyle(LZ.inkMute)
+            }
+            .padding(.top, 4)
+        }
+    }
 
-                // Stat row
-                if vm.checkIns.count >= 2 {
-                    statsRow.padding(.horizontal)
-                }
+    private func monthName(_ s: String) -> String {
+        s.components(separatedBy: " ").first ?? s
+    }
+    private func currentYear() -> String {
+        let f = DateFormatter(); f.dateFormat = "yyyy"; return f.string(from: Date())
+    }
 
-                // Trend chart
-                if vm.checkIns.count >= 2 {
-                    TrendChartView(checkIns: vm.checkIns)
-                        .padding(.horizontal)
-                }
+    // MARK: - Body content
 
-                // Insight feed
-                InsightFeedView(
-                    insights: vm.insights,
-                    onDismiss: { vm.dismiss(insight: $0) }
+    private var content: some View {
+        VStack(spacing: 0) {
+            // Stat cards
+            HStack(spacing: 8) {
+                StatCard(
+                    label: "Avg score",
+                    value: String(format: "%.1f", vm.overallAverage),
+                    sub: "of 10"
                 )
-
-                // Zone connections
-                if vm.checkIns.count >= 4 {
-                    ZoneConnectionsView(correlationStrength: { vm.correlationStrength(between: $0, and: $1) })
-                        .padding(.horizontal)
+                if let (zone, delta) = vm.mostImprovedZone, delta > 0 {
+                    StatCard(
+                        label: "Most improved",
+                        value: ZoneRegistry.definition(for: zone).name,
+                        sub: "+\(delta)",
+                        trendUp: true,
+                        color: ZoneRegistry.definition(for: zone).color
+                    )
                 }
-
-                // Reflection prompt
-                reflectionCard
-                    .padding(.horizontal)
+                if let (zone, sigma) = vm.mostConsistentZone {
+                    StatCard(
+                        label: "Most consistent",
+                        value: ZoneRegistry.definition(for: zone).name,
+                        sub: String(format: "σ %.1f", sigma),
+                        color: ZoneRegistry.definition(for: zone).color
+                    )
+                }
             }
-            .padding(.bottom, DS.Spacing.s32)
-        }
-        .background(Color(.systemGroupedBackground))
-    }
+            .padding(.horizontal, 18)
+            .padding(.top, 8)
 
-    private var periodHeader: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(vm.periodLabel)
-                    .font(.title2).fontWeight(.semibold)
-                Text("\(vm.checkIns.count) check-in\(vm.checkIns.count == 1 ? "" : "s")")
-                    .font(.subheadline).foregroundStyle(.secondary)
-            }
-            Spacer()
-        }
-    }
+            // Trend chart
+            sectionTitle("Across the month")
+            TrendChartView(checkIns: vm.checkIns)
+                .padding(.horizontal, 18)
 
-    private var statsRow: some View {
-        HStack(spacing: DS.Spacing.s12) {
-            StatCard(
-                label: "Overall avg",
-                value: String(format: "%.1f", vm.overallAverage),
-                icon: "chart.bar.fill",
-                color: Color(hex: "#1D9E75")
+            // Insight feed
+            sectionTitle("What we noticed")
+            InsightFeedView(
+                insights: vm.insights,
+                onDismiss: { vm.dismiss(insight: $0) }
             )
-            if let (zone, delta) = vm.mostImprovedZone {
-                StatCard(
-                    label: "Most improved",
-                    value: ZoneRegistry.definition(for: zone).name,
-                    icon: "arrow.up.circle.fill",
-                    color: ZoneRegistry.definition(for: zone).color
+
+            // Zone connections
+            if vm.checkIns.count >= 4 {
+                sectionTitle("How your zones move together")
+                ZoneConnectionsView(
+                    correlationStrength: { vm.correlationStrength(between: $0, and: $1) }
                 )
-            }
-            if let (zone, _) = vm.mostConsistentZone {
-                StatCard(
-                    label: "Most consistent",
-                    value: ZoneRegistry.definition(for: zone).name,
-                    icon: "minus.circle.fill",
-                    color: ZoneRegistry.definition(for: zone).color
-                )
+                .padding(.horizontal, 18)
             }
         }
     }
 
-    private var reflectionCard: some View {
-        let zone = vm.mostImprovedZone?.0 ?? .vitality
-        let def  = ZoneRegistry.definition(for: zone)
-        return VStack(alignment: .leading, spacing: DS.Spacing.s8) {
-            Label("Reflection", systemImage: "quote.bubble.fill")
-                .font(.headline)
-                .foregroundStyle(def.color)
-            Text("What would it look like if \(def.name) was 2 points higher next week?")
-                .font(.body)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
+    private func sectionTitle(_ s: String) -> some View {
+        HStack {
+            SectionTitle(text: s)
         }
-        .padding()
-        .background(def.color.opacity(0.08), in: RoundedRectangle(cornerRadius: DS.Radius.lg))
+        .padding(.horizontal, 24)
     }
+
+    // MARK: - Empty
 
     private var emptyState: some View {
-        VStack(spacing: DS.Spacing.s16) {
-            Spacer()
-            Image(systemName: "waveform.path.ecg")
-                .font(.system(size: 56))
-                .foregroundStyle(.quaternary)
+        VStack(spacing: 14) {
+            ZoneGlyph(glyph: .focus, size: 38, stroke: 1.4)
+                .foregroundStyle(LZ.inkMute.opacity(0.45))
             Text("Your pulse will appear after 2 check-ins.")
-                .font(.headline)
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(LZ.ink)
                 .multilineTextAlignment(.center)
-            Text("Check in weekly to surface patterns and insights.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
+            Text("Quiet reflection compounds. We're patient.")
+                .font(LZType.serifItalic(13))
+                .foregroundStyle(LZ.inkSoft)
                 .multilineTextAlignment(.center)
-            Spacer()
         }
-        .padding()
+        .padding(.top, 80)
+        .padding(.horizontal, 32)
     }
 }
+
+// MARK: - Stat card
 
 struct StatCard: View {
     let label: String
     let value: String
-    let icon: String
-    let color: Color
+    let sub: String
+    var trendUp: Bool = false
+    var color: Color = LZ.ink
 
     var body: some View {
-        VStack(alignment: .leading, spacing: DS.Spacing.s4) {
-            Image(systemName: icon)
-                .font(.caption)
-                .foregroundStyle(color)
+        VStack(alignment: .leading, spacing: 8) {
+            Text(label).uppercaseCaption(size: 9.5, tracking: 1.9)
             Text(value)
-                .font(.subheadline)
-                .fontWeight(.semibold)
+                .font(.system(size: value.count > 6 ? 14 : 20, weight: .medium))
+                .tracking(-0.24)
+                .foregroundStyle(color)
                 .lineLimit(2)
-            Text(label)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.leading)
+            Spacer(minLength: 0)
+            HStack(spacing: 4) {
+                if trendUp {
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 9, weight: .semibold))
+                        .foregroundStyle(color)
+                }
+                Text(sub)
+                    .font(.system(size: 10.5).monospacedDigit())
+                    .foregroundStyle(LZ.inkSoft)
+            }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(DS.Spacing.s12)
-        .background(.background, in: RoundedRectangle(cornerRadius: DS.Radius.md))
+        .padding(.horizontal, 10)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity, minHeight: 88, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 12, style: .continuous).fill(LZ.cream)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+        )
     }
 }

@@ -6,95 +6,189 @@ struct ZoneCard: View {
     @Binding var selectedTag: String?
     @Binding var note: String
     var hapticsEnabled: Bool = true
+    var rated: Bool = false   // false → show "—" until user moves slider
 
     @State private var noteExpanded = false
     @FocusState private var noteFocused: Bool
 
     var body: some View {
-        HStack(spacing: 0) {
-            // Left color accent
-            Rectangle()
-                .fill(definition.color)
-                .frame(width: 4)
+        ZStack(alignment: .topLeading) {
+            // Card surface
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+                )
+                .shadow(color: Color.black.opacity(0.04), radius: 1, x: 0, y: 1)
 
-            VStack(alignment: .leading, spacing: DS.Spacing.s12) {
-                // Zone identity + score
-                HStack {
-                    Image(systemName: definition.iconName)
-                        .font(.body)
-                        .foregroundStyle(definition.color)
-                    Text(definition.name)
-                        .font(.headline)
+            // Left color bar
+            UnevenRoundedRectangle(
+                topLeadingRadius: 16,
+                bottomLeadingRadius: 16,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: 0,
+                style: .continuous
+            )
+            .fill(definition.color)
+            .frame(width: 4)
+
+            VStack(alignment: .leading, spacing: 12) {
+                // Header
+                HStack(alignment: .firstTextBaseline) {
+                    HStack(spacing: 10) {
+                        ZoneGlyph(glyph: definition.glyph, size: 18, stroke: 1.6)
+                            .foregroundStyle(definition.color)
+                        Text(definition.name)
+                            .font(.system(size: 15, weight: .medium))
+                            .tracking(-0.075)
+                            .foregroundStyle(LZ.ink)
+                    }
                     Spacer()
-                    Text("\(score)")
-                        .font(.system(size: 40, weight: .thin))
-                        .foregroundStyle(definition.color)
-                        .contentTransition(.numericText())
-                        .animation(DS.Anim.spring, value: score)
+                    Text(rated ? String(format: "%.1f", Double(score)) : "—")
+                        .font(.system(size: 30, weight: .light).monospacedDigit())
+                        .tracking(-0.75)
+                        .foregroundStyle(rated ? LZ.ink : LZ.inkMute)
+                        .opacity(rated ? 1.0 : 0.4)
                 }
 
                 // Slider
-                Slider(value: Binding(
-                    get: { Double(score) },
-                    set: { newVal in
-                        let rounded = Int(newVal.rounded())
-                        if rounded != score {
-                            score = rounded
-                            if hapticsEnabled {
-                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                            }
-                        }
-                    }
-                ), in: 1...10, step: 1)
-                .tint(definition.color)
+                LZSlider(
+                    color: definition.color,
+                    score: $score,
+                    rated: rated,
+                    hapticsEnabled: hapticsEnabled
+                )
+                .frame(height: 22)
 
-                // Mood tags
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: DS.Spacing.s8) {
-                        ForEach(definition.exampleTags, id: \.self) { tag in
-                            TagPill(
-                                label: tag,
-                                isSelected: selectedTag == tag,
-                                color: definition.color
-                            ) {
+                // Tag pills (wrap)
+                FlowLayout(spacing: 6) {
+                    ForEach(definition.exampleTags, id: \.self) { tag in
+                        TagPill(
+                            label: tag,
+                            isSelected: selectedTag == tag,
+                            color: definition.color
+                        ) {
+                            withAnimation(DS.Anim.sheet) {
                                 selectedTag = (selectedTag == tag) ? nil : tag
                             }
                         }
                     }
                 }
 
-                // Note field
-                if noteExpanded {
-                    TextField("Optional note…", text: $note, axis: .vertical)
-                        .font(.body)
-                        .lineLimit(2...4)
-                        .focused($noteFocused)
-                        .onChange(of: note) {
-                            if note.count > 120 { note = String(note.prefix(120)) }
-                        }
-                        .padding(DS.Spacing.s8)
-                        .background(.quaternary, in: RoundedRectangle(cornerRadius: DS.Radius.sm))
+                // Note
+                if noteExpanded || !note.isEmpty {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Note").uppercaseCaption(size: 9, tracking: 1.8)
+                        TextField("Walked twice this week…", text: $note, axis: .vertical)
+                            .font(LZType.serifItalic(13))
+                            .foregroundStyle(LZ.inkSoft)
+                            .focused($noteFocused)
+                            .lineLimit(2...4)
+                            .onChange(of: note) {
+                                if note.count > 120 { note = String(note.prefix(120)) }
+                            }
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 12)
+                    .background(LZ.cream)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 } else {
                     Button {
                         noteExpanded = true
                         noteFocused = true
                     } label: {
-                        Label("Add note", systemImage: "square.and.pencil")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            ZoneGlyph(glyph: .pen, size: 13, stroke: 2.0)
+                            Text("Add a note")
+                                .font(.system(size: 12, weight: .medium))
+                        }
+                        .foregroundStyle(LZ.inkMute)
                     }
                 }
             }
-            .padding(DS.Spacing.s16)
+            .padding(.leading, 18)
+            .padding(.trailing, 16)
+            .padding(.vertical, 14)
         }
-        .background(.background, in: RoundedRectangle(cornerRadius: DS.Radius.lg))
-        .overlay(
-            RoundedRectangle(cornerRadius: DS.Radius.lg)
-                .strokeBorder(.separator, lineWidth: 0.5)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: DS.Radius.lg))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 }
+
+// MARK: - Slider with custom track, fill, tick marks, and thumb
+
+struct LZSlider: View {
+    let color: Color
+    @Binding var score: Int
+    var rated: Bool
+    var hapticsEnabled: Bool
+
+    var body: some View {
+        GeometryReader { geo in
+            let w = geo.size.width
+            let h = geo.size.height
+            let pct = CGFloat(score) / 10
+
+            ZStack(alignment: .leading) {
+                // Track
+                Capsule()
+                    .fill(Color(hex: "#EFE7D2"))
+                    .frame(height: 6)
+
+                // Fill
+                if rated {
+                    Capsule()
+                        .fill(color)
+                        .frame(width: max(0, w * pct), height: 6)
+                }
+
+                // Tick marks at 0, 0.25, 0.5, 0.75, 1.0
+                ForEach(0..<5, id: \.self) { i in
+                    let t = CGFloat(i) / 4
+                    let isEnd = (i == 0 || i == 4)
+                    Circle()
+                        .fill(isEnd ? LZ.inkMute : Color(hex: "#C9BFA6"))
+                        .frame(width: 2, height: 2)
+                        .opacity(0.6)
+                        .position(x: max(1, w * t), y: h / 2)
+                }
+
+                // Thumb
+                if rated {
+                    ZStack {
+                        Circle()
+                            .fill(Color.white)
+                            .frame(width: 22, height: 22)
+                            .overlay(Circle().strokeBorder(color, lineWidth: 1.5))
+                            .shadow(color: Color.black.opacity(0.12), radius: 3, x: 0, y: 2)
+                        Circle().fill(color).frame(width: 6, height: 6)
+                    }
+                    .position(x: max(11, min(w - 11, w * pct)), y: h / 2)
+                }
+            }
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        let p = max(0, min(w, value.location.x))
+                        let newVal = max(1, min(10, Int(round((p / w) * 10))))
+                        if newVal != score {
+                            score = newVal
+                            if hapticsEnabled {
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            }
+                        }
+                    }
+            )
+        }
+    }
+}
+
+// MARK: - Tag pill
 
 struct TagPill: View {
     let label: String
@@ -105,15 +199,55 @@ struct TagPill: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.caption)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .padding(.horizontal, DS.Spacing.s12)
-                .padding(.vertical, DS.Spacing.s4)
-                .background(isSelected ? color.opacity(0.2) : Color(.systemGray6), in: Capsule())
-                .foregroundStyle(isSelected ? color : .secondary)
-                .overlay(isSelected ? Capsule().strokeBorder(color.opacity(0.5), lineWidth: 1) : nil)
+                .font(.system(size: 11.5, weight: isSelected ? .semibold : .medium))
+                .tracking(0.1)
+                .padding(.horizontal, 11)
+                .padding(.vertical, 5)
+                .background(
+                    Capsule().fill(isSelected ? color.opacity(0.12) : Color.clear)
+                )
+                .overlay(
+                    Capsule().strokeBorder(
+                        isSelected ? color : LZ.rule,
+                        lineWidth: 0.5
+                    )
+                )
+                .foregroundStyle(isSelected ? color : LZ.inkSoft)
         }
         .buttonStyle(.plain)
-        .animation(DS.Anim.sheet, value: isSelected)
+    }
+}
+
+// MARK: - FlowLayout (wraps tags onto multiple lines)
+
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 6
+    var lineSpacing: CGFloat = 6
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
+        let w = proposal.width ?? 320
+        var x: CGFloat = 0, y: CGFloat = 0, maxH: CGFloat = 0
+        for sv in subviews {
+            let s = sv.sizeThatFits(.unspecified)
+            if x + s.width > w && x > 0 {
+                x = 0; y += maxH + lineSpacing; maxH = 0
+            }
+            x += s.width + spacing
+            maxH = max(maxH, s.height)
+        }
+        return CGSize(width: w, height: y + maxH)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) {
+        var x = bounds.minX, y = bounds.minY, maxH: CGFloat = 0
+        for sv in subviews {
+            let s = sv.sizeThatFits(.unspecified)
+            if x + s.width > bounds.maxX && x > bounds.minX {
+                x = bounds.minX; y += maxH + lineSpacing; maxH = 0
+            }
+            sv.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(s))
+            x += s.width + spacing
+            maxH = max(maxH, s.height)
+        }
     }
 }
