@@ -62,12 +62,18 @@ targets:
       - path: LifeZonesMap/Services/WidgetDataProvider.swift
       - path: LifeZonesMap/Views/Components/IconMark.swift
       - path: LifeZonesMap/Views/Components/ZoneGlyph.swift
+    info:
+      # iOS widget extensions need the NSExtension dictionary in Info.plist
+      # (a nested key — INFOPLIST_KEY_* build settings can only express flat
+      # keys, so XcodeGen writes a real plist instead).
+      path: LifeZonesWidget/Generated-Info.plist
+      properties:
+        CFBundleDisplayName: Life Zones
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.rejkavaz.LifeZonesMap.Widget
-        INFOPLIST_KEY_CFBundleDisplayName: "Life Zones"
-        INFOPLIST_KEY_NSExtensionPointIdentifier: com.apple.widgetkit-extension
-        GENERATE_INFOPLIST_FILE: YES
         SKIP_INSTALL: YES
 
   # ───────────────────────────── Tests ──────────────────────────────

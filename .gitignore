@@ -1,6 +1,7 @@
 # Xcode — fully generated from project.yml by XcodeGen; nothing to track.
 *.xcodeproj/
 *.xcworkspace/
+**/Generated-Info.plist
 **/.xcode.env.local
 DerivedData/
 build/
