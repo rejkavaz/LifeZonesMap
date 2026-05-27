@@ -53,7 +53,6 @@ jobs:
       run: |
         SDK_PATH=$(xcrun --sdk iphonesimulator --show-sdk-path)
         
-        # Targets the simulator architecture so code signing is completely bypassed legally
         swift build -c release \
           --triple arm64-apple-ios-simulator \
           -Xswiftc -sdk -Xswiftc "$SDK_PATH" \
@@ -67,14 +66,10 @@ jobs:
         
         find . -name "GoogleService-Info.plist" -exec cp {} LifeZonesMap.app/Info.plist \; 2>/dev/null || true
         
-        # Simulator builds are wrapped as zipped app packages rather than physical device IPAs
         zip -r LifeZonesMap.zip LifeZonesMap.app
 
-    - name: Ship to Appetize Browser Simulator
-      env:
-        APPETIZE_TOKEN: ${{ secrets.APPETIZE_TOKEN }}
-      run: |
-        # Streams your built binary bundle right into your Appetize app dashboard
-        curl https://$APPETIZE_TOKEN@api.appetize.io/v1/apps \
-          -F "file=@LifeZonesMap.zip" \
-          -F "platform=ios"
+    - name: Save App Build directly to GitHub
+      uses: actions/upload-artifact@v4
+      with:
+        name: LifeZonesMap-Simulator-Build
+        path: LifeZonesMap.zip
