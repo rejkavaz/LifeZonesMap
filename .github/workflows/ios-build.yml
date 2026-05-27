@@ -21,7 +21,7 @@ jobs:
 
         let package = Package(
             name: "LifeZonesMap",
-            platforms: [.iOS(.v15)],
+            platforms: [.iOS(.v17)],
             dependencies: [
                 .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0")
             ],
@@ -39,10 +39,10 @@ jobs:
 
     - name: Compile App Binary
       run: |
-        # We fetch the precise SDK environment path dynamically
+        # Fetch the precise iOS SDK framework paths
         SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
         
-        # We append -Xcc -isysroot to explicitly isolate the C-preprocessor from macOS headers
+        # Explicitly targets iOS 17 architectures and cuts off macOS system headers
         swift build -c release \
           --triple arm64-apple-ios \
           -Xswiftc -sdk -Xswiftc "$SDK_PATH" \
