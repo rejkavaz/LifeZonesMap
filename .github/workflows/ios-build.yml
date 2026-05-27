@@ -13,46 +13,45 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
-    - name: Dynamically Create Xcode Project
+    - name: Dynamically Generate Build Configuration
       run: |
-        # Instead of generic SwiftPM, we instruct the cloud Mac to bundle your files
-        # into a temporary native Xcode structure that naturally understands the iOS SDK paths.
-        mkdir -p LifeZonesMap.xcodeproj
-        cat << 'EOF' > LifeZonesMap.xcodeproj/project.pbxproj
-        // !$*UTF8*$!
-        {
-          archiveVersion = 1;
-          classes = {};
-          objectVersion = 56;
-          objects = {
-            /* Minimal fallback mapping to force clean Apple compilation */
-          };
-          rootObject = 0;
-        }
+        cat << 'EOF' > Package.swift
+        // swift-tools-version: 6.0
+        import PackageDescription
+
+        let package = Package(
+            name: "LifeZonesMap",
+            platforms: [.iOS(.v15)],
+            dependencies: [
+                .package(url: "https://github.com/firebase/firebase-ios-sdk.git", from: "11.0.0")
+            ],
+            targets: [
+                .executableTarget(
+                    name: "LifeZonesMap",
+                    dependencies: [
+                        .product(name: "FirebaseCore", package: "firebase-ios-sdk")
+                    ],
+                    path: "."
+                )
+            ]
+        )
         EOF
 
-    - name: Compile App Binary via Native Xcode Engine
+    - name: Compile App Binary
       run: |
-        # Using xcodebuild with -sdk iphoneos completely isolates the build environments
-        # from the host Mac system headers, neutralizing the DarwinFoundation errors.
-        xcodebuild -project ./LifeZonesMap.xcodeproj \
-                   -scheme LifeZonesMap \
-                   -sdk iphoneos \
-                   -configuration Release \
-                   CODE_SIGNING_ALLOWED=NO \
-                   CODE_SIGNING_REQUIRED=NO \
-                   clean build
+        # We fetch the precise SDK environment path dynamically
+        SDK_PATH=$(xcrun --sdk iphoneos --show-sdk-path)
+        
+        # We append -Xcc -isysroot to explicitly isolate the C-preprocessor from macOS headers
+        swift build -c release \
+          --triple arm64-apple-ios \
+          -Xswiftc -sdk -Xswiftc "$SDK_PATH" \
+          -Xcc -isysroot -Xcc "$SDK_PATH"
 
     - name: Package Into iPhone App (.IPA)
       run: |
         mkdir -p build/LifeZonesMap.app
-        # Locate the compiled binary artifact and bundle it safely
-        if [ -f .build/arm64-apple-ios/release/LifeZonesMap ]; then
-          cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
-        else
-          find . -name "LifeZonesMap" -type f -exec cp {} build/LifeZonesMap.app/LifeZonesMap \; 2>/dev/null || true
-        fi
-        
+        cp .build/arm64-apple-ios/release/LifeZonesMap build/LifeZonesMap.app/LifeZonesMap
         cp GoogleService-Info.plist build/LifeZonesMap.app/Info.plist
         
         mkdir -p payload/Payload
