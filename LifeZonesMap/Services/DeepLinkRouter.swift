@@ -36,10 +36,10 @@ final class DeepLinkRouter: NSObject, UNUserNotificationCenterDelegate {
     }
 
     // MARK: - UNUserNotificationCenterDelegate
+    // These have to be nonisolated because the protocol requirement isn't
+    // main-actor-isolated. Both then hop back to MainActor to mutate state.
 
-    /// Foreground notification — still let it banner so the user knows it's
-    /// time, but also tee up the deep link in case they tap.
-    func userNotificationCenter(
+    nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
@@ -47,13 +47,15 @@ final class DeepLinkRouter: NSObject, UNUserNotificationCenterDelegate {
         completionHandler([.banner, .sound])
     }
 
-    /// User tapped the notification (from background, lock screen, or banner).
-    func userNotificationCenter(
+    nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        handle(userInfo: response.notification.request.content.userInfo)
+        let userInfo = response.notification.request.content.userInfo
+        Task { @MainActor in
+            self.handle(userInfo: userInfo)
+        }
         completionHandler()
     }
 }

@@ -118,7 +118,7 @@ struct TrendChartView: View {
                 ctx.stroke(
                     line,
                     with: .color(def.color.opacity(0.30)),
-                    style: StrokeStyle(lineWidth: 1.0, dash: [3, 3], lineCap: .round, lineJoin: .round)
+                    style: StrokeStyle(lineWidth: 1.0, lineCap: .round, lineJoin: .round, dash: [3, 3])
                 )
             }
         }
