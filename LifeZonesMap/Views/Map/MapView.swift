@@ -168,6 +168,8 @@ struct MapView: View {
     var onZoneTap: (ZoneID) -> Void = { _ in }
     var onSettingsTap: () -> Void = {}
 
+    @State private var showingQuickMark = false
+
     private var overallAverage: Double {
         let vals = scores.values
         guard !vals.isEmpty else { return 0 }
@@ -181,6 +183,9 @@ struct MapView: View {
             zoneList
         }
         .background(LZ.paper.ignoresSafeArea())
+        .sheet(isPresented: $showingQuickMark) {
+            QuickMarkSheet()
+        }
     }
 
     // MARK: - Header
@@ -194,12 +199,19 @@ struct MapView: View {
             Spacer()
             Text(currentWeekLabel())
                 .uppercaseCaption(size: 11)
+            Button { showingQuickMark = true } label: {
+                Image(systemName: "plus.circle")
+                    .font(.system(size: 17, weight: .regular))
+                    .foregroundStyle(LZ.tealDeep)
+            }
+            .accessibilityLabel("Mark today")
+            .padding(.leading, DS.Spacing.s8)
             Button(action: onSettingsTap) {
                 Image(systemName: "gearshape")
                     .font(.system(size: 16, weight: .regular))
                     .foregroundStyle(LZ.inkMute)
             }
-            .padding(.leading, DS.Spacing.s8)
+            .padding(.leading, DS.Spacing.s4)
         }
         .padding(.horizontal, 24)
         .padding(.top, DS.Spacing.s4)

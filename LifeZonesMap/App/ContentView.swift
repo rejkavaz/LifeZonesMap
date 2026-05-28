@@ -3,6 +3,7 @@ import SwiftData
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(DeepLinkRouter.self) private var router
     @Query private var prefsArray: [UserPreferences]
 
     @State private var activeTab: AppTab = PreviewSeeder.isActive ? PreviewSeeder.initialTab() : .map
@@ -59,6 +60,17 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .onChange(of: router.pending) {
+            guard let action = router.pending else { return }
+            switch action {
+            case .openCheckIn:        activeTab = .check
+            case .openJournal:        activeTab = .journal
+            case .openZoneDetail(let z):
+                activeTab = .map
+                selectedZone = z
+            }
+            router.pending = nil
         }
     }
 

@@ -7,16 +7,24 @@ import SwiftData
 /// its line.
 struct TrendChartView: View {
     let checkIns: [WeeklyCheckIn]
+    var priorCheckIns: [WeeklyCheckIn] = []
     @Query private var goals: [ZoneGoal]
+    @State private var showComparison = false
 
     var body: some View {
         VStack(spacing: 0) {
+            if !priorCheckIns.isEmpty {
+                comparisonToggle
+                    .padding(.horizontal, 14)
+                    .padding(.top, 10)
+            }
+
             Canvas { ctx, size in
                 draw(in: ctx, size: size)
             }
             .frame(height: 180)
             .padding(.horizontal, 14)
-            .padding(.top, 14)
+            .padding(.top, priorCheckIns.isEmpty ? 14 : 6)
 
             legend
                 .padding(.horizontal, 14)
@@ -30,6 +38,19 @@ struct TrendChartView: View {
             RoundedRectangle(cornerRadius: 14, style: .continuous)
                 .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
         )
+    }
+
+    private var comparisonToggle: some View {
+        HStack {
+            Text(showComparison ? "Showing this period vs the one before" : "This period only")
+                .uppercaseCaption(color: LZ.inkMute, size: 9.5, tracking: 1.6)
+            Spacer()
+            Toggle("Compare", isOn: $showComparison)
+                .toggleStyle(.button)
+                .tint(LZ.tealDeep)
+                .font(.system(size: 11, weight: .medium))
+                .controlSize(.mini)
+        }
     }
 
     // MARK: - Drawing
@@ -80,7 +101,29 @@ struct TrendChartView: View {
             }
         }
 
-        // Series lines
+        // Prior-period ghost lines (drawn first so current period sits on top)
+        if showComparison && !priorCheckIns.isEmpty {
+            let priorN = max(1, priorCheckIns.count - 1)
+            for zone in ZoneID.allCases {
+                let def = ZoneRegistry.definition(for: zone)
+                let priorData: [CGFloat] = priorCheckIns.map { CGFloat($0.score(for: zone)) }
+                guard priorData.count >= 2 else { continue }
+                var line = Path()
+                for (i, v) in priorData.enumerated() {
+                    let x = pad.l + (CGFloat(i) / CGFloat(priorN)) * chartW
+                    let y = pad.t + (1 - v / 10) * chartH
+                    if i == 0 { line.move(to: CGPoint(x: x, y: y)) }
+                    else { line.addLine(to: CGPoint(x: x, y: y)) }
+                }
+                ctx.stroke(
+                    line,
+                    with: .color(def.color.opacity(0.30)),
+                    style: StrokeStyle(lineWidth: 1.0, dash: [3, 3], lineCap: .round, lineJoin: .round)
+                )
+            }
+        }
+
+        // Series lines (current period)
         for zone in ZoneID.allCases {
             let def = ZoneRegistry.definition(for: zone)
             let data: [CGFloat] = checkIns.map { CGFloat($0.score(for: zone)) }

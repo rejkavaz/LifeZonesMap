@@ -107,8 +107,11 @@ struct PulseView: View {
 
             // Trend chart
             sectionTitle("Across the month")
-            TrendChartView(checkIns: vm.checkIns)
-                .padding(.horizontal, 18)
+            TrendChartView(
+                checkIns: vm.checkIns,
+                priorCheckIns: vm.priorCheckIns
+            )
+            .padding(.horizontal, 18)
 
             // Insight feed
             sectionTitle("What we noticed")

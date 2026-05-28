@@ -2,17 +2,23 @@ import SwiftUI
 import SwiftData
 
 struct PromptLibraryView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \PromptResponse.createdAt, order: .reverse) private var responses: [PromptResponse]
+    @Query(sort: \CustomPrompt.createdAt, order: .reverse) private var custom: [CustomPrompt]
 
     @State private var filter: ZoneID?    // nil = all zones
     @State private var showAnsweredOnly = false
+    @State private var showingNewPrompt = false
 
     private var answeredIDs: Set<String> {
         Set(responses.map { $0.promptID })
     }
 
+    /// Merge library + custom prompts, applying the zone filter.
     private var prompts: [Prompt] {
-        var list = PromptLibrary.filtered(by: filter)
+        let library = PromptLibrary.filtered(by: filter)
+        let userOwn = custom.filter { filter == nil || $0.zone == filter }.map(\.asPrompt)
+        var list = library + userOwn
         if showAnsweredOnly {
             list = list.filter { answeredIDs.contains($0.id) }
         }
@@ -30,6 +36,7 @@ struct PromptLibraryView: View {
                     .font(.system(size: 13, weight: .medium))
                     .foregroundStyle(LZ.inkSoft)
                     .padding(.horizontal, 24)
+                addYourOwnButton
                 promptList
             }
             .padding(.bottom, 40)
@@ -37,6 +44,44 @@ struct PromptLibraryView: View {
         .background(LZ.paper.ignoresSafeArea())
         .navigationTitle("Prompt library")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { showingNewPrompt = true } label: {
+                    Image(systemName: "plus.circle")
+                        .foregroundStyle(LZ.tealDeep)
+                }
+                .accessibilityLabel("Add your own prompt")
+            }
+        }
+        .sheet(isPresented: $showingNewPrompt) {
+            CustomPromptEditor()
+        }
+    }
+
+    private var addYourOwnButton: some View {
+        Button { showingNewPrompt = true } label: {
+            HStack(spacing: 10) {
+                Image(systemName: "plus.circle.fill")
+                    .foregroundStyle(LZ.tealDeep)
+                Text("Add your own prompt")
+                    .font(.system(size: 13.5, weight: .medium))
+                    .foregroundStyle(LZ.ink)
+                Spacer()
+                Text("\(custom.count) saved")
+                    .font(.system(size: 11).monospacedDigit())
+                    .foregroundStyle(LZ.inkMute)
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 11)
+            .background(LZ.tealDeep.opacity(0.06))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .strokeBorder(LZ.tealDeep.opacity(0.3), lineWidth: 0.5)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 18)
     }
 
     private var header: some View {
@@ -122,10 +167,10 @@ struct PromptLibraryView: View {
         .padding(.horizontal, 18)
     }
 
-    /// Stable order: zone order, then Open, then If-Then.
+    /// Stable order: zone order, then Open, then If-Then, then Custom.
     private func orderedCategories(grouped: [String: [Prompt]]) -> [String] {
         var order: [String] = ZoneRegistry.all.map(\.name)
-        order += ["Open", "If-Then"]
+        order += ["Open", "If-Then", "Custom"]
         return order.filter { grouped[$0] != nil }
     }
 

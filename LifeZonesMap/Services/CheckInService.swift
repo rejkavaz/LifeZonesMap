@@ -70,6 +70,22 @@ final class CheckInService {
         return try modelContext.fetch(descriptor)
     }
 
+    /// The 28-day window immediately before the current one. Used for
+    /// month-over-month comparison overlays.
+    func fetchPrior28Days() throws -> [WeeklyCheckIn] {
+        let now = Date()
+        let cal = Calendar.current
+        let currentStart = cal.date(byAdding: .day, value: -28, to: now) ?? now
+        let priorStart   = cal.date(byAdding: .day, value: -56, to: now) ?? now
+        let descriptor = FetchDescriptor<WeeklyCheckIn>(
+            predicate: #Predicate {
+                $0.weekStartDate >= priorStart && $0.weekStartDate < currentStart
+            },
+            sortBy: [SortDescriptor(\.weekStartDate)]
+        )
+        return try modelContext.fetch(descriptor)
+    }
+
     // MARK: - Stats
 
     func deltaFromLastWeek(for zone: ZoneID, current: WeeklyCheckIn) throws -> Int? {

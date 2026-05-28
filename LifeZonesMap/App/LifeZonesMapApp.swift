@@ -7,6 +7,7 @@ private let logger = Logger(subsystem: "com.rejkavaz.LifeZonesMap", category: "S
 @main
 struct LifeZonesMapApp: App {
     let container: ModelContainer
+    @State private var router = DeepLinkRouter()
 
     init() {
         logger.notice("Launching Life Zones Map")
@@ -46,6 +47,7 @@ struct LifeZonesMapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(router)
                 .onAppear { seedIfNeeded() }
         }
         .modelContainer(container)
@@ -80,6 +82,7 @@ struct LifeZonesMapApp: App {
             MoodDrop.self,
             ZoneGoal.self,
             GoodThing.self,
+            CustomPrompt.self,
             configurations: config
         )
     }

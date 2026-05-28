@@ -171,6 +171,37 @@ final class ZoneGoal {
     }
 }
 
+/// A user-authored prompt that lives alongside the curated PromptLibrary.
+/// Same Prompt struct shape so the UI can treat them uniformly, but persists
+/// across launches. id is "user-<UUID>" so it won't collide with library ids.
+@Model
+final class CustomPrompt {
+    var id: UUID
+    var text: String
+    var zoneIDRaw: String?       // nil = cross-zone
+    var createdAt: Date
+
+    init(text: String, zone: ZoneID?) {
+        self.id = UUID()
+        self.text = text
+        self.zoneIDRaw = zone?.rawValue
+        self.createdAt = Date()
+    }
+
+    var zone: ZoneID? { zoneIDRaw.flatMap { ZoneID(rawValue: $0) } }
+
+    /// Bridge to the same Prompt struct PromptLibrary uses, so the UI
+    /// doesn't care whether a prompt is curated or custom.
+    var asPrompt: Prompt {
+        Prompt(
+            id: "user-\(id.uuidString)",
+            text: text,
+            zone: zone,
+            customCategory: "Custom"
+        )
+    }
+}
+
 /// User's response to a single prompt from PromptLibrary. Not tied to a
 /// check-in — answer any prompt, any time, as many times as you want.
 @Model

@@ -26,6 +26,7 @@ struct JournalView: View {
                         .padding(.top, 6)
                         .padding(.bottom, 14)
 
+                    promptOfTheWeekSection
                     moodSection
                     libraryCallout
                     goodThingsCallout
@@ -83,6 +84,14 @@ struct JournalView: View {
             + checkIns.filter { c in
                 ZoneID.allCases.contains { c.note(for: $0)?.isEmpty == false }
             }.count
+    }
+
+    // MARK: - Prompt of the Week
+
+    private var promptOfTheWeekSection: some View {
+        PromptOfTheWeekCard()
+            .padding(.horizontal, 18)
+            .padding(.bottom, 6)
     }
 
     // MARK: - Mood drops strip

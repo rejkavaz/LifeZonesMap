@@ -38,6 +38,8 @@ final class NotificationScheduler {
         content.body = pickMessage(modelContext: modelContext)
         content.sound = .default
         content.threadIdentifier = "weekly-checkin"
+        // Tapping the notification deep-links into the check-in flow.
+        content.userInfo = ["deepLink": "checkin"]
 
         var components = DateComponents()
         components.weekday = dayOfWeek + 1   // UNCalendar uses 1=Sun..7=Sat
