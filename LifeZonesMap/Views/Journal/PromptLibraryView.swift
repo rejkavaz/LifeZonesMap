@@ -89,14 +89,29 @@ struct PromptLibraryView: View {
 
     private var promptList: some View {
         LazyVStack(spacing: 8) {
-            ForEach(prompts) { prompt in
-                NavigationLink {
-                    PromptDetailView(prompt: prompt)
-                } label: {
-                    promptRow(prompt: prompt)
+            // Group by category so research notes can sit at section breaks
+            let grouped = Dictionary(grouping: prompts, by: { $0.category })
+            let categoryOrder = orderedCategories(grouped: grouped)
+
+            ForEach(categoryOrder, id: \.self) { category in
+                if let bucket = grouped[category] {
+                    if filter == nil {
+                        categoryHeader(category)
+                    }
+                    ForEach(bucket) { prompt in
+                        NavigationLink {
+                            PromptDetailView(prompt: prompt)
+                        } label: {
+                            promptRow(prompt: prompt)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    if let note = PromptLibrary.researchNote(for: category) {
+                        researchFooter(note: note)
+                    }
                 }
-                .buttonStyle(.plain)
             }
+
             if prompts.isEmpty {
                 Text("Nothing here yet.")
                     .font(LZType.serifItalic(13.5))
@@ -105,6 +120,38 @@ struct PromptLibraryView: View {
             }
         }
         .padding(.horizontal, 18)
+    }
+
+    /// Stable order: zone order, then Open, then If-Then.
+    private func orderedCategories(grouped: [String: [Prompt]]) -> [String] {
+        var order: [String] = ZoneRegistry.all.map(\.name)
+        order += ["Open", "If-Then"]
+        return order.filter { grouped[$0] != nil }
+    }
+
+    private func categoryHeader(_ name: String) -> some View {
+        HStack {
+            Text(name.uppercased())
+                .uppercaseCaption()
+            Rectangle().fill(LZ.ruleSoft).frame(height: 0.5)
+        }
+        .padding(.top, 14)
+    }
+
+    private func researchFooter(note: String) -> some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "info.circle")
+                .font(.system(size: 11))
+                .foregroundStyle(LZ.inkMute)
+                .padding(.top, 2)
+            Text(note)
+                .font(LZType.serifItalic(11.5))
+                .lineSpacing(2)
+                .foregroundStyle(LZ.inkSoft)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .padding(.bottom, 6)
     }
 
     private func promptRow(prompt: Prompt) -> some View {

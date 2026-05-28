@@ -16,7 +16,10 @@ final class PatternEngine {
         insights += trendInsights(sorted)
         insights += drainInsights(sorted)
         insights += weekdayPatternInsights(sorted)
-        if let latest = sorted.last { insights += recoveryInsights(latest) }
+        if let latest = sorted.last {
+            insights += recoveryInsights(latest)
+            insights += selfCompassionInsights(latest: latest, prior: sorted.dropLast().last)
+        }
 
         return deduplicated(insights)
     }
@@ -169,6 +172,30 @@ final class PatternEngine {
             break
         }
         return results
+    }
+
+    // MARK: - Self-compassion (Neff)
+
+    /// When several zones drop sharply at once, surface a self-compassion
+    /// framed insight rather than a warning. Based on Kristin Neff's work
+    /// showing that meeting hard moments with kindness (rather than
+    /// judgment) reduces shame and improves recovery.
+    /// Fires when 3+ zones dropped 2+ points week-over-week.
+    private func selfCompassionInsights(latest: WeeklyCheckIn, prior: WeeklyCheckIn?) -> [ZoneInsight] {
+        guard let prior else { return [] }
+        let droppers = ZoneID.allCases.filter {
+            latest.score(for: $0) <= prior.score(for: $0) - 2
+        }
+        guard droppers.count >= 3 else { return [] }
+
+        let weekRange = latest.weekStartDate...latest.weekStartDate
+        let body = "A few zones dropped this week. Hard weeks are part of every life — not a sign you're doing this wrong. Notice without grading."
+        return [ZoneInsight(
+            type: .positive,    // visually pairs with the green Lift accent
+            zoneIDs: droppers.map(\.rawValue),
+            body: body,
+            weekRange: weekRange
+        )]
     }
 
     // MARK: - Recovery

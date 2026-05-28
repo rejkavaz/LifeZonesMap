@@ -64,7 +64,7 @@ struct LogZoneScoreIntent: AppIntent {
         let container = try ModelContainer(
             for: WeeklyCheckIn.self, ZoneInsight.self, UserPreferences.self,
             WeeklyReflection.self, PromptResponse.self, MoodDrop.self,
-            ZoneGoal.self
+            ZoneGoal.self, GoodThing.self
         )
         let context = container.mainContext
         let service = CheckInService(modelContext: context)

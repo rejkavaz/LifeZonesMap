@@ -3,20 +3,29 @@ import Foundation
 /// A single curated reflection prompt. Static — defined in code, identified
 /// by a stable string id so user responses can link to it across versions.
 struct Prompt: Identifiable, Hashable {
-    let id: String        // stable, never reuse
+    let id: String                // stable, never reuse
     let text: String
-    let zone: ZoneID?     // nil = cross-zone / open
+    let zone: ZoneID?             // nil = cross-zone / open
+    let customCategory: String?   // optional override (e.g. "If-Then")
+
+    init(id: String, text: String, zone: ZoneID? = nil, customCategory: String? = nil) {
+        self.id = id
+        self.text = text
+        self.zone = zone
+        self.customCategory = customCategory
+    }
 
     var category: String {
-        zone.map { ZoneRegistry.definition(for: $0).name } ?? "Open"
+        if let c = customCategory { return c }
+        return zone.map { ZoneRegistry.definition(for: $0).name } ?? "Open"
     }
 }
 
 enum PromptLibrary {
 
-    /// 75 evergreen prompts. Order within a zone is stable, ids never change.
+    /// 87 evergreen prompts. Order within a zone is stable, ids never change.
     static let all: [Prompt] = vitality + deepWork + connection + innerWorld
-        + creation + foundation + growth + open
+        + creation + foundation + growth + open + intentions
 
     static func filtered(by zone: ZoneID?) -> [Prompt] {
         guard let z = zone else { return all }
@@ -25,6 +34,33 @@ enum PromptLibrary {
 
     static func prompt(id: String) -> Prompt? {
         all.first { $0.id == id }
+    }
+
+    /// Short, plain-English research note attached to each category.
+    /// Shown in the library so users can see where the questions come from.
+    static func researchNote(for category: String) -> String? {
+        switch category {
+        case "Vitality":
+            return "Affect labeling (Lieberman, UCLA): putting body state into words quiets the amygdala. Naming is regulating."
+        case "Deep Work":
+            return "Flow research (Csikszentmihalyi): asking 'when was I last in flow?' surfaces conditions worth recreating."
+        case "Connection":
+            return "Harvard Study of Adult Development (Waldinger, 80+ years): the quality of close relationships predicts wellbeing more than wealth or fame."
+        case "Inner World":
+            return "Self-compassion research (Neff): asking 'what's heavy?' with kindness reduces shame; with judgment, it amplifies it."
+        case "Creation":
+            return "Lyubomirsky & Sheldon: regular small acts of intentional making correlate with sustained life-satisfaction gains."
+        case "Foundation":
+            return "Implementation intentions (Gollwitzer): naming what you're avoiding is the first step that meaningfully shifts follow-through."
+        case "Growth":
+            return "Growth mindset (Dweck): treating ability as adjustable, not fixed, changes how challenges read."
+        case "Open":
+            return "Day Reconstruction (Kahneman): episode-by-episode recall is more accurate than global mood ratings."
+        case "If-Then":
+            return "Implementation intentions (Gollwitzer, 1999): 'if X happens, I will do Y' formats produce 2–3x better follow-through than vague goals."
+        default:
+            return nil
+        }
     }
 
     // MARK: - By zone
@@ -126,5 +162,29 @@ enum PromptLibrary {
         Prompt(id: "o3", text: "When did you feel most yourself?",                                           zone: nil),
         Prompt(id: "o4", text: "What's a small thing from this week worth remembering?",                     zone: nil),
         Prompt(id: "o5", text: "If you had to describe this week in three words, what would they be?",       zone: nil)
+    ]
+
+    /// Implementation intentions — Gollwitzer's "if X happens, I will do Y"
+    /// format. Replicated studies show 2-3x improvement in follow-through
+    /// vs vague goals. Each prompt deliberately uses an if/then or when/then
+    /// structure to scaffold the user into specifying both trigger and response.
+    static let intentions: [Prompt] = [
+        Prompt(id: "if1",  text: "If I notice I'm scrolling at night, I will…",                              zone: .vitality,   customCategory: "If-Then"),
+        Prompt(id: "if2",  text: "When my body feels tense between meetings, I will…",                       zone: .vitality,   customCategory: "If-Then"),
+        Prompt(id: "if3",  text: "If I haven't moved by 3pm, I will…",                                       zone: .vitality,   customCategory: "If-Then"),
+
+        Prompt(id: "if4",  text: "When I open my laptop in the morning, the first thing I will do is…",      zone: .deepWork,   customCategory: "If-Then"),
+        Prompt(id: "if5",  text: "If a meeting gets cancelled, I will use the gap to…",                      zone: .deepWork,   customCategory: "If-Then"),
+        Prompt(id: "if6",  text: "When I'm about to context-switch into Slack, I will instead…",             zone: .deepWork,   customCategory: "If-Then"),
+
+        Prompt(id: "if7",  text: "If a week goes by without seeing my closest people, I will…",              zone: .connection, customCategory: "If-Then"),
+        Prompt(id: "if8",  text: "When someone offers to help, I will respond by…",                          zone: .connection, customCategory: "If-Then"),
+
+        Prompt(id: "if9",  text: "When I notice anxiety rising about something I can't control, I will…",    zone: .innerWorld, customCategory: "If-Then"),
+        Prompt(id: "if10", text: "If I catch myself ruminating, I will…",                                    zone: .innerWorld, customCategory: "If-Then"),
+
+        Prompt(id: "if11", text: "When I feel a creative urge but no time, I will at least…",                zone: .creation,   customCategory: "If-Then"),
+
+        Prompt(id: "if12", text: "If a task on my Foundation list has been there 3+ weeks, I will…",         zone: .foundation, customCategory: "If-Then")
     ]
 }

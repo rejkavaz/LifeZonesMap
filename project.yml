@@ -32,16 +32,27 @@ targets:
     sources:
       - path: LifeZonesMap
     info:
-      # CFBundleIcons requires a nested dict for alternate icons, so we
-      # provide a full Info.plist via XcodeGen rather than using flat
-      # INFOPLIST_KEY_* build settings.
+      # Hand-rolled Info.plist (rather than auto-generated) because
+      # CFBundleAlternateIcons requires a nested dict that flat
+      # INFOPLIST_KEY_* build settings can't express.
       path: LifeZonesMap/Generated-Info.plist
       properties:
         CFBundleDisplayName: Life Zones
+        # SwiftUI WindowGroup needs the scene manifest or the app
+        # silently fails to launch.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
         UILaunchScreen:
           UIColorName: AccentColor
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
+        UISupportedInterfaceOrientations~ipad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIRequiredDeviceCapabilities:
+          - arm64
         CFBundleIcons:
           CFBundlePrimaryIcon:
             CFBundleIconName: AppIcon

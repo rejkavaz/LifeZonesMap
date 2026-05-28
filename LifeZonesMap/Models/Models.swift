@@ -124,6 +124,27 @@ final class ZoneInsight {
     }
 }
 
+/// Single entry for the "Three Good Things" exercise — Seligman et al.
+/// (2005) showed that writing down three specific good things each week,
+/// with why they happened, produces sustained wellbeing gains months later.
+/// One row per "thing". Grouped by weekStartDate.
+@Model
+final class GoodThing {
+    var id: UUID
+    var weekStartDate: Date
+    var text: String           // what happened
+    var why: String            // why you think it happened (Seligman emphasizes this)
+    var createdAt: Date
+
+    init(weekStartDate: Date, text: String, why: String = "") {
+        self.id = UUID()
+        self.weekStartDate = weekStartDate
+        self.text = text
+        self.why = why
+        self.createdAt = Date()
+    }
+}
+
 /// A gentle, optional per-zone target band. "I'd like Vitality to live
 /// between 6 and 8." Shown as a faint strip behind the trend chart line.
 /// Never enforced, never nagged about. One row per zone (max).
