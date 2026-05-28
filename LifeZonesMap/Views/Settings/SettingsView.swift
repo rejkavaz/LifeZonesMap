@@ -92,6 +92,11 @@ struct SettingsView: View {
             NavigationLink("Customize zone names") {
                 CustomZoneNamesView(prefs: prefs)
             }
+            NavigationLink {
+                GoalsView()
+            } label: {
+                Label("Goals", systemImage: "target")
+            }
         }
     }
 

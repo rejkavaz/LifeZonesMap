@@ -15,6 +15,7 @@ final class PatternEngine {
         insights += correlationInsights(sorted)
         insights += trendInsights(sorted)
         insights += drainInsights(sorted)
+        insights += weekdayPatternInsights(sorted)
         if let latest = sorted.last { insights += recoveryInsights(latest) }
 
         return deduplicated(insights)
@@ -120,6 +121,52 @@ final class PatternEngine {
                     weekRange: weekRange
                 ))
             }
+        }
+        return results
+    }
+
+    // MARK: - Weekday pattern
+
+    /// If the user checks in on different weekdays across history, see if any
+    /// weekday's overall average is meaningfully above/below the others.
+    /// Fires when one weekday is ≥1.0 lower or higher than the global mean
+    /// AND has been used at least 3 times.
+    private func weekdayPatternInsights(_ sorted: [WeeklyCheckIn]) -> [ZoneInsight] {
+        guard sorted.count >= 6 else { return [] }
+
+        var byWeekday: [Int: [Double]] = [:]
+        let cal = Calendar.current
+        for c in sorted {
+            let day = cal.component(.weekday, from: c.createdAt) // 1=Sun..7=Sat
+            byWeekday[day, default: []].append(c.overallAverage)
+        }
+
+        let globalAvg = sorted.map(\.overallAverage).reduce(0, +) / Double(sorted.count)
+
+        var results: [ZoneInsight] = []
+        let weekRange = sorted.first!.weekStartDate...sorted.last!.weekStartDate
+
+        for (weekday, values) in byWeekday {
+            guard values.count >= 3 else { continue }
+            let avg = values.reduce(0, +) / Double(values.count)
+            let delta = avg - globalAvg
+            guard abs(delta) >= 1.0 else { continue }
+
+            let weekdayName = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][weekday - 1]
+            let body: String
+            if delta < 0 {
+                body = "Your \(weekdayName) check-ins run lower than other weekdays — average \(String(format: "%.1f", avg)) vs \(String(format: "%.1f", globalAvg)) overall."
+            } else {
+                body = "\(weekdayName) tends to be your best check-in day — running \(String(format: "%.1f", avg)) on average."
+            }
+            results.append(ZoneInsight(
+                type: .trend,
+                zoneIDs: [],
+                body: body,
+                weekRange: weekRange
+            ))
+            // Only surface one weekday pattern at a time
+            break
         }
         return results
     }

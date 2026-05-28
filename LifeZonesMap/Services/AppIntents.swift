@@ -63,7 +63,8 @@ struct LogZoneScoreIntent: AppIntent {
     func perform() async throws -> some IntentResult & ProvidesDialog {
         let container = try ModelContainer(
             for: WeeklyCheckIn.self, ZoneInsight.self, UserPreferences.self,
-            WeeklyReflection.self, PromptResponse.self, MoodDrop.self
+            WeeklyReflection.self, PromptResponse.self, MoodDrop.self,
+            ZoneGoal.self
         )
         let context = container.mainContext
         let service = CheckInService(modelContext: context)

@@ -124,6 +124,30 @@ final class ZoneInsight {
     }
 }
 
+/// A gentle, optional per-zone target band. "I'd like Vitality to live
+/// between 6 and 8." Shown as a faint strip behind the trend chart line.
+/// Never enforced, never nagged about. One row per zone (max).
+@Model
+final class ZoneGoal {
+    var id: UUID
+    var zoneIDRaw: String
+    var lowerBound: Int       // 1...10
+    var upperBound: Int       // 1...10, > lowerBound
+    var note: String          // optional personal note
+    var createdAt: Date
+
+    var zone: ZoneID? { ZoneID(rawValue: zoneIDRaw) }
+
+    init(zone: ZoneID, lower: Int, upper: Int, note: String = "") {
+        self.id = UUID()
+        self.zoneIDRaw = zone.rawValue
+        self.lowerBound = max(1, min(10, lower))
+        self.upperBound = max(self.lowerBound + 1, min(10, upper))
+        self.note = note
+        self.createdAt = Date()
+    }
+}
+
 /// User's response to a single prompt from PromptLibrary. Not tied to a
 /// check-in — answer any prompt, any time, as many times as you want.
 @Model

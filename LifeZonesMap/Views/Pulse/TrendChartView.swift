@@ -1,9 +1,13 @@
 import SwiftUI
+import SwiftData
 
 /// Multi-line trend chart drawn directly in Canvas (matches pulse-screen.jsx LineChart).
 /// Custom legend below shows series + first→last delta.
+/// If the user has set ZoneGoals, render each goal as a faint band behind
+/// its line.
 struct TrendChartView: View {
     let checkIns: [WeeklyCheckIn]
+    @Query private var goals: [ZoneGoal]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +40,16 @@ struct TrendChartView: View {
         let n = max(1, checkIns.count - 1)
         let chartW = w - pad.l - pad.r
         let chartH = h - pad.t - pad.b
+
+        // Goal bands — render first so lines draw over them
+        for goal in goals {
+            guard let zone = goal.zone else { continue }
+            let def = ZoneRegistry.definition(for: zone)
+            let yUpper = pad.t + (1 - CGFloat(goal.upperBound) / 10) * chartH
+            let yLower = pad.t + (1 - CGFloat(goal.lowerBound) / 10) * chartH
+            let bandRect = CGRect(x: pad.l, y: yUpper, width: chartW, height: yLower - yUpper)
+            ctx.fill(Path(bandRect), with: .color(def.color.opacity(0.08)))
+        }
 
         // y gridlines + labels at 0, 2.5, 5, 7.5, 10
         for v in [0.0, 2.5, 5.0, 7.5, 10.0] {

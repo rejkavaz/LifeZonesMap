@@ -7,6 +7,9 @@ import Observation
 final class PulseViewModel {
     var checkIns: [WeeklyCheckIn] = []
     var insights: [ZoneInsight]   = []
+    /// All-time check-in count — used by MilestoneRibbon. Loaded separately
+    /// because the rolling-28-day window doesn't include older history.
+    var totalCheckInCount = 0
     var isLoading = false
 
     private let engine = PatternEngine()
@@ -15,6 +18,7 @@ final class PulseViewModel {
         isLoading = true
         let service = CheckInService(modelContext: modelContext)
         checkIns = (try? service.fetchLast28Days()) ?? []
+        totalCheckInCount = (try? service.fetchAll().count) ?? 0
         insights = engine.analyze(checkIns)
         isLoading = false
     }

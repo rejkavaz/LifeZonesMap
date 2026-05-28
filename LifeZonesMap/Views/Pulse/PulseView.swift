@@ -71,6 +71,12 @@ struct PulseView: View {
 
     private var content: some View {
         VStack(spacing: 0) {
+            // Milestone ribbon (quiet — appears once you cross 4/10/26/52 weeks)
+            MilestoneRibbon(checkInCount: vm.totalCheckInCount)
+                .padding(.horizontal, 18)
+                .padding(.top, 6)
+                .padding(.bottom, 14)
+
             // Stat cards
             HStack(spacing: 8) {
                 StatCard(
