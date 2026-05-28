@@ -2,6 +2,7 @@
 *.xcodeproj/
 *.xcworkspace/
 **/Generated-Info.plist
+LifeZonesMap/Generated-Info.plist
 **/.xcode.env.local
 DerivedData/
 build/

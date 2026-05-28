@@ -8,8 +8,23 @@ struct CheckInView: View {
     @State private var showingSummary = false
     @State private var showingReflection = false
 
+    @Query(sort: \WeeklyCheckIn.weekStartDate, order: .reverse) private var history: [WeeklyCheckIn]
+
     private var prefs: UserPreferences? {
         try? modelContext.fetch(FetchDescriptor<UserPreferences>()).first
+    }
+
+    /// Returns the user's most-frequently used custom tags for a zone,
+    /// sorted by frequency. Skips any tag that's already in the seed set.
+    private func personalTags(for zone: ZoneID) -> [String] {
+        let defaults = Set(ZoneRegistry.definition(for: zone).exampleTags)
+        var counts: [String: Int] = [:]
+        for c in history {
+            if let t = c.tag(for: zone), !t.isEmpty, !defaults.contains(t) {
+                counts[t, default: 0] += 1
+            }
+        }
+        return counts.sorted { $0.value > $1.value }.map(\.key)
     }
 
     var body: some View {
@@ -65,7 +80,8 @@ struct CheckInView: View {
                             selectedTag: tagBinding(for: def.id),
                             note:        noteBinding(for: def.id),
                             hapticsEnabled: prefs?.enableHaptics ?? true,
-                            rated: ratedZones.contains(def.id)
+                            rated: ratedZones.contains(def.id),
+                            personalTags: personalTags(for: def.id)
                         )
                         .padding(.horizontal, 18)
                     }

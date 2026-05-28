@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Life Zones — Icon Variants</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100vh; background: transparent; }
+  body { display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" data-presets="react">
+const VARIANTS = {
+  sage:  { bg: '#E8E2CE', fg: '#5E8C5A', dot: '#E8E2CE' },
+  clay:  { bg: '#EDDFC8', fg: '#A8754F', dot: '#EDDFC8' },
+  ink:   { bg: '#2C3741', fg: '#7D8FA3', dot: '#2C3741' },
+};
+
+function VariantIcon({ size = 1024, variant }) {
+  const v = VARIANTS[variant];
+  const offsets = [0.95, 0.78, 1.0, 0.86, 0.92, 0.74, 1.0];
+  const cx = size / 2, cy = size / 2;
+  const R = size * 0.42;
+  const N = 7;
+  const pts = [];
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
+    const r = R * offsets[i];
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ') + ' Z';
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+      <rect width={size} height={size} fill={v.bg}/>
+      <path d={d} fill={v.fg} fillOpacity="0.94"/>
+      <circle cx={cx} cy={cy} r={size * 0.014} fill={v.dot}/>
+    </svg>
+  );
+}
+
+// Pull variant from query string
+const params = new URLSearchParams(location.search);
+const which = params.get('v') || 'sage';
+
+ReactDOM.createRoot(document.getElementById('root')).render(<VariantIcon variant={which}/>);
+setTimeout(() => document.title = 'READY · icon-' + which, 1200);
+</script>
+</body>
+</html>

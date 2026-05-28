@@ -6,6 +6,7 @@ struct SettingsView: View {
     @Query private var prefsArray: [UserPreferences]
     @Query private var checkIns: [WeeklyCheckIn]
     @Query private var insights: [ZoneInsight]
+    @Query private var reflections: [WeeklyReflection]
 
     @State private var showDeleteAlert = false
     @State private var showExportSheet = false
@@ -22,6 +23,7 @@ struct SettingsView: View {
             List {
                 checkInSection
                 zonesSection
+                appearanceSection
                 historySection
                 insightsSection
                 dataSection
@@ -93,6 +95,16 @@ struct SettingsView: View {
         }
     }
 
+    private var appearanceSection: some View {
+        Section("Appearance") {
+            NavigationLink {
+                AppIconPickerView()
+            } label: {
+                Label("App icon", systemImage: "app.badge")
+            }
+        }
+    }
+
     private var historySection: some View {
         Section("Your data") {
             NavigationLink {
@@ -142,7 +154,8 @@ struct SettingsView: View {
             Button("Export PDF report") {
                 let data = ExportService().exportPDFReport(
                     checkIns: Array(checkIns),
-                    insights: Array(insights)
+                    insights: Array(insights),
+                    reflections: Array(reflections)
                 )
                 exportItem = ExportSheetItem(data: data, filename: "lifezonesmap_report.pdf")
             }

@@ -7,9 +7,24 @@ struct ZoneCard: View {
     @Binding var note: String
     var hapticsEnabled: Bool = true
     var rated: Bool = false   // false → show "—" until user moves slider
+    /// User's most-used custom tags for this zone, drawn from history.
+    var personalTags: [String] = []
 
     @State private var noteExpanded = false
     @FocusState private var noteFocused: Bool
+
+    /// Default seed tags + the user's top 3 personal tags (deduplicated).
+    private var allTags: [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        for t in definition.exampleTags {
+            if seen.insert(t).inserted { result.append(t) }
+        }
+        for t in personalTags.prefix(3) {
+            if seen.insert(t).inserted { result.append(t) }
+        }
+        return result
+    }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
@@ -61,9 +76,9 @@ struct ZoneCard: View {
                 )
                 .frame(height: 22)
 
-                // Tag pills (wrap)
+                // Tag pills (wrap) — seed tags first, then user's history-derived ones
                 FlowLayout(spacing: 6) {
-                    ForEach(definition.exampleTags, id: \.self) { tag in
+                    ForEach(allTags, id: \.self) { tag in
                         TagPill(
                             label: tag,
                             isSelected: selectedTag == tag,
