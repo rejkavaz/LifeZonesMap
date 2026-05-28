@@ -1,6 +1,7 @@
 # Life Zones Map
 
 [![iOS](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ios.yml/badge.svg)](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ios.yml)
+[![IPA](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ipa.yml/badge.svg)](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ipa.yml)
 
 A weekly self-reflection iOS app that visualizes life balance as an interactive island map, detects patterns across zones, and surfaces personal insights over time.
 
@@ -111,6 +112,27 @@ What this means in practice:
 - The widget extension and main app stay in sync because both are built every run
 - Swift Testing's `@Test` macros run in CI without any extra config
 - The Anthropic API integration's compile-time checks are validated even though you can't run the app
+
+### Installing on your iPhone via Sideloadly (no Apple Developer account)
+
+Every push to `master` builds an unsigned `.ipa` and publishes it to [Releases](https://github.com/rejkavaz/LifeZonesMap/releases). To get it on your phone:
+
+1. **Download the .ipa** — grab the latest `LifeZonesMap-<sha>-r<run>.ipa` from the Releases page (or from the [IPA workflow](https://github.com/rejkavaz/LifeZonesMap/actions/workflows/ipa.yml) artifacts).
+2. **Install Sideloadly** ([sideloadly.io](https://sideloadly.io)) — it's free, cross-platform, runs on Windows.
+3. **Plug in your iPhone**, open Sideloadly.
+4. **Drag the .ipa in**, sign in with your Apple ID. Sideloadly re-signs the bundle using your free signing identity.
+5. **Bundle ID note**: Sideloadly will offer to mutate the bundle ID. The default `com.rejkavaz.LifeZonesMap` won't conflict with anything else on your phone but Sideloadly may prepend a prefix — that's fine.
+6. **Trust the developer** on the phone: *Settings → General → VPN & Device Management → trust your Apple ID*.
+
+#### What works under free signing
+- The full app: Map, Check-In, Pulse, Onboarding, Settings, Pattern engine, local notifications
+- All your data persists in SwiftData on-device
+
+#### Caveats with free Apple ID
+- **The signature expires after 7 days.** Re-sideload weekly with Sideloadly's auto-resign feature, or use [AltStore](https://altstore.io) for automatic refresh over Wi-Fi.
+- **Max 10 apps** sideloaded at once per Apple ID.
+- **App Groups don't work with free signing.** The widget will install but can't read live data from the main app — it shows the placeholder until you have a paid developer account.
+- **3 different bundle IDs per 7-day window** — re-sideloading the same one doesn't count.
 
 ### Anthropic API (optional)
 
