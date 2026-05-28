@@ -164,6 +164,11 @@ enum PromptLibrary {
         Prompt(id: "o5", text: "If you had to describe this week in three words, what would they be?",       zone: nil)
     ]
 
+    // MARK: - Helpers for bridging user-authored CustomPrompt to the Prompt struct
+    // Lives here (not on CustomPrompt) so the Widget target — which compiles
+    // Models.swift but not PromptLibrary.swift — doesn't need to know about
+    // the Prompt type.
+
     /// Implementation intentions — Gollwitzer's "if X happens, I will do Y"
     /// format. Replicated studies show 2-3x improvement in follow-through
     /// vs vague goals. Each prompt deliberately uses an if/then or when/then
@@ -187,4 +192,21 @@ enum PromptLibrary {
 
         Prompt(id: "if12", text: "If a task on my Foundation list has been there 3+ weeks, I will…",         zone: .foundation, customCategory: "If-Then")
     ]
+}
+
+// MARK: - Bridge: CustomPrompt → Prompt
+
+extension CustomPrompt {
+    /// Wraps a user-authored prompt into the same Prompt struct shape
+    /// PromptLibrary uses, so the UI can treat library and custom prompts
+    /// identically. Lives here so Models.swift doesn't have to import
+    /// the Prompt struct (keeps the Widget target's compile graph clean).
+    var asPrompt: Prompt {
+        Prompt(
+            id: "user-\(id.uuidString)",
+            text: text,
+            zone: zone,
+            customCategory: "Custom"
+        )
+    }
 }

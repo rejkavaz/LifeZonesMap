@@ -189,17 +189,6 @@ final class CustomPrompt {
     }
 
     var zone: ZoneID? { zoneIDRaw.flatMap { ZoneID(rawValue: $0) } }
-
-    /// Bridge to the same Prompt struct PromptLibrary uses, so the UI
-    /// doesn't care whether a prompt is curated or custom.
-    var asPrompt: Prompt {
-        Prompt(
-            id: "user-\(id.uuidString)",
-            text: text,
-            zone: zone,
-            customCategory: "Custom"
-        )
-    }
 }
 
 /// User's response to a single prompt from PromptLibrary. Not tied to a
