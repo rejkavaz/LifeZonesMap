@@ -1,29 +1,49 @@
 import SwiftUI
+import UIKit
 
-// MARK: - LZ color tokens (from design system)
-// Source: design/life-zones/project/shared.jsx
+// MARK: - Dynamic color helper
+
+extension Color {
+    /// Resolves to one of two hex values based on the current trait collection.
+    /// Lets the whole LZ palette respond to system Light/Dark mode without
+    /// every callsite having to check colorScheme.
+    static func dynamic(light: String, dark: String) -> Color {
+        Color(UIColor { trait in
+            trait.userInterfaceStyle == .dark
+                ? UIColor(Color(hex: dark))
+                : UIColor(Color(hex: light))
+        })
+    }
+}
+
+// MARK: - LZ color tokens (light + dark)
+// Light source: design/life-zones/project/shared.jsx
+// Dark inversion: warm-ink backgrounds, cream text, slightly lifted zone hues
+//   so they still feel of the same family in either mode.
 
 enum LZ {
     // Surfaces
-    static let cream      = Color(hex: "#F2EBDC")
-    static let creamSoft  = Color(hex: "#EFE7D5")
-    static let paper      = Color(hex: "#FAF6EB")
-    static let ink        = Color(hex: "#262320")
-    static let inkSoft    = Color(hex: "#5B554A")
-    static let inkMute    = Color(hex: "#9A9182")
-    static let rule       = Color(hex: "#D8CFBC")
-    static let ruleSoft   = Color(hex: "#E6DEC9")
-    // Brand
-    static let teal       = Color(hex: "#1D9E75")
-    static let tealDeep   = Color(hex: "#15795A")
+    static let cream      = Color.dynamic(light: "#F2EBDC", dark: "#16140F")
+    static let creamSoft  = Color.dynamic(light: "#EFE7D5", dark: "#1B1814")
+    static let paper      = Color.dynamic(light: "#FAF6EB", dark: "#1F1C17")
+    // Text — inverted in dark
+    static let ink        = Color.dynamic(light: "#262320", dark: "#F0E9D7")
+    static let inkSoft    = Color.dynamic(light: "#5B554A", dark: "#B8B0A0")
+    static let inkMute    = Color.dynamic(light: "#9A9182", dark: "#7C7568")
+    // Rules / borders
+    static let rule       = Color.dynamic(light: "#D8CFBC", dark: "#3A352E")
+    static let ruleSoft   = Color.dynamic(light: "#E6DEC9", dark: "#2D2924")
+    // Brand teal — slightly more luminous in dark
+    static let teal       = Color.dynamic(light: "#1D9E75", dark: "#2DBA8C")
+    static let tealDeep   = Color.dynamic(light: "#15795A", dark: "#22A37A")
     // Zone signature colors (muted, earthy)
-    static let zVitality  = Color(hex: "#BE5A45")   // terracotta red
-    static let zDeepWork  = Color(hex: "#3C6E91")   // ink blue
-    static let zConnect   = Color(hex: "#2D9474")   // moss teal
-    static let zInner     = Color(hex: "#6E5B8A")   // dusky violet
-    static let zCreate    = Color(hex: "#CC8A4A")   // burnt orange
-    static let zFound     = Color(hex: "#B6913E")   // amber ochre
-    static let zGrowth    = Color(hex: "#5E8C5A")   // forest green
+    static let zVitality  = Color.dynamic(light: "#BE5A45", dark: "#DE7058")
+    static let zDeepWork  = Color.dynamic(light: "#3C6E91", dark: "#5E94BB")
+    static let zConnect   = Color.dynamic(light: "#2D9474", dark: "#43B68F")
+    static let zInner     = Color.dynamic(light: "#6E5B8A", dark: "#9582AE")
+    static let zCreate    = Color.dynamic(light: "#CC8A4A", dark: "#E2A164")
+    static let zFound     = Color.dynamic(light: "#B6913E", dark: "#D1AC58")
+    static let zGrowth    = Color.dynamic(light: "#5E8C5A", dark: "#7DB078")
 }
 
 // MARK: - Typography

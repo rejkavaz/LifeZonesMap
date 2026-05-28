@@ -85,6 +85,14 @@ struct CheckInView: View {
                         )
                         .padding(.horizontal, 18)
                     }
+
+                    MediaAttachmentsCard(
+                        photoData: $vm.photoData,
+                        audioData: $vm.audioData,
+                        audioDuration: $vm.audioDuration
+                    )
+                    .padding(.horizontal, 18)
+                    .padding(.top, 6)
                 }
                 .padding(.top, 14)
                 .padding(.bottom, 140)

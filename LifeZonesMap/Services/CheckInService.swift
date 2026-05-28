@@ -14,7 +14,10 @@ final class CheckInService {
     func save(
         scores: [ZoneID: Int],
         tags: [ZoneID: String],
-        notes: [ZoneID: String]
+        notes: [ZoneID: String],
+        photoData: Data? = nil,
+        audioData: Data? = nil,
+        audioDuration: Double = 0
     ) throws -> WeeklyCheckIn {
         let weekStart = Date().isoWeekMonday
 
@@ -23,6 +26,13 @@ final class CheckInService {
             existing.scores = Dictionary(uniqueKeysWithValues: scores.map { ($0.key.rawValue, $0.value) })
             existing.tags   = Dictionary(uniqueKeysWithValues: tags.compactMap { $0.value.isEmpty ? nil : ($0.key.rawValue, $0.value) })
             existing.notes  = Dictionary(uniqueKeysWithValues: notes.compactMap { $0.value.isEmpty ? nil : ($0.key.rawValue, $0.value) })
+            // Only overwrite media if the caller is providing something —
+            // a re-submit without media shouldn't blow away your photo.
+            if let photoData { existing.photoData = photoData }
+            if let audioData {
+                existing.audioData = audioData
+                existing.audioDuration = audioDuration
+            }
             try modelContext.save()
             return existing
         }
@@ -31,7 +41,10 @@ final class CheckInService {
             weekStartDate: weekStart,
             scores: Dictionary(uniqueKeysWithValues: scores.map { ($0.key.rawValue, $0.value) }),
             tags:   Dictionary(uniqueKeysWithValues: tags.compactMap { $0.value.isEmpty ? nil : ($0.key.rawValue, $0.value) }),
-            notes:  Dictionary(uniqueKeysWithValues: notes.compactMap { $0.value.isEmpty ? nil : ($0.key.rawValue, $0.value) })
+            notes:  Dictionary(uniqueKeysWithValues: notes.compactMap { $0.value.isEmpty ? nil : ($0.key.rawValue, $0.value) }),
+            photoData: photoData,
+            audioData: audioData,
+            audioDuration: audioDuration
         )
         modelContext.insert(checkIn)
         try modelContext.save()

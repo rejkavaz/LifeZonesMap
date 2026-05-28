@@ -52,12 +52,21 @@ final class WeeklyCheckIn {
     var tags: [String: String]
     var notes: [String: String]
     var createdAt: Date
+    /// Optional one-image memory hook for the week. JPEG-compressed to
+    /// keep store size sane.
+    var photoData: Data?
+    /// Optional voice note for the week. AAC m4a.
+    var audioData: Data?
+    var audioDuration: Double   // seconds; 0 if no audio
 
     init(
         weekStartDate: Date,
         scores: [String: Int] = [:],
         tags: [String: String] = [:],
-        notes: [String: String] = [:]
+        notes: [String: String] = [:],
+        photoData: Data? = nil,
+        audioData: Data? = nil,
+        audioDuration: Double = 0
     ) {
         self.id = UUID()
         self.weekStartDate = weekStartDate
@@ -65,6 +74,9 @@ final class WeeklyCheckIn {
         self.tags = tags
         self.notes = notes
         self.createdAt = Date()
+        self.photoData = photoData
+        self.audioData = audioData
+        self.audioDuration = audioDuration
     }
 
     var overallAverage: Double {

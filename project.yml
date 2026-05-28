@@ -38,6 +38,7 @@ targets:
       path: LifeZonesMap/Generated-Info.plist
       properties:
         CFBundleDisplayName: Life Zones
+        NSMicrophoneUsageDescription: "Lets you record a short voice note for each weekly check-in. Stored only on your device."
         # SwiftUI WindowGroup needs the scene manifest or the app
         # silently fails to launch.
         UIApplicationSceneManifest:

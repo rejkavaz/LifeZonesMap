@@ -13,6 +13,7 @@ struct CheckInSummaryView: View {
             ScrollView {
                 VStack(spacing: 24) {
                     headerCard
+                    mediaSection
                     deltaList
                 }
                 .padding(.bottom, 32)
@@ -59,6 +60,36 @@ struct CheckInSummaryView: View {
         )
         .padding(.horizontal, 18)
         .padding(.top, 12)
+    }
+
+    @ViewBuilder
+    private var mediaSection: some View {
+        if checkIn.photoData != nil || checkIn.audioData != nil {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Saved with this week").uppercaseCaption()
+                    .padding(.horizontal, 24)
+                HStack(spacing: 10) {
+                    if let data = checkIn.photoData, let img = UIImage(data: data) {
+                        Image(uiImage: img)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 110)
+                            .clipped()
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    if let audioData = checkIn.audioData {
+                        VoiceNotePlaybackTile(
+                            data: audioData,
+                            duration: checkIn.audioDuration,
+                            onRemove: {}
+                        )
+                        .allowsHitTesting(true)
+                    }
+                }
+                .padding(.horizontal, 18)
+            }
+        }
     }
 
     private var deltaList: some View {

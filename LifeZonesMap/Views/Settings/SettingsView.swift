@@ -21,6 +21,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             List {
+                helpSection
                 checkInSection
                 zonesSection
                 appearanceSection
@@ -46,6 +47,20 @@ struct SettingsView: View {
     }
 
     // MARK: - Sections
+
+    private var helpSection: some View {
+        Section {
+            NavigationLink {
+                TutorialView()
+            } label: {
+                Label("Tour & help", systemImage: "book")
+            }
+        } footer: {
+            Text("Every feature, explained — what the app does and why.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+    }
 
     private var checkInSection: some View {
         Section("Check-in schedule") {

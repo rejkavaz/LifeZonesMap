@@ -8,6 +8,9 @@ final class CheckInViewModel {
     var scores: [ZoneID: Int]   = Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, 5) })
     var tags:   [ZoneID: String] = [:]
     var notes:  [ZoneID: String] = [:]
+    var photoData: Data?
+    var audioData: Data?
+    var audioDuration: Double = 0
     var isSubmitting = false
     var submittedCheckIn: WeeklyCheckIn?
     var error: String?
@@ -52,7 +55,14 @@ final class CheckInViewModel {
 
         let svc = service ?? CheckInService(modelContext: modelContext)
         do {
-            let checkIn = try svc.save(scores: scores, tags: tags, notes: notes)
+            let checkIn = try svc.save(
+                scores: scores,
+                tags: tags,
+                notes: notes,
+                photoData: photoData,
+                audioData: audioData,
+                audioDuration: audioDuration
+            )
             submittedCheckIn = checkIn
             alreadyCheckedIn = true
             existingCheckIn  = checkIn
