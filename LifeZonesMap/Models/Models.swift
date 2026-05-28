@@ -153,6 +153,7 @@ final class UserPreferences {
     var customZoneNames: [String: String]
     var onboardingComplete: Bool
     var notificationsEnabled: Bool
+    var hasSeenMapTip: Bool
 
     init() {
         self.id = UUID()
@@ -165,6 +166,7 @@ final class UserPreferences {
         self.customZoneNames = [:]
         self.onboardingComplete = false
         self.notificationsEnabled = true
+        self.hasSeenMapTip = false
     }
 }
 

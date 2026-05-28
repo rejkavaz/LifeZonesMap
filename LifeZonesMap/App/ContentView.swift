@@ -19,11 +19,18 @@ struct ContentView: View {
             Group {
                 switch activeTab {
                 case .map:
-                    MapView(
-                        scores: mapVM.scores,
-                        onZoneTap: { selectedZone = $0 },
-                        onSettingsTap: { showSettings = true }
-                    )
+                    ZStack(alignment: .top) {
+                        MapView(
+                            scores: mapVM.scores,
+                            onZoneTap: { selectedZone = $0 },
+                            onSettingsTap: { showSettings = true }
+                        )
+                        if let p = prefs, !p.hasSeenMapTip, !mapVM.scores.isEmpty {
+                            MapTip(prefs: p)
+                                .padding(.horizontal, 32)
+                                .padding(.top, 380)   // hovers just below the radar card
+                        }
+                    }
                 case .check:
                     CheckInView()
                 case .pulse:

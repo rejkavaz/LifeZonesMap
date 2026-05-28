@@ -4,26 +4,40 @@ import SwiftData
 struct PulseView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var vm = PulseViewModel()
+    @State private var showYearOverview = false
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                header
-                    .padding(.horizontal, 24)
-                    .padding(.top, 6)
-                    .padding(.bottom, 8)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    header
+                        .padding(.horizontal, 24)
+                        .padding(.top, 6)
+                        .padding(.bottom, 8)
 
-                if vm.isLoading {
-                    ProgressView().padding(.top, 60).tint(LZ.tealDeep)
-                } else if vm.checkIns.isEmpty {
-                    emptyState
-                } else {
-                    content
+                    if vm.isLoading {
+                        ProgressView().padding(.top, 60).tint(LZ.tealDeep)
+                    } else if vm.checkIns.isEmpty {
+                        emptyState
+                    } else {
+                        content
+                    }
+                }
+                .padding(.bottom, 100)
+            }
+            .background(LZ.paper.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        YearOverviewView()
+                    } label: {
+                        Image(systemName: "square.grid.3x3")
+                            .foregroundStyle(LZ.tealDeep)
+                    }
+                    .accessibilityLabel("Year overview")
                 }
             }
-            .padding(.bottom, 100)
         }
-        .background(LZ.paper.ignoresSafeArea())
         .onAppear { vm.load(modelContext: modelContext) }
     }
 
@@ -96,6 +110,10 @@ struct PulseView: View {
                 insights: vm.insights,
                 onDismiss: { vm.dismiss(insight: $0) }
             )
+
+            // Reflection feed — recent saved responses to the post-checkin prompt
+            sectionTitle("In your own words")
+            ReflectionFeedView(limit: 3)
 
             // Zone connections
             if vm.checkIns.count >= 4 {
