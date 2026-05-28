@@ -139,10 +139,12 @@ final class ZoneGoal {
     var zone: ZoneID? { ZoneID(rawValue: zoneIDRaw) }
 
     init(zone: ZoneID, lower: Int, upper: Int, note: String = "") {
+        let safeLower = max(1, min(10, lower))
+        let safeUpper = max(safeLower + 1, min(10, upper))
         self.id = UUID()
         self.zoneIDRaw = zone.rawValue
-        self.lowerBound = max(1, min(10, lower))
-        self.upperBound = max(self.lowerBound + 1, min(10, upper))
+        self.lowerBound = safeLower
+        self.upperBound = safeUpper
         self.note = note
         self.createdAt = Date()
     }
