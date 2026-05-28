@@ -26,13 +26,10 @@ final class DeepLinkRouter: NSObject, UNUserNotificationCenterDelegate {
         UNUserNotificationCenter.current().delegate = self
     }
 
-    func handle(userInfo: [AnyHashable: Any]) {
-        guard let link = userInfo["deepLink"] as? String else { return }
-        switch link {
-        case "checkin":  pending = .openCheckIn
-        case "journal":  pending = .openJournal
-        default:         break
-        }
+    /// Decode a deepLink dictionary value (from notifications, widgets,
+    /// or URL schemes) and update `pending` if recognized.
+    func handle(deepLinkValue: String?) {
+        handle(deepLink: deepLinkValue)
     }
 
     // MARK: - UNUserNotificationCenterDelegate
@@ -52,10 +49,21 @@ final class DeepLinkRouter: NSObject, UNUserNotificationCenterDelegate {
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
-        let userInfo = response.notification.request.content.userInfo
+        // Extract the Sendable string here in the nonisolated context;
+        // [AnyHashable: Any] itself isn't safe to send across actors.
+        let link = response.notification.request.content.userInfo["deepLink"] as? String
         Task { @MainActor in
-            self.handle(userInfo: userInfo)
+            self.handle(deepLink: link)
         }
         completionHandler()
+    }
+
+    private func handle(deepLink: String?) {
+        guard let deepLink else { return }
+        switch deepLink {
+        case "checkin":  pending = .openCheckIn
+        case "journal":  pending = .openJournal
+        default:         break
+        }
     }
 }
