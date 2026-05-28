@@ -71,6 +71,42 @@ App icon (7-point polygon), Inter Medium wordmark, cream + ink + 7 muted earthy 
 
 ---
 
+## Research foundations
+
+Every reflective feature in this app traces to a peer-reviewed finding, not a guess. The choice not to gamify, the choice of weekly cadence, the specific exercises offered — all sourced.
+
+### Why no streaks, badges, or daily reminders
+- **Self-Determination Theory** (Deci & Ryan, 2000) — extrinsic motivators (badges, points, leaderboards) reliably undermine intrinsic motivation. Wellbeing apps that gamify produce short-term engagement spikes followed by abandonment.
+- **Notification fatigue research** (Mehrotra et al., 2016) — frequency above 2/week from a single non-essential app reduces engagement and increases negative affect toward the app.
+
+### Why a weekly cadence (not daily)
+- **Day Reconstruction Method** (Kahneman et al., 2004) — episode-by-episode recall is more accurate than global mood ratings, but daily check-ins suffer from same-day reactivity. The weekly window lets a real signal emerge from the noise.
+- **Habit formation research** (Fogg, BJ; Clear, James) — consistency matters more than perfection; punishing missed days harms long-term habit formation.
+
+### Why the journal lives next to the data
+- **Affect labeling** (Lieberman et al., 2007, UCLA) — putting feelings into words activates the right ventrolateral prefrontal cortex and reduces amygdala activity. *Naming is regulating.*
+- **Hawthorne effect** — observation alone changes behavior; structured reflection compounds that effect.
+
+### Three Good Things (in the Journal tab)
+- **Seligman, Steen, Park & Peterson (2005)** — *Positive psychology progress.* RCT showing that writing 3 specific positive events with their *causes* once weekly produced elevated happiness and reduced depressive symptoms at 1, 3, and 6 month follow-ups. The *why* step is essential — it's what creates the durability.
+
+### Best Possible Self (in the Journal tab)
+- **King (2001)**; **Sheldon & Lyubomirsky (2006)**; **Layous, Nelson & Lyubomirsky (2013)** — Across multiple replications, 15 minutes of weekly writing about one's "best possible future self" for 4 weeks produced sustained increases in optimism and life satisfaction.
+
+### If-Then prompts (Implementation Intentions)
+- **Gollwitzer (1999)** — *Implementation intentions: Strong effects of simple plans.* Meta-analyses across 94 studies show "if X happens, I will do Y" formats produce **2-3× better follow-through** than vague intentions. Mechanism: pre-commitment that bypasses willpower at the moment of choice.
+
+### Self-Compassion insight (when many zones drop)
+- **Neff (2003, 2011)** — Self-compassion as the alternative to self-esteem. Three components: self-kindness vs self-judgment, common humanity vs isolation, mindfulness vs over-identification. Replicated finding: meeting hard moments with kindness reduces shame and improves recovery; with judgment it amplifies them.
+
+### The 7 zones themselves
+Loosely informed by:
+- **PERMA framework** (Seligman, 2011) — Positive emotion, Engagement, Relationships, Meaning, Accomplishment.
+- **The Wheel of Life** — older coaching tool with similar holistic structure.
+- **Harvard Study of Adult Development** (Waldinger, ongoing since 1938) — quality of close relationships is the strongest predictor of wellbeing, more than wealth or fame. (Hence Connection getting equal weight to Deep Work.)
+
+---
+
 ## Overview
 
 Life Zones Map lets you check in once a week on 7 life zones — each rated 1–10. The map updates visually as scores change. After 3+ weeks, the app surfaces correlations, trends, and patterns. No streaks, no gamification, fully private by default.

@@ -29,6 +29,7 @@ struct JournalView: View {
                     moodSection
                     libraryCallout
                     goodThingsCallout
+                    bestPossibleSelfCallout
                     answeredCallout
                     recentReflectionsSection
                 }
@@ -204,6 +205,43 @@ struct JournalView: View {
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(LZ.ink)
                     Text("A weekly gratitude exercise from Seligman's research.")
+                        .font(LZType.serifItalic(12.5))
+                        .foregroundStyle(LZ.inkSoft)
+                        .multilineTextAlignment(.leading)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(LZ.inkMute)
+            }
+            .padding(14)
+            .background(Color.white)
+            .overlay(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .strokeBorder(LZ.ruleSoft, lineWidth: 0.5)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal, 18)
+        .padding(.top, 6)
+    }
+
+    private var bestPossibleSelfCallout: some View {
+        NavigationLink {
+            BestPossibleSelfView()
+        } label: {
+            HStack(spacing: 14) {
+                ZoneGlyph(glyph: .moon, size: 22, stroke: 1.6)
+                    .foregroundStyle(LZ.zInner)
+                    .padding(10)
+                    .background(LZ.zInner.opacity(0.12))
+                    .clipShape(Circle())
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Best possible self")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(LZ.ink)
+                    Text("Fifteen minutes a week. Lyubomirsky's protocol.")
                         .font(LZType.serifItalic(12.5))
                         .foregroundStyle(LZ.inkSoft)
                         .multilineTextAlignment(.leading)
