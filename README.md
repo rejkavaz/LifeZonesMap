@@ -7,21 +7,36 @@ A weekly self-reflection iOS app that visualizes life balance as an interactive 
 
 ## Features at a glance
 
-- **The Map** — animated 7-axis radar with corner ticks, topo backdrop, center avg badge
-- **The Check-In** — custom slider, expandable serif-italic note field, tag pills with autocomplete from your own past entries
-- **The Pulse** — monthly stat cards, multi-line trend chart, insight feed (Watch / Lift / Pattern), reflection feed in your own words, zone-connection web
-- **The Year shape** — small-multiples grid of every week you've ever mapped
-- **Zone details** — tap any zone on the map for history sparkline, mood-tag frequency cloud, best/worst weeks, and inline quick-edit
-- **Reflections** — after every check-in, a single data-aware question seeded from what just changed. Saved to a private feed
-- **History** — browse and edit any past week from Settings
-- **Pattern engine** — Pearson correlation, linear trend, drain detection, recovery prompts
-- **Notifications** — adaptive copy that varies by your recent average, occasionally referencing a specific zone that's been moving
-- **Siri shortcut** — "Log my Vitality at 7" via App Intents
-- **Widgets** — small radar, medium 7-zone bars, lock-screen "Needs care"
-- **4 app icons** — Cream (default), Sage Coast, Clay Valley, Twilight Ridge — switchable from Settings
-- **Beautiful PDF export** — mirrors the on-screen Pulse view, ready for printing or sharing
-- **Accessibility** — VoiceOver summary on the radar canvas, dynamic type, haptics
-- **Private by default** — all data lives in on-device SwiftData. Anthropic API is opt-in only
+### The four tabs
+- **Map** — animated 7-axis radar with corner ticks, topo backdrop, center avg badge. Tap any zone for its history.
+- **Check In** — weekly ritual with custom slider, expandable serif-italic notes, tag pills that autocomplete from your own past entries.
+- **Pulse** — monthly stat cards, multi-line trend chart with optional goal bands, insight feed (Watch / Lift / Pattern / Trend), reflection feed, zone-connection web, milestone ribbon.
+- **Journal** — qualitative surface: 75-prompt library, mood drops between check-ins, answered prompts archive, and unified search across every text field in the app.
+
+### Reflection & journaling
+- **75 evergreen prompts** organized by zone — answer any prompt any time, multiple times. "Earlier answers" stack so you can watch your thinking evolve.
+- **Mood drops** — one-word capture between check-ins (with a rotating row of suggestions and an optional sentence).
+- **Post-checkin reflection** — one data-aware question seeded from what just changed in your scores.
+- **Unified search** — find every mention of "tired" or "walking" across your notes, reflections, prompt answers, and mood drops.
+
+### Insight & analysis
+- **Pattern engine** — Pearson correlation, linear trend, drain detection, recovery prompts, weekday-of-checkin patterns.
+- **Year shape** — small-multiples grid of every week you've ever mapped, grouped by month.
+- **Zone detail page** — sparkline, mood-tag frequency cloud, best/lowest weeks, inline quick-edit slider for this week.
+- **Optional goals** — gentle per-zone target bands shown as faint strips on the trend chart. Never enforced.
+- **Quiet milestones** — single acknowledgment when you cross 4 / 10 / 26 / 52 / 78 / 104 weeks of check-ins. No badges, no streaks.
+
+### iOS integration
+- **Siri shortcut** — "Log my Vitality at 7" via App Intents.
+- **Widgets** — small radar, medium 7-zone bars, lock-screen "Needs care".
+- **Adaptive notifications** — copy varies with your recent average, occasionally references a specific zone that's been moving.
+- **4 app icons** — Cream (default), Sage Coast, Clay Valley, Twilight Ridge — switchable from Settings.
+- **Beautiful PDF export** — mirrors the on-screen Pulse view, ready for printing or sharing.
+
+### Done right
+- **Accessibility** — VoiceOver summary on the radar canvas, dynamic type, haptics on slider.
+- **Private by default** — all data lives in on-device SwiftData. Anthropic API is opt-in only.
+- **No streaks, no badges, no gamification.** This app never punishes you for missing a week.
 
 ![Map · Check-In · Pulse](docs/screenshots/08-hifi-three.png)
 
