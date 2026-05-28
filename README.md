@@ -5,6 +5,24 @@
 
 A weekly self-reflection iOS app that visualizes life balance as an interactive island map, detects patterns across zones, and surfaces personal insights over time.
 
+## Features at a glance
+
+- **The Map** — animated 7-axis radar with corner ticks, topo backdrop, center avg badge
+- **The Check-In** — custom slider, expandable serif-italic note field, tag pills with autocomplete from your own past entries
+- **The Pulse** — monthly stat cards, multi-line trend chart, insight feed (Watch / Lift / Pattern), reflection feed in your own words, zone-connection web
+- **The Year shape** — small-multiples grid of every week you've ever mapped
+- **Zone details** — tap any zone on the map for history sparkline, mood-tag frequency cloud, best/worst weeks, and inline quick-edit
+- **Reflections** — after every check-in, a single data-aware question seeded from what just changed. Saved to a private feed
+- **History** — browse and edit any past week from Settings
+- **Pattern engine** — Pearson correlation, linear trend, drain detection, recovery prompts
+- **Notifications** — adaptive copy that varies by your recent average, occasionally referencing a specific zone that's been moving
+- **Siri shortcut** — "Log my Vitality at 7" via App Intents
+- **Widgets** — small radar, medium 7-zone bars, lock-screen "Needs care"
+- **4 app icons** — Cream (default), Sage Coast, Clay Valley, Twilight Ridge — switchable from Settings
+- **Beautiful PDF export** — mirrors the on-screen Pulse view, ready for printing or sharing
+- **Accessibility** — VoiceOver summary on the radar canvas, dynamic type, haptics
+- **Private by default** — all data lives in on-device SwiftData. Anthropic API is opt-in only
+
 ![Map · Check-In · Pulse](docs/screenshots/08-hifi-three.png)
 
 ## Design
