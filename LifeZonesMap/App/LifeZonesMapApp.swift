@@ -9,29 +9,36 @@ struct LifeZonesMapApp: App {
     let container: ModelContainer
 
     init() {
+        logger.notice("Launching Life Zones Map")
         // SwiftData store schema can drift between sideloads as we add new
-        // @Model classes. Rather than crash, try once with the new schema —
-        // and if that fails (typically because the on-disk store predates a
-        // newer model), wipe the local store and retry. This costs the user
-        // their data on schema-breaking updates, which is acceptable while
-        // the app is in early personal-use territory but should be replaced
-        // with a real SchemaMigrationPlan before any real launch.
+        // @Model classes. Try once with the new schema — and if that fails
+        // (typically because the on-disk store predates a newer model),
+        // wipe the store at the deterministic URL we control and retry.
         do {
             container = try Self.makeContainer()
+            logger.notice("ModelContainer opened successfully")
         } catch {
             logger.error("ModelContainer init failed: \(error.localizedDescription, privacy: .public). Wiping store and retrying.")
             Self.wipeStoreFiles()
             do {
                 container = try Self.makeContainer()
+                logger.notice("ModelContainer opened on second attempt after wipe")
             } catch {
-                fatalError("ModelContainer init failed even after wiping store: \(error)")
-            }
-        }
-
-        // CI-only seed mode — see PreviewSeeder
-        if PreviewSeeder.isActive {
-            MainActor.assumeIsolated {
-                PreviewSeeder.seed(in: container.mainContext)
+                logger.fault("ModelContainer init failed after wipe: \(error.localizedDescription, privacy: .public). Falling back to in-memory store.")
+                // Last resort: in-memory store so the app can at least render.
+                // The user will lose any future writes when they close the app
+                // but at least won't see an instant crash.
+                do {
+                    let inMemoryConfig = ModelConfiguration(isStoredInMemoryOnly: true)
+                    container = try ModelContainer(
+                        for: WeeklyCheckIn.self, ZoneInsight.self, UserPreferences.self,
+                        WeeklyReflection.self, PromptResponse.self, MoodDrop.self,
+                        ZoneGoal.self, GoodThing.self,
+                        configurations: inMemoryConfig
+                    )
+                } catch {
+                    fatalError("Couldn't even create in-memory ModelContainer: \(error)")
+                }
             }
         }
     }
@@ -39,14 +46,32 @@ struct LifeZonesMapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onAppear { seedIfNeeded() }
         }
         .modelContainer(container)
     }
 
     // MARK: - Helpers
 
+    /// Explicit URL so we know exactly where SwiftData wrote the store and can wipe it.
+    private static let storeURL: URL = {
+        let supportURL: URL
+        if #available(iOS 16, *) {
+            supportURL = URL.applicationSupportDirectory
+        } else {
+            supportURL = (try? FileManager.default.url(
+                for: .applicationSupportDirectory,
+                in: .userDomainMask,
+                appropriateFor: nil,
+                create: true
+            )) ?? URL(filePath: NSTemporaryDirectory())
+        }
+        return supportURL.appending(path: "LifeZones.store")
+    }()
+
     private static func makeContainer() throws -> ModelContainer {
-        try ModelContainer(
+        let config = ModelConfiguration(url: storeURL)
+        return try ModelContainer(
             for: WeeklyCheckIn.self,
             ZoneInsight.self,
             UserPreferences.self,
@@ -54,35 +79,35 @@ struct LifeZonesMapApp: App {
             PromptResponse.self,
             MoodDrop.self,
             ZoneGoal.self,
-            GoodThing.self
+            GoodThing.self,
+            configurations: config
         )
     }
 
-    /// Best-effort wipe of the SwiftData store. We can't always know the
-    /// exact path SwiftData picked, so try the well-known defaults.
+    /// Wipe the SwiftData store + journal files at our known URL.
+    /// SQLite WAL mode writes three files: .store, .store-shm, .store-wal.
     private static func wipeStoreFiles() {
         let fm = FileManager.default
-        let appSupport = try? fm.url(
-            for: .applicationSupportDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: false
-        )
-
-        let names = ["default.store", "default.store-shm", "default.store-wal"]
-        for name in names {
-            if let url = appSupport?.appendingPathComponent(name) {
-                try? fm.removeItem(at: url)
+        let basePath = storeURL.path()
+        for suffix in ["", "-shm", "-wal", "-journal"] {
+            try? fm.removeItem(atPath: basePath + suffix)
+        }
+        // Belt and suspenders: also remove any *.store files in App Support
+        // in case an older SwiftData version wrote them to the default path.
+        let supportDir = storeURL.deletingLastPathComponent()
+        if let contents = try? fm.contentsOfDirectory(at: supportDir, includingPropertiesForKeys: nil) {
+            for u in contents where u.lastPathComponent.contains(".store") {
+                try? fm.removeItem(at: u)
             }
         }
+    }
 
-        // Some SwiftData versions nest under a bundle-id folder; nuke any
-        // *.store left over in App Support.
-        if let appSupport,
-           let contents = try? fm.contentsOfDirectory(at: appSupport, includingPropertiesForKeys: nil) {
-            for url in contents where url.lastPathComponent.contains(".store") {
-                try? fm.removeItem(at: url)
-            }
-        }
+    /// Run preview seed safely from onAppear — the App protocol's init
+    /// timing has changed across iOS versions and called the seeder from
+    /// init has surfaced subtle crashes. Doing it after the scene is
+    /// attached is unambiguous.
+    private func seedIfNeeded() {
+        guard PreviewSeeder.isActive else { return }
+        PreviewSeeder.seed(in: container.mainContext)
     }
 }

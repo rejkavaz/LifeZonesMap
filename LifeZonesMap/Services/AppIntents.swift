@@ -102,6 +102,7 @@ struct LogZoneScoreIntent: AppIntent {
 
 @available(iOS 17, *)
 struct LifeZonesShortcuts: AppShortcutsProvider {
+    @AppShortcutsBuilder
     static var appShortcuts: [AppShortcut] {
         AppShortcut(
             intent: LogZoneScoreIntent(),
@@ -111,7 +112,7 @@ struct LifeZonesShortcuts: AppShortcutsProvider {
                 "Check in with \(.applicationName)"
             ],
             shortTitle: "Log Zone",
-            systemImageName: "circle.hexagongrid"
+            systemImageName: "square.and.pencil"  // verified SF Symbol; previous "circle.hexagongrid" doesn't exist
         )
     }
 }
