@@ -17,6 +17,15 @@ struct RadarMap: View {
 
     private let zones = ZoneID.allCases
 
+    /// Plain-text summary used by VoiceOver instead of the Canvas drawing.
+    var accessibilitySummary: String {
+        let avg = Double(scores.values.reduce(0, +)) / Double(max(1, scores.count))
+        let parts = ZoneID.allCases.map { zone -> String in
+            "\(ZoneRegistry.definition(for: zone).name): \(scores[zone] ?? 5)"
+        }
+        return "Life Zones map. Overall average \(String(format: "%.1f", avg)). " + parts.joined(separator: ", ") + "."
+    }
+
     var body: some View {
         ZStack {
             Canvas { ctx, _ in
@@ -101,6 +110,9 @@ struct RadarMap: View {
             }
         }
         .frame(width: size, height: size)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary)
+        .accessibilityAddTraits(.isImage)
     }
 
     // MARK: - Labels

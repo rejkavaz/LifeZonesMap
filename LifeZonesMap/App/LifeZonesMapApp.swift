@@ -8,7 +8,10 @@ struct LifeZonesMapApp: App {
     init() {
         do {
             container = try ModelContainer(
-                for: WeeklyCheckIn.self, ZoneInsight.self, UserPreferences.self
+                for: WeeklyCheckIn.self,
+                ZoneInsight.self,
+                UserPreferences.self,
+                WeeklyReflection.self
             )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")

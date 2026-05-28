@@ -6,6 +6,7 @@ struct CheckInView: View {
     @State private var vm = CheckInViewModel()
     @State private var ratedZones: Set<ZoneID> = []
     @State private var showingSummary = false
+    @State private var showingReflection = false
 
     private var prefs: UserPreferences? {
         try? modelContext.fetch(FetchDescriptor<UserPreferences>()).first
@@ -27,9 +28,21 @@ struct CheckInView: View {
             }
         }
         .onAppear { vm.setup(modelContext: modelContext) }
-        .sheet(isPresented: $showingSummary) {
+        .sheet(isPresented: $showingSummary, onDismiss: {
+            // After they close the summary, surface a one-question reflection.
+            if vm.submittedCheckIn != nil {
+                showingReflection = true
+            }
+        }) {
             if let checkIn = vm.submittedCheckIn {
                 CheckInSummaryView(checkIn: checkIn)
+            }
+        }
+        .sheet(isPresented: $showingReflection) {
+            if let checkIn = vm.submittedCheckIn {
+                ReflectionPromptView(checkIn: checkIn) {
+                    showingReflection = false
+                }
             }
         }
     }

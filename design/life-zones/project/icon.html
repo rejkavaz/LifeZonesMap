@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Life Zones — Icon</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100vh; background: transparent; }
+  body { display: flex; align-items: center; justify-content: center; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel" data-presets="react">
+/**
+ * App icon master at 1024x1024. iOS clips with its own rounded-rect mask, so
+ * the artwork is a flat rectangle with the 7-point polygon filling ~80% of
+ * the canvas — bigger than the in-app IconMark.
+ */
+function AppIcon({ size = 1024 }) {
+  const offsets = [0.95, 0.78, 1.0, 0.86, 0.92, 0.74, 1.0];
+  const cx = size / 2, cy = size / 2;
+  const R = size * 0.42;                 // fills more of the canvas
+  const N = 7;
+  const pts = [];
+  for (let i = 0; i < N; i++) {
+    const a = -Math.PI / 2 + (i / N) * Math.PI * 2;
+    const r = R * offsets[i];
+    pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]);
+  }
+  const d = pts.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`).join(' ') + ' Z';
+  return (
+    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
+      <rect width={size} height={size} fill={LZ.cream}/>
+      <path d={d} fill={LZ.tealDeep} fillOpacity="0.94"/>
+      <circle cx={cx} cy={cy} r={size * 0.014} fill={LZ.cream}/>
+    </svg>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<AppIcon/>);
+setTimeout(() => document.title = 'READY · icon', 1200);
+</script>
+</body>
+</html>

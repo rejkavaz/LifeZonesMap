@@ -22,6 +22,7 @@ struct SettingsView: View {
             List {
                 checkInSection
                 zonesSection
+                historySection
                 insightsSection
                 dataSection
                 aboutSection
@@ -88,6 +89,16 @@ struct SettingsView: View {
         Section("Zones") {
             NavigationLink("Customize zone names") {
                 CustomZoneNamesView(prefs: prefs)
+            }
+        }
+    }
+
+    private var historySection: some View {
+        Section("Your data") {
+            NavigationLink {
+                HistoryView()
+            } label: {
+                Label("All past weeks", systemImage: "clock.arrow.circlepath")
             }
         }
     }

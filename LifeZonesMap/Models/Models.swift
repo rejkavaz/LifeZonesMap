@@ -125,6 +125,23 @@ final class ZoneInsight {
 }
 
 @Model
+final class WeeklyReflection {
+    var id: UUID
+    var weekStartDate: Date
+    var prompt: String
+    var response: String
+    var createdAt: Date
+
+    init(weekStartDate: Date, prompt: String, response: String = "") {
+        self.id = UUID()
+        self.weekStartDate = weekStartDate
+        self.prompt = prompt
+        self.response = response
+        self.createdAt = Date()
+    }
+}
+
+@Model
 final class UserPreferences {
     var id: UUID
     var checkInDayOfWeek: Int
