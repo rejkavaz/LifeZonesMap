@@ -124,6 +124,40 @@ final class ZoneInsight {
     }
 }
 
+/// User's response to a single prompt from PromptLibrary. Not tied to a
+/// check-in — answer any prompt, any time, as many times as you want.
+@Model
+final class PromptResponse {
+    var id: UUID
+    var promptID: String       // links to PromptLibrary.prompt(id:)
+    var response: String
+    var createdAt: Date
+
+    init(promptID: String, response: String) {
+        self.id = UUID()
+        self.promptID = promptID
+        self.response = response
+        self.createdAt = Date()
+    }
+}
+
+/// A lightweight one-word (+ optional sentence) mood drop between check-ins.
+/// Captures fleeting state without the weight of a full check-in.
+@Model
+final class MoodDrop {
+    var id: UUID
+    var date: Date
+    var mood: String           // one word, lowercased
+    var detail: String         // optional sentence
+
+    init(mood: String, detail: String = "") {
+        self.id = UUID()
+        self.date = Date()
+        self.mood = mood.lowercased()
+        self.detail = detail
+    }
+}
+
 @Model
 final class WeeklyReflection {
     var id: UUID

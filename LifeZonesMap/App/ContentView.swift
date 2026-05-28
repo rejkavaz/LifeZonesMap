@@ -35,6 +35,8 @@ struct ContentView: View {
                     CheckInView()
                 case .pulse:
                     PulseView()
+                case .journal:
+                    JournalView()
                 }
             }
             .padding(.bottom, 60) // leave room for tab bar

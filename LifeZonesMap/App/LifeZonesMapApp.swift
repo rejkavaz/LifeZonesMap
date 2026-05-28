@@ -11,7 +11,9 @@ struct LifeZonesMapApp: App {
                 for: WeeklyCheckIn.self,
                 ZoneInsight.self,
                 UserPreferences.self,
-                WeeklyReflection.self
+                WeeklyReflection.self,
+                PromptResponse.self,
+                MoodDrop.self
             )
         } catch {
             fatalError("Failed to create ModelContainer: \(error)")

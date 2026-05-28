@@ -1,12 +1,13 @@
 import SwiftUI
 
 enum AppTab: String, CaseIterable {
-    case map, check, pulse
+    case map, check, pulse, journal
     var label: String {
         switch self {
-        case .map:   return "Map"
-        case .check: return "Check In"
-        case .pulse: return "Pulse"
+        case .map:     return "Map"
+        case .check:   return "Check In"
+        case .pulse:   return "Pulse"
+        case .journal: return "Journal"
         }
     }
 }
@@ -97,6 +98,24 @@ struct TabIconShape: Shape {
             path.addLine(to: p(9, 7)); path.addLine(to: p(12, 17))
             path.addLine(to: p(14, 11)); path.addLine(to: p(16, 14))
             path.addLine(to: p(21, 14))
+        case .journal:
+            // Open book / notebook
+            path.move(to: p(4, 6))
+            path.addLine(to: p(4, 19))
+            path.addLine(to: p(11, 17))
+            path.addLine(to: p(11, 6))
+            path.move(to: p(13, 6))
+            path.addLine(to: p(13, 17))
+            path.addLine(to: p(20, 19))
+            path.addLine(to: p(20, 6))
+            // Spine
+            path.move(to: p(11, 6))
+            path.addLine(to: p(13, 6))
+            // Page lines
+            path.move(to: p(6, 11)); path.addLine(to: p(9, 11))
+            path.move(to: p(6, 14)); path.addLine(to: p(9, 14))
+            path.move(to: p(15, 11)); path.addLine(to: p(18, 11))
+            path.move(to: p(15, 14)); path.addLine(to: p(18, 14))
         }
         return path
     }
