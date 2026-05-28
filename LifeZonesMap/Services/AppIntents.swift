@@ -7,9 +7,9 @@ import Foundation
 enum ZoneEntity: String, AppEnum, CaseIterable {
     case vitality, deepWork, connection, innerWorld, creation, foundation, growth
 
-    static var typeDisplayRepresentation: TypeDisplayRepresentation { "Zone" }
+    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Zone"
 
-    static var caseDisplayRepresentations: [ZoneEntity: DisplayRepresentation] = [
+    static let caseDisplayRepresentations: [ZoneEntity: DisplayRepresentation] = [
         .vitality:   "Vitality",
         .deepWork:   "Deep Work",
         .connection: "Connection",
@@ -36,9 +36,9 @@ enum ZoneEntity: String, AppEnum, CaseIterable {
 
 @available(iOS 17, *)
 struct LogZoneScoreIntent: AppIntent {
-    static var title: LocalizedStringResource = "Log Zone Score"
+    static let title: LocalizedStringResource = "Log Zone Score"
 
-    static var description: IntentDescription = IntentDescription(
+    static let description: IntentDescription = IntentDescription(
         "Update this week's score for a single Life Zone.",
         categoryName: "Wellness"
     )
@@ -57,7 +57,7 @@ struct LogZoneScoreIntent: AppIntent {
         Summary("Log \(\.$zone) at \(\.$score)")
     }
 
-    static var openAppWhenRun: Bool = false
+    static let openAppWhenRun: Bool = false
 
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog {
