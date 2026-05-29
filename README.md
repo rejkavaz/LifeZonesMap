@@ -182,6 +182,30 @@ What this means in practice:
 - Swift Testing's `@Test` macros run in CI without any extra config
 - The Anthropic API integration's compile-time checks are validated even though you can't run the app
 
+### Migrating to a new phone (or restoring after a reinstall)
+
+**Settings → Data → Backup & restore.**
+
+- **Export full backup** writes a single JSON file (`lifezones-backup-YYYY-MM-DD.json`) containing every check-in, reflection, prompt answer, mood drop, goal, good-thing, custom prompt, preferences, and any attached photos / voice notes (base64-encoded inline). Share to AirDrop, iCloud Drive, email, or messages.
+- **Import from file** picks any `.json` or `.lifezones` archive and offers two modes:
+  - **Merge** — keep what's already in the app, insert only entries whose UUIDs aren't already present. Safe to run repeatedly.
+  - **Replace everything** — wipe the local store first, then load from the file. Use this when moving to a new phone.
+
+The archive format is documented and versioned. Schema: `LifeZonesBackup` in [`BackupService.swift`](LifeZonesMap/Services/BackupService.swift). Current version: 1.
+
+### Test data — a year of realistic check-ins
+
+[`docs/sample-year.lifezones.json`](docs/sample-year.lifezones.json) is a 52-week mock backup you can import to see what the app looks like once it's been lived in. The data tells a believable story arc:
+
+- Weeks 1-13 (Mar-May): settling into the app, scores in the 5-6 band
+- Weeks 14-26 (Jun-Aug): a stressful work stretch — Vitality and Inner World drop, Deep Work climbs hard
+- Weeks 27-39 (Sep-Nov): recovery, deliberate Connection effort pays off
+- Weeks 40-52 (Dec-Feb): stronger overall, Creation and Growth rising together
+
+Includes 6 reflections, 14 prompt-library answers (with one Best Possible Self entry, one Gratitude Letter, one Naikan reflection, three Behavioral Activation plans), 60 mood drops, 2 zone goals, 6 Three-Good-Things entries, and 2 custom prompts. Lights up every insight type the pattern engine can produce.
+
+To regenerate: `python docs/generate-sample-year.py`.
+
 ### Installing on your iPhone via Sideloadly (no Apple Developer account)
 
 Every push to `master` builds an unsigned `.ipa` and publishes it to [Releases](https://github.com/rejkavaz/LifeZonesMap/releases). To get it on your phone:

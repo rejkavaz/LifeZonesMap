@@ -233,6 +233,11 @@ struct SettingsView: View {
 
     private var dataSection: some View {
         Section("Data") {
+            NavigationLink {
+                BackupSettingsView()
+            } label: {
+                Label("Backup & restore", systemImage: "externaldrive.badge.timemachine")
+            }
             Button("Export as JSON") {
                 let data = ExportService().exportJSON(checkIns: Array(checkIns))
                 exportItem = ExportSheetItem(data: data, filename: "lifezonesmap.json")

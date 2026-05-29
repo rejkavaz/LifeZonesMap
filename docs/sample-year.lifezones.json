@@ -1,0 +1,1902 @@
+{
+  "appVersion": "sample-year",
+  "checkIns": [
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-01-19T19:22:00Z",
+      "id": "A98D63A9-A2F8-4C2D-A790-E47D0AC098EC",
+      "notes": {
+        "creation": "Drafted the first half of something. Real start.",
+        "growth": "Tried something I was certain to be bad at. Was bad at it. OK.",
+        "vitality": "Walked twice this week. Sleep was uneven Tuesday-Thursday but came back by the weekend."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 5,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "deepWork": "In flow",
+        "growth": "Coasting",
+        "innerWorld": "Tender",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-01-19T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-01-26T20:23:00Z",
+      "id": "9048A4D5-67DF-4FBA-866A-78FDD6C36914",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "innerWorld": "Anxious"
+      },
+      "weekStartDate": "2026-01-26T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-02-02T21:13:00Z",
+      "id": "A0780A4D-A4F1-4E3B-83E0-C15F7A6D0D33",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 5,
+        "deepWork": 6,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "creation": "Made things",
+        "foundation": "On top",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-02-02T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-02-09T19:43:00Z",
+      "id": "A28CE167-67C7-4F2E-8834-ED4E2B8BC24C",
+      "notes": {
+        "connection": "Long call with M. We hadn't talked in two months.",
+        "innerWorld": "Calm enough by Friday to read."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 6,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Drained",
+        "deepWork": "Shipped",
+        "foundation": "Worried",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-02-09T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-02-16T19:38:00Z",
+      "id": "95AEFAE5-99F5-40AF-8186-63984914618B",
+      "notes": {
+        "connection": "Long call with M. We hadn't talked in two months."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 6,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "foundation": "Tidy"
+      },
+      "weekStartDate": "2026-02-16T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-02-23T22:42:00Z",
+      "id": "C19DE166-3BC8-4DB0-BF0B-7EBD00EB2A96",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 7,
+        "deepWork": 5,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 7,
+        "vitality": 6
+      },
+      "tags": {
+        "creation": "Quiet",
+        "deepWork": "Stuck",
+        "innerWorld": "Tender"
+      },
+      "weekStartDate": "2026-02-23T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-03-02T19:06:00Z",
+      "id": "5E838D50-B200-4D32-BABE-EB2B92254143",
+      "notes": {
+        "vitality": "Walked twice this week. Sleep was uneven Tuesday-Thursday but came back by the weekend."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 6,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Called family",
+        "deepWork": "In flow",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-03-02T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-03-09T20:26:00Z",
+      "id": "AF3CABDB-1E7A-4FFA-BBBF-F60E7E50AE36",
+      "notes": {
+        "deepWork": "Felt the loss of time I usually have. The work that mattered didn't get done."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 5,
+        "deepWork": 6,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Called family",
+        "deepWork": "Shipped",
+        "foundation": "On top",
+        "innerWorld": "Steady",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-03-09T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-03-16T20:25:00Z",
+      "id": "B6F681D5-0D00-4D4D-8E68-1083638B4BDA",
+      "notes": {
+        "deepWork": "Couldn't get traction. Probably need fewer slack notifications.",
+        "foundation": "Made the appointment I'd been avoiding.",
+        "growth": "Read two chapters of the thing I keep coming back to."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 6,
+        "deepWork": 5,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "creation": "Quiet",
+        "deepWork": "Stuck",
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-03-16T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-03-23T21:18:00Z",
+      "id": "7FD26831-3BFA-4347-A189-4493960F8DFA",
+      "notes": {
+        "creation": "Drafted the first half of something. Real start.",
+        "foundation": "Behind on the boring stuff and trying to make peace with that."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 6,
+        "vitality": 5
+      },
+      "tags": {
+        "connection": "Lonely",
+        "creation": "Made things",
+        "deepWork": "Distracted"
+      },
+      "weekStartDate": "2026-03-23T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-03-30T21:02:00Z",
+      "id": "166BAE65-4D1A-4343-9474-8FA6181DC843",
+      "notes": {
+        "growth": "Tried something I was certain to be bad at. Was bad at it. OK.",
+        "innerWorld": "Caught myself ruminating about the meeting. Talked myself out of it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "foundation": "Behind",
+        "growth": "Learning"
+      },
+      "weekStartDate": "2026-03-30T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-04-06T21:49:00Z",
+      "id": "D3DD80F9-FCBF-49A7-916A-709F528B1B2E",
+      "notes": {
+        "deepWork": "Two solid focus blocks Tuesday morning. Wednesday was meeting-shaped.",
+        "innerWorld": "Caught myself ruminating about the meeting. Talked myself out of it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 6,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "growth": "Stretching",
+        "innerWorld": "Anxious",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-04-06T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-04-13T20:25:00Z",
+      "id": "3B8B4D93-345B-4CB4-B2E1-13A4E79DA2D3",
+      "notes": {
+        "innerWorld": "Tense undertone Wednesday. Couldn't name it.",
+        "vitality": "Skipped exercise. The week ran me."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Called family",
+        "deepWork": "Distracted",
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-04-13T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-04-20T19:42:00Z",
+      "id": "12489679-7A74-4890-A4F1-D756F7480DCD",
+      "notes": {
+        "creation": "Wrote and threw away. Counts.",
+        "deepWork": "Couldn't get traction. Probably need fewer slack notifications."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "connection": "Drained",
+        "deepWork": "Distracted",
+        "foundation": "On top",
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-04-20T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-04-27T20:42:00Z",
+      "id": "F4206B12-980D-433D-81E0-DEC9D86FE870",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 4,
+        "vitality": 6
+      },
+      "tags": {
+        "creation": "Inspired",
+        "deepWork": "Stuck",
+        "foundation": "Tidy",
+        "innerWorld": "Steady",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-04-27T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-05-04T20:11:00Z",
+      "id": "7C3C8227-DEFD-4F15-914D-6CB5B7E8830C",
+      "notes": {
+        "vitality": "Walked twice this week. Sleep was uneven Tuesday-Thursday but came back by the weekend."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "deepWork": "Stuck",
+        "foundation": "Tidy",
+        "growth": "Learning",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-05-04T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-05-11T21:49:00Z",
+      "id": "508BAB80-1686-459C-8048-9AC7EAA32F23",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "creation": "Quiet",
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-05-11T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-05-18T22:54:00Z",
+      "id": "BF0ACBB6-EC19-47DF-9400-59CB0069975A",
+      "notes": {
+        "innerWorld": "Steady. Surprised by how steady, given everything.",
+        "vitality": "Body felt tense most days. Need to leave the laptop downstairs."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 4,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Drained",
+        "creation": "Made things",
+        "deepWork": "Shipped",
+        "growth": "Coasting"
+      },
+      "weekStartDate": "2026-05-18T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-05-25T20:03:00Z",
+      "id": "7D4F430B-F6CF-4799-9EF2-B5BEE0ED1712",
+      "notes": {
+        "growth": "Tried something I was certain to be bad at. Was bad at it. OK.",
+        "vitality": "Three good nights of sleep. Body remembers what that feels like."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "growth": "Drifting",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-05-25T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-06-01T22:44:00Z",
+      "id": "FF5C9936-4420-4C17-B860-E9B7F8C418CB",
+      "notes": {
+        "creation": "Made nothing this week. Read three good things from other people though.",
+        "deepWork": "Couldn't get traction. Probably need fewer slack notifications.",
+        "growth": "Took the harder option in a small choice. Felt it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 4,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-06-01T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-06-08T19:54:00Z",
+      "id": "2F1BB31E-5D2E-4B96-B45D-89D2D41444CC",
+      "notes": {
+        "connection": "Family dinner Sunday. Phones in the basket.",
+        "creation": "Wrote and threw away. Counts.",
+        "growth": "Coasted. Comfortable. Worth naming."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 4,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Called family",
+        "growth": "Coasting",
+        "innerWorld": "Curious",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-06-08T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-06-15T21:01:00Z",
+      "id": "586BB118-34F0-4882-888B-61199D879A89",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "creation": "Made things",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-06-15T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-06-22T21:30:00Z",
+      "id": "E375AE61-AFDD-4645-B3C4-80CA7F082DD8",
+      "notes": {
+        "deepWork": "Shipped the thing I'd been circling. Boring last step turned out to be the unlock.",
+        "foundation": "Bills handled. Inbox almost at zero."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-06-22T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-06-29T21:44:00Z",
+      "id": "E3AD0E42-BF27-4133-A7BB-95B5D6C1791D",
+      "notes": {
+        "connection": "Coffee with someone I'd been undertending. They'd been worried.",
+        "foundation": "Made the appointment I'd been avoiding."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "foundation": "Behind",
+        "growth": "Learning",
+        "innerWorld": "Curious",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-06-29T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-07-06T22:28:00Z",
+      "id": "E4E5EDF0-09C8-4C33-9FB9-AC0F1339DCBC",
+      "notes": {
+        "creation": "Drafted the first half of something. Real start.",
+        "deepWork": "Two solid focus blocks Tuesday morning. Wednesday was meeting-shaped.",
+        "innerWorld": "Couldn't quite settle. Read instead of doom-scrolling. Small win."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 5,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "foundation": "Worried",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-07-06T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-07-13T20:27:00Z",
+      "id": "E3CEC463-EB14-4A20-BBAC-4D8C678CD541",
+      "notes": {
+        "connection": "Coffee with someone I'd been undertending. They'd been worried.",
+        "deepWork": "Shipped the thing I'd been circling. Boring last step turned out to be the unlock.",
+        "foundation": "Bills handled. Inbox almost at zero."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "creation": "Stalled",
+        "deepWork": "In flow",
+        "foundation": "Worried",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-07-13T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-07-20T19:48:00Z",
+      "id": "898A9590-8BFC-490E-81A3-8581066B9A3D",
+      "notes": {
+        "creation": "Made nothing this week. Read three good things from other people though.",
+        "growth": "Took the harder option in a small choice. Felt it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 4,
+        "creation": 5,
+        "deepWork": 8,
+        "foundation": 6,
+        "growth": 5,
+        "innerWorld": 3,
+        "vitality": 3
+      },
+      "tags": {
+        "innerWorld": "Curious"
+      },
+      "weekStartDate": "2026-07-20T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-07-27T21:16:00Z",
+      "id": "22E08E2C-30BD-4B55-A6C4-F0161FA13526",
+      "notes": {
+        "deepWork": "Couldn't get traction. Probably need fewer slack notifications."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 4,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 3
+      },
+      "tags": {
+        "connection": "Lonely",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-07-27T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-08-03T19:14:00Z",
+      "id": "E6982B94-4673-4719-82B9-AE7F3E9811F9",
+      "notes": {
+        "creation": "Wrote and threw away. Counts."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 7,
+        "deepWork": 9,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 3
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "creation": "Quiet",
+        "growth": "Learning",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-08-03T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-08-10T19:18:00Z",
+      "id": "60C1D464-2F36-441D-B654-A215A7133352",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 5,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 3,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Called family",
+        "foundation": "Worried"
+      },
+      "weekStartDate": "2026-08-10T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-08-17T22:06:00Z",
+      "id": "09601B51-BCCC-4BC1-A54A-11AD6FC11AAB",
+      "notes": {
+        "innerWorld": "Steady. Surprised by how steady, given everything."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 4,
+        "innerWorld": 4,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Drained",
+        "deepWork": "Shipped",
+        "foundation": "Tidy",
+        "growth": "Coasting",
+        "vitality": "Wired"
+      },
+      "weekStartDate": "2026-08-17T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-08-24T20:47:00Z",
+      "id": "A862B4C2-8ECA-4D71-80B4-EFB13301AB98",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 6,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 4,
+        "vitality": 4
+      },
+      "tags": {
+        "creation": "Quiet",
+        "foundation": "On top"
+      },
+      "weekStartDate": "2026-08-24T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-08-31T21:29:00Z",
+      "id": "F16B5B93-587A-46A4-B619-C2CF97386248",
+      "notes": {
+        "innerWorld": "Tense undertone Wednesday. Couldn't name it."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 4
+      },
+      "tags": {
+        "connection": "Drained",
+        "deepWork": "Distracted",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-08-31T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-09-07T19:58:00Z",
+      "id": "63E43ADF-91B1-4FC9-A193-330C8A1DF568",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {
+        "connection": "Drained",
+        "deepWork": "Distracted",
+        "foundation": "Worried",
+        "innerWorld": "Tender",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-09-07T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-09-14T22:11:00Z",
+      "id": "3962EFB4-7D66-462B-8B81-69AFA3D54063",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 6
+      },
+      "tags": {
+        "foundation": "Behind",
+        "growth": "Coasting"
+      },
+      "weekStartDate": "2026-09-14T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-09-21T22:00:00Z",
+      "id": "43143CB4-26D8-4962-AE67-21287C1D0247",
+      "notes": {
+        "innerWorld": "Calm enough by Friday to read."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 5,
+        "vitality": 5
+      },
+      "tags": {},
+      "weekStartDate": "2026-09-21T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-09-28T20:24:00Z",
+      "id": "E41B1633-71C6-4E88-AFD1-83DE9A29C9D1",
+      "notes": {
+        "growth": "Took the harder option in a small choice. Felt it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Called family",
+        "foundation": "On top",
+        "growth": "Drifting",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-09-28T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-10-05T22:05:00Z",
+      "id": "716BE942-536B-4D5B-AEA3-FD317A091406",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Lonely",
+        "creation": "Inspired",
+        "growth": "Stretching",
+        "innerWorld": "Anxious",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-10-05T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-10-12T20:37:00Z",
+      "id": "6BCA9620-6305-424F-AB1D-78EF7F6926D8",
+      "notes": {
+        "growth": "Coasted. Comfortable. Worth naming.",
+        "vitality": "First proper long walk in months. Should not have waited."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 5,
+        "innerWorld": 5,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Called family",
+        "deepWork": "Shipped",
+        "growth": "Learning"
+      },
+      "weekStartDate": "2026-10-12T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-10-19T21:24:00Z",
+      "id": "5C6142C1-1D50-4358-A048-84586C2BB7E6",
+      "notes": {
+        "foundation": "Did the laundry. Did the dishes. Sometimes that's everything.",
+        "growth": "Coasted. Comfortable. Worth naming.",
+        "innerWorld": "Steady. Surprised by how steady, given everything."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 8,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "connection": "Lonely",
+        "deepWork": "Shipped",
+        "foundation": "Worried",
+        "growth": "Stretching"
+      },
+      "weekStartDate": "2026-10-19T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-10-26T19:27:00Z",
+      "id": "730D9D15-48CC-4808-9402-3E883C251DF6",
+      "notes": {
+        "growth": "Read two chapters of the thing I keep coming back to."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 8,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 8
+      },
+      "tags": {
+        "foundation": "Behind",
+        "growth": "Drifting",
+        "innerWorld": "Tender"
+      },
+      "weekStartDate": "2026-10-26T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-11-02T20:51:00Z",
+      "id": "F0E85B9C-6BB3-494A-8FB8-9FC66EA57534",
+      "notes": {
+        "connection": "Skipped two opportunities to text people back. Habit I want to break.",
+        "growth": "Coasted. Comfortable. Worth naming."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 6,
+        "deepWork": 8,
+        "foundation": 8,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 6
+      },
+      "tags": {
+        "growth": "Coasting",
+        "vitality": "Foggy"
+      },
+      "weekStartDate": "2026-11-02T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-11-09T20:23:00Z",
+      "id": "D235CBA5-5D31-4966-822B-061FA167ADF2",
+      "notes": {
+        "foundation": "Made the appointment I'd been avoiding."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 8,
+        "growth": 6,
+        "innerWorld": 7,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Lonely",
+        "creation": "Stalled",
+        "deepWork": "Distracted",
+        "growth": "Drifting",
+        "innerWorld": "Anxious"
+      },
+      "weekStartDate": "2026-11-09T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-11-16T20:49:00Z",
+      "id": "1BCC0FBF-2F97-4A23-B15C-DE87BA2615EA",
+      "notes": {
+        "growth": "Coasted. Comfortable. Worth naming."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 7,
+        "innerWorld": 7,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Lonely",
+        "creation": "Quiet",
+        "foundation": "Tidy",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-11-16T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-11-23T20:51:00Z",
+      "id": "68EFF57D-4A38-4D4D-B1FF-BE144B13C3D4",
+      "notes": {
+        "innerWorld": "Caught myself ruminating about the meeting. Talked myself out of it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Saw friends",
+        "growth": "Learning"
+      },
+      "weekStartDate": "2026-11-23T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-11-30T20:49:00Z",
+      "id": "C123C995-33EB-4831-8AD9-6BAB29FCDCD2",
+      "notes": {
+        "connection": "Long call with M. We hadn't talked in two months.",
+        "foundation": "Bills handled. Inbox almost at zero.",
+        "innerWorld": "Caught myself ruminating about the meeting. Talked myself out of it after."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 7,
+        "vitality": 8
+      },
+      "tags": {
+        "creation": "Stalled",
+        "deepWork": "Distracted",
+        "foundation": "Tidy",
+        "vitality": "Slept well"
+      },
+      "weekStartDate": "2026-11-30T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-12-07T22:29:00Z",
+      "id": "67E11CD7-9137-4646-AABF-8F27FADD2162",
+      "notes": {
+        "foundation": "Behind on the boring stuff and trying to make peace with that."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 8,
+        "growth": 7,
+        "innerWorld": 7,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Drained",
+        "creation": "Made things",
+        "growth": "Learning",
+        "innerWorld": "Curious"
+      },
+      "weekStartDate": "2026-12-07T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-12-14T21:43:00Z",
+      "id": "6967E947-DCE6-4042-8CAB-591140119FC1",
+      "notes": {
+        "innerWorld": "Calm enough by Friday to read."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 8,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "creation": "Quiet",
+        "growth": "Coasting"
+      },
+      "weekStartDate": "2026-12-14T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-12-21T19:41:00Z",
+      "id": "1853C531-A3F8-4AB1-9CB1-6B553511E2F8",
+      "notes": {
+        "innerWorld": "Tense undertone Wednesday. Couldn't name it."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 6,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 6,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Called family",
+        "creation": "Quiet",
+        "foundation": "Tidy",
+        "innerWorld": "Tender"
+      },
+      "weekStartDate": "2026-12-21T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2026-12-28T20:46:00Z",
+      "id": "9C21C6A7-1C02-4E15-8894-FE90EBBC5039",
+      "notes": {
+        "deepWork": "Wrote three good paragraphs. Threw away one. Net positive.",
+        "vitality": "Three good nights of sleep. Body remembers what that feels like."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 7,
+        "creation": 8,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 7,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "foundation": "Tidy",
+        "innerWorld": "Curious",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2026-12-28T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2027-01-04T20:55:00Z",
+      "id": "E2B19D59-8F21-43FB-81D6-8D4639BA093F",
+      "notes": {},
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 7,
+        "growth": 7,
+        "innerWorld": 6,
+        "vitality": 7
+      },
+      "tags": {
+        "foundation": "Worried",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2027-01-04T00:00:00Z"
+    },
+    {
+      "audioData": null,
+      "audioDuration": 0,
+      "createdAt": "2027-01-11T21:50:00Z",
+      "id": "742DC950-AEE9-44C4-90EB-CB8A45F065C4",
+      "notes": {
+        "deepWork": "Felt the loss of time I usually have. The work that mattered didn't get done."
+      },
+      "photoData": null,
+      "scores": {
+        "connection": 8,
+        "creation": 7,
+        "deepWork": 7,
+        "foundation": 8,
+        "growth": 7,
+        "innerWorld": 7,
+        "vitality": 7
+      },
+      "tags": {
+        "connection": "Called family",
+        "creation": "Quiet",
+        "foundation": "On top",
+        "growth": "Learning",
+        "vitality": "Moved"
+      },
+      "weekStartDate": "2027-01-11T00:00:00Z"
+    }
+  ],
+  "customPrompts": [
+    {
+      "createdAt": "2026-09-21T00:00:00Z",
+      "id": "FF5E9B8F-A386-4BA5-9343-8F64F53FB75A",
+      "text": "What did I almost talk myself out of this week, and did I do it anyway?",
+      "zoneIDRaw": "growth"
+    },
+    {
+      "createdAt": "2026-10-26T00:00:00Z",
+      "id": "4AA773C1-61B9-4273-85DB-0D0E22C03D11",
+      "text": "Whose voice was I hearing in my head this week?",
+      "zoneIDRaw": "innerWorld"
+    }
+  ],
+  "exportedAt": "2027-01-11T00:00:00Z",
+  "goals": [
+    {
+      "createdAt": "2026-06-08T00:00:00Z",
+      "id": "14A89E53-1AD4-41F4-933A-BFEB8DE8AD67",
+      "lowerBound": 6,
+      "note": "Don't grind past 8 \u2014 leave room for life.",
+      "upperBound": 8,
+      "zoneIDRaw": "vitality"
+    },
+    {
+      "createdAt": "2026-06-08T00:00:00Z",
+      "id": "114D9FC5-23B7-4A79-9DAF-3331C4261736",
+      "lowerBound": 6,
+      "note": "8s are great. 9s mean I'm overdoing it.",
+      "upperBound": 9,
+      "zoneIDRaw": "deepWork"
+    }
+  ],
+  "goodThings": [
+    {
+      "createdAt": "2026-08-17T21:00:00Z",
+      "id": "E72C9A29-C948-496D-B6BD-FE389A411452",
+      "text": "Coffee on the porch on Saturday morning",
+      "weekStartDate": "2026-08-17T00:00:00Z",
+      "why": "Because I went to bed early Friday. Compounding effect."
+    },
+    {
+      "createdAt": "2026-09-07T21:00:00Z",
+      "id": "FF45C8EC-F73A-43A4-856C-F7BBF052BDBD",
+      "text": "Finished the cabinet I'd been avoiding",
+      "weekStartDate": "2026-09-07T00:00:00Z",
+      "why": "Because I gave myself 25 minutes instead of telling myself it had to be the whole afternoon."
+    },
+    {
+      "createdAt": "2026-09-28T21:00:00Z",
+      "id": "95657AD3-3C41-4161-BEA0-FBA69C8DB80C",
+      "text": "Long honest conversation with J",
+      "weekStartDate": "2026-09-28T00:00:00Z",
+      "why": "Because I asked the question I'd been avoiding instead of the small-talk one."
+    },
+    {
+      "createdAt": "2026-10-19T21:00:00Z",
+      "id": "DB0A2EF3-6174-488F-B9EA-CEB6EF7A9EB6",
+      "text": "Walked 11k steps on a workday",
+      "weekStartDate": "2026-10-19T00:00:00Z",
+      "why": "Because I took meetings on foot."
+    },
+    {
+      "createdAt": "2026-11-09T21:00:00Z",
+      "id": "5B430C24-ED2C-4402-8E96-2AD76CD33F02",
+      "text": "Read for an hour without picking up my phone",
+      "weekStartDate": "2026-11-09T00:00:00Z",
+      "why": "Because I left it in the other room."
+    },
+    {
+      "createdAt": "2026-11-30T21:00:00Z",
+      "id": "DFDB2C54-65AB-4A0C-90C2-B2017A145BFD",
+      "text": "Cooked the meal I'd been thinking about",
+      "weekStartDate": "2026-11-30T00:00:00Z",
+      "why": "Because Saturday had no other commitments."
+    }
+  ],
+  "moodDrops": [
+    {
+      "date": "2027-01-10T00:00:00Z",
+      "detail": "",
+      "id": "46DE3A5D-EB8D-41EA-9098-317E37B8D9BA",
+      "mood": "foggy"
+    },
+    {
+      "date": "2027-01-04T00:00:00Z",
+      "detail": "",
+      "id": "61005134-E4A8-4F7F-BCC5-F190FC4D68B9",
+      "mood": "sharp"
+    },
+    {
+      "date": "2026-12-29T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "8913A92D-0A17-430E-9D97-79EBA2738322",
+      "mood": "content"
+    },
+    {
+      "date": "2026-12-27T00:00:00Z",
+      "detail": "",
+      "id": "199623E6-C9C6-4A8A-98BA-063197BEAACA",
+      "mood": "curious"
+    },
+    {
+      "date": "2026-12-20T00:00:00Z",
+      "detail": "",
+      "id": "837B4541-5344-4319-9A32-B548ACBC1AA2",
+      "mood": "frayed"
+    },
+    {
+      "date": "2026-12-13T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "B538C9AD-B1FD-4837-A2ED-E863CB6C79DC",
+      "mood": "worn"
+    },
+    {
+      "date": "2026-12-08T00:00:00Z",
+      "detail": "",
+      "id": "B3AD2EB2-B4A9-4EEA-97E0-1620F1CA2B8A",
+      "mood": "restless"
+    },
+    {
+      "date": "2026-12-05T00:00:00Z",
+      "detail": "Slept well last night.",
+      "id": "0B193192-CD37-4934-8EC5-24211E77C579",
+      "mood": "hopeful"
+    },
+    {
+      "date": "2026-12-02T00:00:00Z",
+      "detail": "Could not pinpoint why.",
+      "id": "AF0C5613-982D-48E8-A3C7-B519B6EC8FB2",
+      "mood": "tired"
+    },
+    {
+      "date": "2026-11-24T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "3F8D31D5-93DE-4D3A-B112-6BF27207609A",
+      "mood": "calm"
+    },
+    {
+      "date": "2026-11-19T00:00:00Z",
+      "detail": "",
+      "id": "8189F67D-9D45-45E3-82E9-ABF059AD8783",
+      "mood": "curious"
+    },
+    {
+      "date": "2026-11-14T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "5FFAC570-677E-4909-919F-F9BBEDD3782D",
+      "mood": "vague"
+    },
+    {
+      "date": "2026-11-12T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "4DBAA780-4A4A-43B8-9A41-787B2265509E",
+      "mood": "calm"
+    },
+    {
+      "date": "2026-11-03T00:00:00Z",
+      "detail": "",
+      "id": "4AAD8150-622A-47D4-895B-0FB1B3E383C3",
+      "mood": "hopeful"
+    },
+    {
+      "date": "2026-10-31T00:00:00Z",
+      "detail": "",
+      "id": "FC16E988-6D1B-4E24-A8E8-32FA08E4F1EA",
+      "mood": "restless"
+    },
+    {
+      "date": "2026-10-24T00:00:00Z",
+      "detail": "Could not pinpoint why.",
+      "id": "75218D92-F0D1-4891-A677-A824C2741694",
+      "mood": "tender"
+    },
+    {
+      "date": "2026-10-19T00:00:00Z",
+      "detail": "",
+      "id": "B50B1EBD-0BAA-4A94-89FD-CC7437C6132B",
+      "mood": "restless"
+    },
+    {
+      "date": "2026-10-18T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "77930F55-A2D2-4A5A-AA08-7EA310EEB81C",
+      "mood": "alive"
+    },
+    {
+      "date": "2026-10-13T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "C749B7E5-20D2-4164-BE99-C6EA9768582A",
+      "mood": "alive"
+    },
+    {
+      "date": "2026-10-04T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "95DC3C23-EFC0-439A-AC0B-7B6C45C63BBD",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-09-29T00:00:00Z",
+      "detail": "Cold rain. Liked it.",
+      "id": "2AABF290-F9E8-4E3D-A8F1-A14AB9DD11B1",
+      "mood": "steady"
+    },
+    {
+      "date": "2026-09-25T00:00:00Z",
+      "detail": "Cold rain. Liked it.",
+      "id": "9FE5E0CC-98D1-4EE5-A5A9-3892F6387340",
+      "mood": "tired"
+    },
+    {
+      "date": "2026-09-21T00:00:00Z",
+      "detail": "",
+      "id": "40D3A5A1-CCCD-4AF5-88C5-750FA1EA8E68",
+      "mood": "scattered"
+    },
+    {
+      "date": "2026-09-16T00:00:00Z",
+      "detail": "",
+      "id": "5E7E492F-F6CA-463B-BCF2-538EC629C58F",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-09-11T00:00:00Z",
+      "detail": "",
+      "id": "B612C9FB-DF6C-4F5C-AD81-4C66B2983096",
+      "mood": "hopeful"
+    },
+    {
+      "date": "2026-09-04T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "ADDC6466-7406-4977-906E-4EF26EA9F770",
+      "mood": "worn"
+    },
+    {
+      "date": "2026-09-02T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "70582BBB-B722-4619-BC1E-1EDD76686655",
+      "mood": "tired"
+    },
+    {
+      "date": "2026-08-25T00:00:00Z",
+      "detail": "",
+      "id": "DE58E840-F385-4044-A68A-E01D2E1BEF57",
+      "mood": "quiet"
+    },
+    {
+      "date": "2026-08-21T00:00:00Z",
+      "detail": "Calmed by the time I made coffee.",
+      "id": "5FF5833B-19A1-4430-9876-F9CD261E4F54",
+      "mood": "patient"
+    },
+    {
+      "date": "2026-08-18T00:00:00Z",
+      "detail": "",
+      "id": "D6D6DF3B-B234-4454-8DD2-3CA912D59BF0",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-08-14T00:00:00Z",
+      "detail": "Calmed by the time I made coffee.",
+      "id": "0ECD4D0D-1F67-4F17-A79D-EF27AC6E2DB2",
+      "mood": "patient"
+    },
+    {
+      "date": "2026-08-09T00:00:00Z",
+      "detail": "Could not pinpoint why.",
+      "id": "1AFDDA58-617A-4701-9B80-B0E81055CDCF",
+      "mood": "lit"
+    },
+    {
+      "date": "2026-08-04T00:00:00Z",
+      "detail": "Could not pinpoint why.",
+      "id": "9C88F278-B3DA-4E65-8DAA-225CE478D6F1",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-07-30T00:00:00Z",
+      "detail": "Slept well last night.",
+      "id": "CEF0BB00-755D-42D0-8591-1F089AB93E42",
+      "mood": "quiet"
+    },
+    {
+      "date": "2026-07-21T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "5A6FC45C-52AF-46BE-B0D1-487B25722DFB",
+      "mood": "anxious"
+    },
+    {
+      "date": "2026-07-17T00:00:00Z",
+      "detail": "",
+      "id": "CA9F9565-BCE5-4C24-B9D1-B58A5AA88794",
+      "mood": "scattered"
+    },
+    {
+      "date": "2026-07-14T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "E50DA90F-6E6F-434E-84B5-0350C2E318B9",
+      "mood": "lit"
+    },
+    {
+      "date": "2026-07-10T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "84AD2FC8-B6E9-41B5-820D-E267FCF3423E",
+      "mood": "calm"
+    },
+    {
+      "date": "2026-07-03T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "2E84CCB7-CDF4-41C9-AA55-30D18DE296F0",
+      "mood": "wired"
+    },
+    {
+      "date": "2026-06-27T00:00:00Z",
+      "detail": "Calmed by the time I made coffee.",
+      "id": "BC6597EA-5862-4606-8CC5-0CFD2E06AAF3",
+      "mood": "anxious"
+    },
+    {
+      "date": "2026-06-22T00:00:00Z",
+      "detail": "",
+      "id": "68B004DF-F339-4C03-97E2-606C48ED201D",
+      "mood": "quiet"
+    },
+    {
+      "date": "2026-06-17T00:00:00Z",
+      "detail": "Calmed by the time I made coffee.",
+      "id": "F5BC2142-81CB-41D0-B2AE-172A14DEFB1B",
+      "mood": "patient"
+    },
+    {
+      "date": "2026-06-13T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "D0CEACAB-A5DF-4443-A0D2-CD92420EDA38",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-06-08T00:00:00Z",
+      "detail": "",
+      "id": "05BB98AA-5992-48BF-9133-4BEEC9B1FA57",
+      "mood": "guarded"
+    },
+    {
+      "date": "2026-06-02T00:00:00Z",
+      "detail": "Cold rain. Liked it.",
+      "id": "D31A44F0-64F7-44DB-A4BA-B160470D4D49",
+      "mood": "curious"
+    },
+    {
+      "date": "2026-05-27T00:00:00Z",
+      "detail": "Caught it before it became something bigger.",
+      "id": "FCED0CCE-9EFB-4219-8F44-844A2637A89A",
+      "mood": "soft"
+    },
+    {
+      "date": "2026-05-24T00:00:00Z",
+      "detail": "",
+      "id": "CF564D66-22C0-43BF-AFE2-3893CD17835F",
+      "mood": "quiet"
+    },
+    {
+      "date": "2026-05-21T00:00:00Z",
+      "detail": "Slept well last night.",
+      "id": "01F20042-697B-4E3E-936D-1D5D5CBC0750",
+      "mood": "quiet"
+    },
+    {
+      "date": "2026-05-14T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "6417D2AE-2DA5-4868-B66A-C1808081AE48",
+      "mood": "content"
+    },
+    {
+      "date": "2026-05-08T00:00:00Z",
+      "detail": "Calmed by the time I made coffee.",
+      "id": "E7EC24C0-0FFB-4072-8C8E-D4BF3F6FEFE3",
+      "mood": "soft"
+    },
+    {
+      "date": "2026-05-04T00:00:00Z",
+      "detail": "",
+      "id": "69F2D553-0B6C-41D7-AC29-EFE2769EA4F4",
+      "mood": "content"
+    },
+    {
+      "date": "2026-04-29T00:00:00Z",
+      "detail": "Cold rain. Liked it.",
+      "id": "9D62F44D-83F5-4A67-9EA7-3E27509603C8",
+      "mood": "vague"
+    },
+    {
+      "date": "2026-04-24T00:00:00Z",
+      "detail": "",
+      "id": "14E34CA0-6427-4956-8CCB-458F67CD7DAA",
+      "mood": "calm"
+    },
+    {
+      "date": "2026-04-21T00:00:00Z",
+      "detail": "Cold rain. Liked it.",
+      "id": "FF4027F6-BB85-4002-935A-FDCBD6C6072C",
+      "mood": "buzzy"
+    },
+    {
+      "date": "2026-04-14T00:00:00Z",
+      "detail": "",
+      "id": "B19D219E-5C7B-4481-B67E-823CB645CB04",
+      "mood": "alive"
+    },
+    {
+      "date": "2026-04-11T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "8F6BF630-34A4-44DA-897C-BBAEB0CB5205",
+      "mood": "foggy"
+    },
+    {
+      "date": "2026-04-03T00:00:00Z",
+      "detail": "",
+      "id": "3C677D2A-2BF1-48BB-A02B-EB0C042F17CD",
+      "mood": "tired"
+    },
+    {
+      "date": "2026-04-01T00:00:00Z",
+      "detail": "Meeting tomorrow weighing on me.",
+      "id": "48332515-7EE5-45C2-8B9B-084023B424B3",
+      "mood": "hopeful"
+    },
+    {
+      "date": "2026-03-25T00:00:00Z",
+      "detail": "Sunday-morning kind.",
+      "id": "1FEC5C29-BC8C-48DE-A00C-9CE33031C757",
+      "mood": "anxious"
+    },
+    {
+      "date": "2026-03-22T00:00:00Z",
+      "detail": "",
+      "id": "0BD9FBEB-31E7-4D0C-9F40-B7C091CF1354",
+      "mood": "vague"
+    }
+  ],
+  "preferences": {
+    "anthropicAPIKey": "",
+    "appLockEnabled": false,
+    "checkInDayOfWeek": 0,
+    "checkInHour": 19,
+    "customZoneNames": {},
+    "enableHaptics": true,
+    "enableInsights": true,
+    "hasSeenMapTip": true,
+    "healthKitVitalityEnabled": false,
+    "id": "F7F8738C-3052-439C-8C9A-99EA537D2BFF",
+    "insightAPIEnabled": false,
+    "notificationsEnabled": true,
+    "onboardingComplete": true
+  },
+  "promptResponses": [
+    {
+      "createdAt": "2026-12-28T20:00:00Z",
+      "id": "99C6C317-685C-4F7F-A744-7F8BE01CF909",
+      "promptID": "c1",
+      "response": "Reached out to Sam \u2014 we hadn't talked in months. Took 90 seconds."
+    },
+    {
+      "createdAt": "2026-12-07T20:00:00Z",
+      "id": "8BB9DC20-851E-4509-98B4-FA6002165FF6",
+      "promptID": "i1",
+      "response": "The dread about Wednesday's meeting. I've been pretending it wasn't there."
+    },
+    {
+      "createdAt": "2026-11-16T20:00:00Z",
+      "id": "66FE1E6D-D007-4931-A59D-D9E9408B20A6",
+      "promptID": "w3",
+      "response": "Saturday morning. Working on the cabinet. Three hours felt like twenty minutes."
+    },
+    {
+      "createdAt": "2026-10-26T20:00:00Z",
+      "id": "F295B467-83C3-43E8-A77A-4C785F9B73B7",
+      "promptID": "v8",
+      "response": "Last Sunday. Slept ten hours and woke up without an alarm. Felt almost foreign."
+    },
+    {
+      "createdAt": "2026-10-05T20:00:00Z",
+      "id": "86765197-F706-4C79-A1AD-4C9A65B8903B",
+      "promptID": "g4",
+      "response": "What I actually want my work to look like in five years vs what it looks like now."
+    },
+    {
+      "createdAt": "2026-09-14T20:00:00Z",
+      "id": "B4A96DF5-65EA-47B0-B59E-A87AF3CABE0C",
+      "promptID": "if4",
+      "response": "When I open my laptop, the first thing I will do is open the doc I'm avoiding \u2014 not Slack."
+    },
+    {
+      "createdAt": "2026-08-24T20:00:00Z",
+      "id": "837B91CF-CEA6-4A3E-9BBE-51617AFB94AD",
+      "promptID": "bps-current",
+      "response": "Five years from now I live somewhere with a real morning. Coffee, the long walk, then work that I chose. The work is harder than now but I'm steadier inside it. There's a person I love and we know each other well by then. My body still works \u2014 I take it on long walks and it surprises me. I have time to make things badly. I read more than I scroll. Money isn't the constant background hum it is now. I'm closer to my parents than I ever expected to be."
+    },
+    {
+      "createdAt": "2026-08-03T20:00:00Z",
+      "id": "1AFF7E0C-F05A-4F66-81C6-7F7D0B11B35A",
+      "promptID": "gratitude-letter",
+      "response": "To J:\n\nI don't think I ever properly thanked you for the call last September. I was unraveling and didn't quite know it, and you noticed before I did. You asked one specific question that I'd been avoiding for months, and you didn't let me deflect. The answer took me three more weeks to find, but the question was the unlock. I don't think you've thought about that call since. I think about it almost weekly."
+    },
+    {
+      "createdAt": "2026-07-13T20:00:00Z",
+      "id": "3C87C136-48E3-48BD-8520-A85B711DA4E7",
+      "promptID": "self-compassion-break",
+      "response": "Self-compassion break \u00b7 \"The meeting felt like a verdict and I'd been carrying it around for three days.\""
+    },
+    {
+      "createdAt": "2026-06-22T20:00:00Z",
+      "id": "FFDFB06A-A383-43D9-8454-0E877A3E3A3A",
+      "promptID": "lkm-session",
+      "response": "Loving-kindness session \u00b7 5:23 over 5 steps"
+    },
+    {
+      "createdAt": "2026-06-01T20:00:00Z",
+      "id": "5D0C2EE3-9BAE-4F52-94AA-72B0E27A8D0A",
+      "promptID": "naikan-reflection",
+      "response": "About: Mom\n\nRECEIVED\nTime, mostly. So much of it. The phone calls every Sunday. The visits. The small noticing.\n\nGIVEN\nLess than I should have. I called less than she'd have liked. Showed up when I needed to, not when she did.\n\nTROUBLES CAUSED\nLong stretches of quiet she had to be patient through. The worry I gave her when I went silent. The conversations she wanted to have that I deferred."
+    },
+    {
+      "createdAt": "2026-05-11T20:00:00Z",
+      "id": "A10ABE99-C4D9-4DA0-9B21-8909A5C1A0E6",
+      "promptID": "behavioral-activation",
+      "response": "category=connection\nstatus=DONE\nactivity=Call A. on Tuesday evening for at least 30 minutes.\nwhen=Tuesday after dinner"
+    },
+    {
+      "createdAt": "2026-04-20T20:00:00Z",
+      "id": "E03279BE-A8EF-41C1-95AE-965BBD844365",
+      "promptID": "behavioral-activation",
+      "response": "category=pleasure\nstatus=DONE\nactivity=Long Saturday walk with no podcast \u2014 just notice things.\nwhen=Saturday 10am"
+    },
+    {
+      "createdAt": "2026-03-30T20:00:00Z",
+      "id": "FCE57E6B-2131-409A-AE84-761D0218B781",
+      "promptID": "behavioral-activation",
+      "response": "category=mastery\nstatus=SKIPPED\nactivity=Finish the cabinet that's been sitting half-built.\nwhen=Sunday afternoon"
+    }
+  ],
+  "reflections": [
+    {
+      "createdAt": "2026-03-16T20:00:00Z",
+      "id": "5F60B9F7-65BE-480E-971E-F01431FDE842",
+      "prompt": "Deep Work rose by 2 this week. What changed?",
+      "response": "I closed Slack between 9 and 11 every morning. That's it. That was the whole trick.",
+      "weekStartDate": "2026-03-16T00:00:00Z"
+    },
+    {
+      "createdAt": "2026-05-04T20:00:00Z",
+      "id": "F7548755-9E86-4751-9F5A-4F4940349B3D",
+      "prompt": "Vitality dropped by 3. Anything worth naming?",
+      "response": "Two nights of poor sleep + the meeting I'd been dreading. Body knew before I did.",
+      "weekStartDate": "2026-05-04T00:00:00Z"
+    },
+    {
+      "createdAt": "2026-06-22T20:00:00Z",
+      "id": "4F44DAB5-5026-48FB-B16B-E054732BAC97",
+      "prompt": "Connection has been quiet \u2014 how is it?",
+      "response": "I noticed I'd been letting texts pile up. Wrote back to three people today.",
+      "weekStartDate": "2026-06-22T00:00:00Z"
+    },
+    {
+      "createdAt": "2026-08-10T20:00:00Z",
+      "id": "213B5BDE-49C2-42B9-939F-C65F40789588",
+      "prompt": "Inner World is at 4 this week. What would a 6 look like?",
+      "response": "Less time on my phone before bed. Reading instead. The thing I keep saying I'll do.",
+      "weekStartDate": "2026-08-10T00:00:00Z"
+    },
+    {
+      "createdAt": "2026-09-28T20:00:00Z",
+      "id": "13085427-7E41-4064-82A3-F7BF5AEF2456",
+      "prompt": "What did this week ask of you that you weren't expecting?",
+      "response": "Saying no to something I'd already agreed to. It was harder than I thought it would be.",
+      "weekStartDate": "2026-09-28T00:00:00Z"
+    },
+    {
+      "createdAt": "2026-11-16T20:00:00Z",
+      "id": "EAB525B5-CAA4-4AC0-8828-45A56AFFD8FC",
+      "prompt": "What's a small thing from this week worth remembering?",
+      "response": "Sunday morning walk with no phone. Heard birds I'd been missing.",
+      "weekStartDate": "2026-11-16T00:00:00Z"
+    }
+  ],
+  "version": 1
+}
