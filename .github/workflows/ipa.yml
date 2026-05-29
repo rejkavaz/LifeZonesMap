@@ -3,6 +3,7 @@ name: IPA
 on:
   push:
     branches: [master, main]
+    tags: ['v*']
     paths-ignore:
       - 'docs/**'
       - 'README.md'
@@ -103,15 +104,36 @@ jobs:
           path: ${{ steps.package.outputs.ipa }}
           retention-days: 30
 
-      - name: Publish to GitHub Release (master only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+      - name: Publish to GitHub Release
+        # Release on: a version tag push (v*), a push to master, or a manual run.
+        if: >-
+          startsWith(github.ref, 'refs/tags/v') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/master') ||
+          github.event_name == 'workflow_dispatch'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="ipa-${{ steps.package.outputs.sha }}"
-          gh release create "$TAG" \
-            "${{ steps.package.outputs.ipa }}" \
-            --title "Unsigned .ipa @ ${{ steps.package.outputs.sha }}" \
-            --notes "Drop into Sideloadly to sign with your Apple ID and install on your iPhone. See README for details." \
-            --target "${{ github.sha }}" \
-            || gh release upload "$TAG" "${{ steps.package.outputs.ipa }}" --clobber
+          set -euo pipefail
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            # Tagged release — use the pushed tag and read its message as notes.
+            TAG="${{ github.ref_name }}"
+            TITLE="Life Zones $TAG"
+          else
+            # master / manual run — keep the rolling per-commit release.
+            TAG="ipa-${{ steps.package.outputs.sha }}"
+            TITLE="Unsigned .ipa @ ${{ steps.package.outputs.sha }}"
+          fi
+          NOTES="Unsigned build at \`${{ steps.package.outputs.sha }}\` (run #${{ github.run_number }}).
+
+          Drop the attached \`.ipa\` into Sideloadly to sign with your Apple ID and install on your iPhone. See the README for details."
+
+          # Create the release if it doesn't exist yet; otherwise just (re)upload the asset.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${{ steps.package.outputs.ipa }}" --clobber
+          else
+            gh release create "$TAG" \
+              "${{ steps.package.outputs.ipa }}" \
+              --title "$TITLE" \
+              --notes "$NOTES" \
+              --target "${{ github.sha }}"
+          fi
