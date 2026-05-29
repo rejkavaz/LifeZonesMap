@@ -46,7 +46,11 @@ private struct RadarRevealLayer: View, Animatable {
     let showNodes: Bool
 
     var progress: CGFloat
-    var animatableData: CGFloat {
+    // Animatable's protocol requirement is nonisolated, but View is
+    // implicitly @MainActor in Swift 6 strict-concurrency mode. Mark this
+    // property nonisolated so it can satisfy the protocol — safe because
+    // CGFloat is Sendable and the struct is a value type.
+    nonisolated var animatableData: CGFloat {
         get { progress }
         set { progress = newValue }
     }
