@@ -6,6 +6,9 @@ import Observation
 @MainActor
 final class MapViewModel {
     var scores: [ZoneID: Int] = Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, 5) })
+    /// Last week's scores, for the map's faint comparison overlay. Nil when
+    /// there's nothing earlier to compare against.
+    var previousScores: [ZoneID: Int]?
     var selectedZone: ZoneID?
     var showCheckInPrompt = false
     var isLoading = false
@@ -24,6 +27,7 @@ final class MapViewModel {
                 scores[zone] = checkIn.score(for: zone)
             }
         }
+        previousScores = try? service.previousWeekScores()
     }
 
     func selectZone(_ zone: ZoneID) {

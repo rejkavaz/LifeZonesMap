@@ -17,6 +17,14 @@ struct RadarMap: View {
     /// Optional: tapping a zone's label/node calls back so the radar itself
     /// becomes navigable, not just the list below it.
     var onZoneTap: ((ZoneID) -> Void)? = nil
+    /// Optional faint "last week" polygon drawn behind the current one for
+    /// at-a-glance comparison. Nil = no overlay.
+    var ghostScores: [ZoneID: Int]? = nil
+    /// Grow the polygon out from the centre on appear / when scores change.
+    /// Disabled for the tiny radars in lists, which shouldn't pop as you scroll.
+    var animateReveal = true
+
+    @State private var revealProgress: CGFloat = 0
 
     private let zones = ZoneID.allCases
 
@@ -36,80 +44,89 @@ struct RadarMap: View {
 
     var body: some View {
         ZStack {
-            Canvas { ctx, _ in
-                let center = CGPoint(x: size / 2, y: size / 2)
-                let R      = size / 2 - inset
+            // The Canvas is wrapped so a single animatable `progress` (0→1)
+            // grows the data polygon out from the centre. Rings/grid stay put.
+            AnimatableReveal(progress: animateReveal ? revealProgress : 1) { p in
+                Canvas { ctx, _ in
+                    let center = CGPoint(x: size / 2, y: size / 2)
+                    let R      = size / 2 - inset
 
-                // Rings — 4 dashed 7-sided polygons at 0.25, 0.5, 0.75, 1.0
-                if showRings {
-                    let ringScales: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
-                    for (i, scale) in ringScales.enumerated() {
-                        var path = Path()
-                        for k in 0..<zones.count {
-                            let pt = radialPoint(center: center, index: k, radius: R * scale)
-                            if k == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
-                        }
-                        path.closeSubpath()
-                        let isOuter = i == ringScales.count - 1
-                        ctx.stroke(
-                            path,
-                            with: .color(ringColor.opacity(0.55)),
-                            style: StrokeStyle(
-                                lineWidth: isOuter ? 0.9 : 0.7,
-                                dash: isOuter ? [] : [3, 4]
+                    // Rings — 4 dashed 7-sided polygons at 0.25, 0.5, 0.75, 1.0
+                    if showRings {
+                        let ringScales: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
+                        for (i, scale) in ringScales.enumerated() {
+                            var path = Path()
+                            for k in 0..<zones.count {
+                                let pt = radialPoint(center: center, index: k, radius: R * scale)
+                                if k == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+                            }
+                            path.closeSubpath()
+                            let isOuter = i == ringScales.count - 1
+                            ctx.stroke(
+                                path,
+                                with: .color(ringColor.opacity(0.55)),
+                                style: StrokeStyle(
+                                    lineWidth: isOuter ? 0.9 : 0.7,
+                                    dash: isOuter ? [] : [3, 4]
+                                )
                             )
-                        )
+                        }
                     }
-                }
 
-                // Axis spokes
-                if showGrid {
-                    for k in 0..<zones.count {
-                        var p = Path()
-                        p.move(to: center)
-                        p.addLine(to: radialPoint(center: center, index: k, radius: R))
-                        ctx.stroke(p, with: .color(ringColor.opacity(0.55)), lineWidth: 0.6)
+                    // Axis spokes
+                    if showGrid {
+                        for k in 0..<zones.count {
+                            var path = Path()
+                            path.move(to: center)
+                            path.addLine(to: radialPoint(center: center, index: k, radius: R))
+                            ctx.stroke(path, with: .color(ringColor.opacity(0.55)), lineWidth: 0.6)
+                        }
                     }
-                }
 
-                // Score polygon
-                var poly = Path()
-                for (i, z) in zones.enumerated() {
-                    let v = CGFloat(scores[z] ?? 5) / 10
-                    let pt = radialPoint(center: center, index: i, radius: R * v)
-                    if i == 0 { poly.move(to: pt) } else { poly.addLine(to: pt) }
-                }
-                poly.closeSubpath()
-                ctx.fill(poly, with: .color(fill.opacity(fillOpacity)))
-                ctx.stroke(poly, with: .color(stroke), style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
-
-                // Nodes (white halo + colored center)
-                if showNodes {
-                    for (i, z) in zones.enumerated() {
-                        let v = CGFloat(scores[z] ?? 5) / 10
-                        let pt = radialPoint(center: center, index: i, radius: R * v)
-                        let def = ZoneRegistry.definition(for: z)
-                        let outerR = dotRadius + 2
-                        let innerR = max(dotRadius - 1, 1.5)
-                        ctx.fill(
-                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
-                                                   width: outerR * 2, height: outerR * 2)),
-                            with: .color(LZ.paper)
-                        )
+                    // "Last week" ghost polygon — faint dashed outline behind
+                    // the current one, grown by the same reveal progress.
+                    if let ghost = ghostScores {
+                        let gpoly = polygonPath(for: ghost, center: center, R: R, scale: p)
                         ctx.stroke(
-                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
-                                                   width: outerR * 2, height: outerR * 2)),
-                            with: .color(def.color), lineWidth: 1.2
-                        )
-                        ctx.fill(
-                            Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR,
-                                                   width: innerR * 2, height: innerR * 2)),
-                            with: .color(def.color)
+                            gpoly,
+                            with: .color(LZ.ink.opacity(0.28)),
+                            style: StrokeStyle(lineWidth: 1, lineJoin: .round, dash: [3, 3])
                         )
                     }
+
+                    // Score polygon
+                    let poly = polygonPath(for: scores, center: center, R: R, scale: p)
+                    ctx.fill(poly, with: .color(fill.opacity(fillOpacity)))
+                    ctx.stroke(poly, with: .color(stroke), style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
+
+                    // Nodes (white halo + colored center)
+                    if showNodes {
+                        for (i, z) in zones.enumerated() {
+                            let v = CGFloat(scores[z] ?? 5) / 10 * p
+                            let pt = radialPoint(center: center, index: i, radius: R * v)
+                            let def = ZoneRegistry.definition(for: z)
+                            let outerR = dotRadius + 2
+                            let innerR = max(dotRadius - 1, 1.5)
+                            ctx.fill(
+                                Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                                       width: outerR * 2, height: outerR * 2)),
+                                with: .color(LZ.paper)
+                            )
+                            ctx.stroke(
+                                Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                                       width: outerR * 2, height: outerR * 2)),
+                                with: .color(def.color), lineWidth: 1.2
+                            )
+                            ctx.fill(
+                                Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR,
+                                                       width: innerR * 2, height: innerR * 2)),
+                                with: .color(def.color)
+                            )
+                        }
+                    }
                 }
+                .frame(width: size, height: size)
             }
-            .frame(width: size, height: size)
 
             // Labels — SwiftUI Text so it picks up dynamic type if needed
             if showLabels {
@@ -117,9 +134,26 @@ struct RadarMap: View {
             }
         }
         .frame(width: size, height: size)
+        .onAppear {
+            guard animateReveal, revealProgress < 1 else { return }
+            withAnimation(.easeOut(duration: 0.55)) { revealProgress = 1 }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilitySummary)
         .accessibilityAddTraits(.isImage)
+    }
+
+    /// Closed polygon path for a set of zone scores, with each vertex pulled
+    /// toward the centre by `scale` (used for the grow-in reveal).
+    private func polygonPath(for values: [ZoneID: Int], center: CGPoint, R: CGFloat, scale: CGFloat) -> Path {
+        var path = Path()
+        for (i, z) in zones.enumerated() {
+            let v = CGFloat(values[z] ?? 5) / 10 * scale
+            let pt = radialPoint(center: center, index: i, radius: R * v)
+            if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+        }
+        path.closeSubpath()
+        return path
     }
 
     // MARK: - Labels
@@ -184,14 +218,32 @@ struct RadarMap: View {
     }
 }
 
+// MARK: - Animatable reveal wrapper
+
+/// Re-renders its content for every interpolated frame of `progress`, which
+/// lets a `Canvas` (not otherwise implicitly animatable) grow on appear and
+/// when its data changes.
+private struct AnimatableReveal<Content: View>: View, Animatable {
+    var progress: CGFloat
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+    @ViewBuilder var content: (CGFloat) -> Content
+
+    var body: some View { content(progress) }
+}
+
 // MARK: - The Map screen
 
 struct MapView: View {
     let scores: [ZoneID: Int]
+    var previousScores: [ZoneID: Int]? = nil
     var onZoneTap: (ZoneID) -> Void = { _ in }
     var onSettingsTap: () -> Void = {}
 
     @State private var showingQuickMark = false
+    @State private var showComparison = true
 
     private var overallAverage: Double {
         let vals = scores.values
@@ -307,7 +359,8 @@ struct MapView: View {
                 fillOpacity: 0.16,
                 stroke: LZ.tealDeep,
                 ringColor: Color(hex: "#C2B79C"),
-                onZoneTap: onZoneTap
+                onZoneTap: onZoneTap,
+                ghostScores: showComparison ? previousScores : nil
             )
             .padding(.top, 10)
             .padding(.bottom, 6)
@@ -322,6 +375,39 @@ struct MapView: View {
             }
             .offset(y: -4)
             .allowsHitTesting(false)
+
+            // "vs last week" legend / toggle — only when there's prior data
+            if previousScores != nil {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.25)) { showComparison.toggle() }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Capsule()
+                                    .fill(LZ.ink.opacity(showComparison ? 0.28 : 0.14))
+                                    .frame(width: 14, height: 2)
+                                Text(showComparison ? "vs last week" : "show last week")
+                                    .uppercaseCaption(
+                                        color: showComparison ? LZ.inkSoft : LZ.inkMute,
+                                        size: 9, tracking: 1.5
+                                    )
+                            }
+                            .padding(.horizontal, 9)
+                            .padding(.vertical, 5)
+                            .background(
+                                Capsule().fill(LZ.paper.opacity(showComparison ? 0.5 : 0))
+                            )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(showComparison ? "Hide last week comparison" : "Show last week comparison")
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+                }
+            }
         }
         .frame(height: 372)
         .padding(.horizontal, 18)
@@ -425,8 +511,14 @@ struct ZoneRow: View {
 }
 
 #Preview {
-    MapView(scores: [
-        .vitality: 6, .deepWork: 8, .connection: 7,
-        .innerWorld: 5, .creation: 7, .foundation: 8, .growth: 6
-    ])
+    MapView(
+        scores: [
+            .vitality: 6, .deepWork: 8, .connection: 7,
+            .innerWorld: 5, .creation: 7, .foundation: 8, .growth: 6
+        ],
+        previousScores: [
+            .vitality: 5, .deepWork: 7, .connection: 5,
+            .innerWorld: 6, .creation: 6, .foundation: 7, .growth: 5
+        ]
+    )
 }

@@ -73,7 +73,8 @@ struct HistoryView: View {
                 fill: LZ.teal,
                 fillOpacity: 0.18,
                 stroke: LZ.tealDeep,
-                dotRadius: 1
+                dotRadius: 1,
+                animateReveal: false
             )
 
             VStack(alignment: .leading, spacing: 2) {

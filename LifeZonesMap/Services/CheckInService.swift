@@ -99,6 +99,20 @@ final class CheckInService {
         return try modelContext.fetch(descriptor)
     }
 
+    /// Per-zone scores from the most recent check-in *before* the current ISO
+    /// week. Drives the map's faint "last week" comparison overlay. Returns
+    /// nil when there's no earlier check-in to compare against.
+    func previousWeekScores() throws -> [ZoneID: Int]? {
+        let monday = Date().isoWeekMonday
+        var descriptor = FetchDescriptor<WeeklyCheckIn>(
+            predicate: #Predicate { $0.weekStartDate < monday },
+            sortBy: [SortDescriptor(\.weekStartDate, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+        guard let prev = try modelContext.fetch(descriptor).first else { return nil }
+        return Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, prev.score(for: $0)) })
+    }
+
     // MARK: - Stats
 
     func deltaFromLastWeek(for zone: ZoneID, current: WeeklyCheckIn) throws -> Int? {

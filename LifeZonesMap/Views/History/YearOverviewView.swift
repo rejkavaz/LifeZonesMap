@@ -91,7 +91,8 @@ struct YearOverviewView: View {
                 fill: LZ.teal,
                 fillOpacity: 0.20,
                 stroke: LZ.tealDeep,
-                dotRadius: 1
+                dotRadius: 1,
+                animateReveal: false
             )
             Text(dayLabel(c.weekStartDate))
                 .font(.system(size: 9, weight: .medium))

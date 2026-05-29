@@ -8,7 +8,7 @@ A weekly self-reflection iOS app that visualizes life balance as an interactive 
 ## Features at a glance
 
 ### The four tabs
-- **Map** — animated 7-axis radar with corner ticks, topo backdrop, center avg badge. Tap any zone for its history.
+- **Map** — 7-axis radar that grows in on appear, with corner ticks, topo backdrop, and a center avg badge. Tap any zone — on the radar itself or in the list — for its history. A faint dashed "last week" polygon overlays for at-a-glance comparison (toggleable), and the list header points to the zone that needs care.
 - **Check In** — weekly ritual with custom slider, expandable serif-italic notes, tag pills that autocomplete from your own past entries.
 - **Pulse** — monthly stat cards, multi-line trend chart with optional goal bands, insight feed (Watch / Lift / Pattern / Trend), reflection feed, zone-connection web, milestone ribbon.
 - **Journal** — qualitative surface: 75-prompt library, mood drops between check-ins, answered prompts archive, and unified search across every text field in the app.
