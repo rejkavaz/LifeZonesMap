@@ -331,6 +331,47 @@ extension TutorialTopic {
         ),
 
         TutorialTopic(
+            id: "practices",
+            title: "Practices (evidence-based exercises)",
+            summary: "Five guided, peer-reviewed wellbeing exercises.",
+            glyph: .leaf,
+            accent: LZ.zGrowth,
+            sections: [
+                TutorialSection(
+                    "Three good things",
+                    symbol: "leaf",
+                    body: "Seligman et al. 2005. Each week, three positive events from your week plus *why* you think they happened. Multiple RCTs show measurable wellbeing gains at 1, 3, and 6 month follow-ups."
+                ),
+                TutorialSection(
+                    "Best possible self",
+                    symbol: "sparkles",
+                    body: "King 2001; Lyubomirsky 2006. Spend 15 minutes writing about your best plausible future self, 5 years out, in present tense. Four weekly sessions produced sustained optimism gains."
+                ),
+                TutorialSection(
+                    "Gratitude letter",
+                    symbol: "envelope",
+                    body: "Seligman, Steen, Park & Peterson 2005. One of the single largest interventions in positive psychology — write a specific letter of gratitude to someone who positively impacted you. Effects appeared even without delivery."
+                ),
+                TutorialSection(
+                    "Loving-kindness meditation",
+                    symbol: "heart.text.square",
+                    body: "Fredrickson et al. 2008. Five-step practice offering warmth to: yourself, someone loved, someone neutral, someone difficult, all beings. Seven weeks of practice produced sustained increases in daily positive emotions and social connection."
+                ),
+                TutorialSection(
+                    "Self-compassion break",
+                    symbol: "heart.circle",
+                    body: "Neff 2003/2011. A formal three-step practice for hard moments — recognize suffering, common humanity, give yourself kindness. Use anytime you're being self-critical."
+                ),
+                TutorialSection(
+                    "Worth savoring (top of Journal)",
+                    symbol: "clock.arrow.circlepath",
+                    body: "Bryant & Veroff. A random past 'Three good things' entry from 30+ days ago surfaces at the top of your Journal each week. Actively dwelling on positive memories amplifies their wellbeing effect."
+                )
+            ],
+            footer: "Each practice has its own citation in the README's Research foundations section."
+        ),
+
+        TutorialTopic(
             id: "siri",
             title: "Siri shortcut",
             summary: "Log a single zone by voice.",

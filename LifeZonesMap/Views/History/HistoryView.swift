@@ -66,6 +66,7 @@ struct HistoryView: View {
             // Mini radar — 36pt
             RadarMap(
                 scores: Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, checkIn.score(for: $0)) }),
+                animateReveal: false,   // don't pop one-by-one as the list scrolls
                 size: 36,
                 showNodes: false,
                 showLabels: false,

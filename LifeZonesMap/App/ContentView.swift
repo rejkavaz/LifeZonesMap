@@ -23,6 +23,7 @@ struct ContentView: View {
                     ZStack(alignment: .top) {
                         MapView(
                             scores: mapVM.scores,
+                            previousScores: mapVM.previousScores,
                             onZoneTap: { selectedZone = $0 },
                             onSettingsTap: { showSettings = true }
                         )

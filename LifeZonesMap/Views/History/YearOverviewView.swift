@@ -84,6 +84,7 @@ struct YearOverviewView: View {
         VStack(spacing: 4) {
             RadarMap(
                 scores: Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, c.score(for: $0)) }),
+                animateReveal: false,   // each tile stays static as the grid scrolls
                 size: 64,
                 showNodes: false,
                 showLabels: false,

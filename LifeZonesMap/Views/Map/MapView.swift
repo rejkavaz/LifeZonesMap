@@ -1,9 +1,117 @@
 import SwiftUI
 
-// MARK: - The radar polygon itself (used at many sizes)
+// MARK: - Shared radar geometry
+
+/// Angle for vertex `i` in a regular n-sided polygon, starting at -π/2 (top).
+private func radarAngle(index i: Int, of n: Int) -> CGFloat {
+    -CGFloat.pi / 2 + (CGFloat(i) / CGFloat(n)) * .pi * 2
+}
+
+/// Build the polygon path for a set of zone scores. `scale` lets the caller
+/// scale all vertex distances by a single multiplier — used by the reveal
+/// animation (0 → 1) and by ghost overlays at 1.
+private func radarPolygonPath(
+    scores: [ZoneID: Int],
+    zones: [ZoneID],
+    center: CGPoint,
+    R: CGFloat,
+    scale: CGFloat = 1
+) -> Path {
+    var path = Path()
+    for (i, z) in zones.enumerated() {
+        let v = CGFloat(scores[z] ?? 5) / 10 * scale
+        let a = radarAngle(index: i, of: zones.count)
+        let pt = CGPoint(x: center.x + cos(a) * R * v,
+                         y: center.y + sin(a) * R * v)
+        if i == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
+    }
+    path.closeSubpath()
+    return path
+}
+
+// MARK: - Animatable reveal layer
+// Canvas can't animate implicitly, so we wrap it in a view that conforms to
+// Animatable over a single CGFloat. SwiftUI calls `body` with interpolated
+// progress values while the animation runs, and the Canvas re-renders each
+// frame using the new value.
+
+private struct RadarRevealLayer: View, Animatable {
+    let scores: [ZoneID: Int]
+    let zones: [ZoneID]
+    let insetProportion: CGFloat
+    let fill: Color
+    let fillOpacity: Double
+    let stroke: Color
+    let dotRadius: CGFloat
+    let showNodes: Bool
+
+    var progress: CGFloat
+    var animatableData: CGFloat {
+        get { progress }
+        set { progress = newValue }
+    }
+
+    var body: some View {
+        Canvas { ctx, size in
+            let dim = min(size.width, size.height)
+            let center = CGPoint(x: size.width / 2, y: size.height / 2)
+            let insetVal = dim * insetProportion
+            let R = dim / 2 - insetVal
+
+            let poly = radarPolygonPath(
+                scores: scores, zones: zones,
+                center: center, R: R,
+                scale: progress
+            )
+            ctx.fill(poly, with: .color(fill.opacity(fillOpacity)))
+            ctx.stroke(poly,
+                       with: .color(stroke),
+                       style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
+
+            if showNodes {
+                for (i, z) in zones.enumerated() {
+                    let v = CGFloat(scores[z] ?? 5) / 10 * progress
+                    let a = radarAngle(index: i, of: zones.count)
+                    let pt = CGPoint(x: center.x + cos(a) * R * v,
+                                     y: center.y + sin(a) * R * v)
+                    let def = ZoneRegistry.definition(for: z)
+                    let outerR = dotRadius + 2
+                    let innerR = max(dotRadius - 1, 1.5)
+                    ctx.fill(
+                        Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                               width: outerR * 2, height: outerR * 2)),
+                        with: .color(LZ.paper)
+                    )
+                    ctx.stroke(
+                        Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
+                                               width: outerR * 2, height: outerR * 2)),
+                        with: .color(def.color), lineWidth: 1.2
+                    )
+                    ctx.fill(
+                        Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR,
+                                               width: innerR * 2, height: innerR * 2)),
+                        with: .color(def.color)
+                    )
+                }
+            }
+        }
+    }
+}
+
+// MARK: - RadarMap (the radar polygon — used at many sizes)
 
 struct RadarMap: View {
     let scores: [ZoneID: Int]
+    /// Optional ghost overlay of the previous week's scores. When nil, no
+    /// ghost is drawn.
+    var previousScores: [ZoneID: Int]? = nil
+    /// Whether to show the ghost overlay. Owner of this view decides;
+    /// MapView wires this to a small bottom-left toggle.
+    var showPreviousOverlay: Bool = true
+    /// Set to false for tiny radars in History / YearOverview tiles — they
+    /// shouldn't pop one-by-one as the list scrolls.
+    var animateReveal: Bool = true
+
     var size: CGFloat = 342
     var showNodes = true
     var showLabels = true
@@ -15,7 +123,10 @@ struct RadarMap: View {
     var ringColor: Color = Color(hex: "#C2B79C")
     var dotRadius: CGFloat = 5.5
 
+    @State private var revealProgress: CGFloat = 0
+
     private let zones = ZoneID.allCases
+    private let insetProportion: CGFloat = 0.18
 
     /// Plain-text summary used by VoiceOver instead of the Canvas drawing.
     var accessibilitySummary: String {
@@ -28,18 +139,21 @@ struct RadarMap: View {
 
     var body: some View {
         ZStack {
-            Canvas { ctx, _ in
-                let center = CGPoint(x: size / 2, y: size / 2)
-                let inset  = size * 0.18
-                let R      = size / 2 - inset
+            // 1. Static rings + spokes (never animate)
+            Canvas { ctx, canvasSize in
+                let dim = min(canvasSize.width, canvasSize.height)
+                let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+                let insetVal = dim * insetProportion
+                let R = dim / 2 - insetVal
 
-                // Rings — 4 dashed 7-sided polygons at 0.25, 0.5, 0.75, 1.0
                 if showRings {
                     let ringScales: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
                     for (i, scale) in ringScales.enumerated() {
                         var path = Path()
                         for k in 0..<zones.count {
-                            let pt = radialPoint(center: center, index: k, radius: R * scale)
+                            let a = radarAngle(index: k, of: zones.count)
+                            let pt = CGPoint(x: center.x + cos(a) * R * scale,
+                                             y: center.y + sin(a) * R * scale)
                             if k == 0 { path.move(to: pt) } else { path.addLine(to: pt) }
                         }
                         path.closeSubpath()
@@ -55,61 +169,69 @@ struct RadarMap: View {
                     }
                 }
 
-                // Axis spokes
                 if showGrid {
                     for k in 0..<zones.count {
+                        let a = radarAngle(index: k, of: zones.count)
                         var p = Path()
                         p.move(to: center)
-                        p.addLine(to: radialPoint(center: center, index: k, radius: R))
+                        p.addLine(to: CGPoint(x: center.x + cos(a) * R,
+                                              y: center.y + sin(a) * R))
                         ctx.stroke(p, with: .color(ringColor.opacity(0.55)), lineWidth: 0.6)
                     }
                 }
-
-                // Score polygon
-                var poly = Path()
-                for (i, z) in zones.enumerated() {
-                    let v = CGFloat(scores[z] ?? 5) / 10
-                    let pt = radialPoint(center: center, index: i, radius: R * v)
-                    if i == 0 { poly.move(to: pt) } else { poly.addLine(to: pt) }
-                }
-                poly.closeSubpath()
-                ctx.fill(poly, with: .color(fill.opacity(fillOpacity)))
-                ctx.stroke(poly, with: .color(stroke), style: StrokeStyle(lineWidth: 1.4, lineJoin: .round))
-
-                // Nodes (white halo + colored center)
-                if showNodes {
-                    for (i, z) in zones.enumerated() {
-                        let v = CGFloat(scores[z] ?? 5) / 10
-                        let pt = radialPoint(center: center, index: i, radius: R * v)
-                        let def = ZoneRegistry.definition(for: z)
-                        let outerR = dotRadius + 2
-                        let innerR = max(dotRadius - 1, 1.5)
-                        ctx.fill(
-                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
-                                                   width: outerR * 2, height: outerR * 2)),
-                            with: .color(LZ.paper)
-                        )
-                        ctx.stroke(
-                            Path(ellipseIn: CGRect(x: pt.x - outerR, y: pt.y - outerR,
-                                                   width: outerR * 2, height: outerR * 2)),
-                            with: .color(def.color), lineWidth: 1.2
-                        )
-                        ctx.fill(
-                            Path(ellipseIn: CGRect(x: pt.x - innerR, y: pt.y - innerR,
-                                                   width: innerR * 2, height: innerR * 2)),
-                            with: .color(def.color)
-                        )
-                    }
-                }
             }
-            .frame(width: size, height: size)
 
-            // Labels — SwiftUI Text so it picks up dynamic type if needed
+            // 2. Previous-week ghost polygon (only if data + visible)
+            if let previousScores, showPreviousOverlay {
+                Canvas { ctx, canvasSize in
+                    let dim = min(canvasSize.width, canvasSize.height)
+                    let center = CGPoint(x: canvasSize.width / 2, y: canvasSize.height / 2)
+                    let insetVal = dim * insetProportion
+                    let R = dim / 2 - insetVal
+
+                    let ghost = radarPolygonPath(
+                        scores: previousScores, zones: zones,
+                        center: center, R: R, scale: 1
+                    )
+                    ctx.stroke(
+                        ghost,
+                        with: .color(LZ.ink.opacity(0.28)),
+                        style: StrokeStyle(lineWidth: 1.2, lineJoin: .round, dash: [3, 4])
+                    )
+                }
+                .transition(.opacity)
+            }
+
+            // 3. Current polygon + nodes, animated via Animatable progress
+            RadarRevealLayer(
+                scores: scores,
+                zones: zones,
+                insetProportion: insetProportion,
+                fill: fill,
+                fillOpacity: fillOpacity,
+                stroke: stroke,
+                dotRadius: dotRadius,
+                showNodes: showNodes,
+                progress: revealProgress
+            )
+
+            // 4. Labels — SwiftUI Text overlay
             if showLabels {
                 labels
             }
         }
         .frame(width: size, height: size)
+        .onAppear {
+            if animateReveal {
+                // The grow-in: progress goes 0 → 1 over 0.55s ease-out so the
+                // polygon and nodes appear to expand outward from the center.
+                withAnimation(.easeOut(duration: 0.55)) {
+                    revealProgress = 1
+                }
+            } else {
+                revealProgress = 1
+            }
+        }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilitySummary)
         .accessibilityAddTraits(.isImage)
@@ -119,45 +241,42 @@ struct RadarMap: View {
 
     @ViewBuilder private var labels: some View {
         let center = CGPoint(x: size / 2, y: size / 2)
-        let inset  = size * 0.18
+        let inset  = size * insetProportion
         let R      = size / 2 - inset
+        // Pull labels closer to the polygon ring (was 0.62 originally, which
+        // combined with the previous +/-38 hard offset pushed Foundation /
+        // Connection past the canvas edge on narrow screens). 0.42 keeps
+        // labels outside the node but well inside the canvas frame.
+        let labelMultiplier: CGFloat = 0.42
 
         ForEach(Array(zones.enumerated()), id: \.element) { i, z in
-            let angle = angleFor(index: i)
-            let pt    = CGPoint(x: center.x + cos(angle) * (R + inset * 0.62),
-                                y: center.y + sin(angle) * (R + inset * 0.62))
+            let angle = radarAngle(index: i, of: zones.count)
+            let pt    = CGPoint(x: center.x + cos(angle) * (R + inset * labelMultiplier),
+                                y: center.y + sin(angle) * (R + inset * labelMultiplier))
             let def   = ZoneRegistry.definition(for: z)
             let score = scores[z] ?? 5
             let isRight = cos(angle) > 0.2
             let isLeft  = cos(angle) < -0.2
-            let alignment: HorizontalAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
-            let frameAlign: Alignment = isRight ? .leading : (isLeft ? .trailing : .center)
+            let hAlignment: HorizontalAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
 
-            VStack(alignment: alignment, spacing: 1) {
+            // Intrinsic-width text via fixedSize() so labels are exactly as
+            // wide as they need to be; minimumScaleFactor handles the long
+            // names ("Inner World" / "Foundation" / "Connection") gracefully.
+            VStack(alignment: hAlignment, spacing: 1) {
                 Text(def.name)
                     .font(.system(size: size * 0.034, weight: .medium))
-                    .tracking(0.2)
+                    .tracking(0.1)
                     .foregroundStyle(LZ.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 Text(String(format: "%.1f", Double(score)))
                     .font(.system(size: size * 0.038, weight: .semibold).monospacedDigit())
                     .foregroundStyle(def.color)
+                    .lineLimit(1)
             }
-            .frame(width: 90, alignment: frameAlign)
-            .position(x: pt.x + (isRight ? 38 : (isLeft ? -38 : 0)),
-                      y: pt.y)
+            .fixedSize()
+            .position(x: pt.x, y: pt.y)
         }
-    }
-
-    // MARK: - Geometry
-
-    private func angleFor(index: Int) -> CGFloat {
-        let n = CGFloat(zones.count)
-        return -CGFloat.pi / 2 + (CGFloat(index) / n) * .pi * 2
-    }
-
-    private func radialPoint(center: CGPoint, index: Int, radius: CGFloat) -> CGPoint {
-        let a = angleFor(index: index)
-        return CGPoint(x: center.x + cos(a) * radius, y: center.y + sin(a) * radius)
     }
 }
 
@@ -165,10 +284,12 @@ struct RadarMap: View {
 
 struct MapView: View {
     let scores: [ZoneID: Int]
+    var previousScores: [ZoneID: Int]? = nil
     var onZoneTap: (ZoneID) -> Void = { _ in }
     var onSettingsTap: () -> Void = {}
 
     @State private var showingQuickMark = false
+    @State private var showPreviousOverlay = true
 
     private var overallAverage: Double {
         let vals = scores.values
@@ -271,6 +392,9 @@ struct MapView: View {
             // The radar
             RadarMap(
                 scores: scores,
+                previousScores: previousScores,
+                showPreviousOverlay: showPreviousOverlay,
+                animateReveal: true,
                 size: 342,
                 fill: LZ.teal,
                 fillOpacity: 0.16,
@@ -290,9 +414,46 @@ struct MapView: View {
             }
             .offset(y: -4)
             .allowsHitTesting(false)
+
+            // Bottom-left previous-week toggle (only when data exists)
+            if previousScores != nil {
+                VStack {
+                    Spacer()
+                    HStack {
+                        previousWeekToggle
+                        Spacer()
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 12)
+                }
+            }
         }
         .frame(height: 372)
         .padding(.horizontal, 18)
+    }
+
+    private var previousWeekToggle: some View {
+        Button {
+            withAnimation(.easeInOut(duration: 0.25)) {
+                showPreviousOverlay.toggle()
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Circle()
+                    .fill(LZ.ink.opacity(showPreviousOverlay ? 0.28 : 0.10))
+                    .frame(width: 6, height: 6)
+                Text(showPreviousOverlay ? "vs last week" : "show last week")
+                    .uppercaseCaption(
+                        color: showPreviousOverlay ? LZ.inkSoft : LZ.inkMute,
+                        size: 9.5, tracking: 1.5
+                    )
+            }
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(showPreviousOverlay ? "Hide last week overlay" : "Show last week overlay")
     }
 
     // MARK: - Zone list

@@ -66,6 +66,19 @@ final class CheckInService {
         try fetchCheckIn(for: Date().isoWeekMonday)
     }
 
+    /// Returns the most recent check-in BEFORE the current ISO week, mapped
+    /// to a [ZoneID: Int] dictionary. Used for the "vs last week" overlay
+    /// on the Map. nil if there is no prior data.
+    func previousWeekScores() throws -> [ZoneID: Int]? {
+        let currentWeekStart = Date().isoWeekMonday
+        let descriptor = FetchDescriptor<WeeklyCheckIn>(
+            predicate: #Predicate { $0.weekStartDate < currentWeekStart },
+            sortBy: [SortDescriptor(\.weekStartDate, order: .reverse)]
+        )
+        guard let prior = try modelContext.fetch(descriptor).first else { return nil }
+        return Dictionary(uniqueKeysWithValues: ZoneID.allCases.map { ($0, prior.score(for: $0)) })
+    }
+
     func fetchAll(limit: Int? = nil) throws -> [WeeklyCheckIn] {
         var descriptor = FetchDescriptor<WeeklyCheckIn>(
             sortBy: [SortDescriptor(\.weekStartDate, order: .reverse)]
