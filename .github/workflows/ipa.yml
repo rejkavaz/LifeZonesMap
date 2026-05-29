@@ -10,6 +10,11 @@ on:
       - 'design/**'
       - '.github/workflows/preview.yml'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v1.0.0). Leave blank for a rolling ipa-<sha> release.'
+        required: false
+        default: ''
 
 permissions:
   contents: write   # for the optional Release upload
@@ -114,12 +119,17 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          INPUT_TAG="${{ github.event.inputs.tag }}"
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Tagged release — use the pushed tag and read its message as notes.
+            # Pushed a version tag — release under that tag.
             TAG="${{ github.ref_name }}"
             TITLE="Life Zones $TAG"
+          elif [[ -n "$INPUT_TAG" ]]; then
+            # Manual run with an explicit tag name.
+            TAG="$INPUT_TAG"
+            TITLE="Life Zones $TAG"
           else
-            # master / manual run — keep the rolling per-commit release.
+            # master / blank manual run — keep the rolling per-commit release.
             TAG="ipa-${{ steps.package.outputs.sha }}"
             TITLE="Unsigned .ipa @ ${{ steps.package.outputs.sha }}"
           fi
