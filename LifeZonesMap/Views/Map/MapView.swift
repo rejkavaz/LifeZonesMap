@@ -14,8 +14,16 @@ struct RadarMap: View {
     var stroke: Color = LZ.tealDeep
     var ringColor: Color = Color(hex: "#C2B79C")
     var dotRadius: CGFloat = 5.5
+    /// Optional: tapping a zone's label/node calls back so the radar itself
+    /// becomes navigable, not just the list below it.
+    var onZoneTap: ((ZoneID) -> Void)? = nil
 
     private let zones = ZoneID.allCases
+
+    /// Polygon inset from the frame edge. When labels are shown we pull the
+    /// polygon in further so the surrounding text has room to sit *inside*
+    /// the canvas bounds instead of spilling past them.
+    private var inset: CGFloat { size * (showLabels ? 0.22 : 0.18) }
 
     /// Plain-text summary used by VoiceOver instead of the Canvas drawing.
     var accessibilitySummary: String {
@@ -30,7 +38,6 @@ struct RadarMap: View {
         ZStack {
             Canvas { ctx, _ in
                 let center = CGPoint(x: size / 2, y: size / 2)
-                let inset  = size * 0.18
                 let R      = size / 2 - inset
 
                 // Rings — 4 dashed 7-sided polygons at 0.25, 0.5, 0.75, 1.0
@@ -118,33 +125,49 @@ struct RadarMap: View {
     // MARK: - Labels
 
     @ViewBuilder private var labels: some View {
-        let center = CGPoint(x: size / 2, y: size / 2)
-        let inset  = size * 0.18
-        let R      = size / 2 - inset
+        let center = size / 2
+        let R      = center - inset
+        // Sit the labels just outside the outer ring …
+        let labelRadius = R + inset * 0.34
+        // … then anchor each label's *inner* edge to that point and clamp the
+        // whole box inside [0, size] so side zones (Foundation / Connection)
+        // can never run past the canvas. lineLimit + minimumScaleFactor are a
+        // final backstop for large Dynamic Type sizes.
+        let labelW: CGFloat = size * 0.24
+        let edge: CGFloat = 4
 
         ForEach(Array(zones.enumerated()), id: \.element) { i, z in
             let angle = angleFor(index: i)
-            let pt    = CGPoint(x: center.x + cos(angle) * (R + inset * 0.62),
-                                y: center.y + sin(angle) * (R + inset * 0.62))
+            let vx = center + cos(angle) * labelRadius
+            let vy = center + sin(angle) * labelRadius
             let def   = ZoneRegistry.definition(for: z)
             let score = scores[z] ?? 5
             let isRight = cos(angle) > 0.2
             let isLeft  = cos(angle) < -0.2
-            let alignment: HorizontalAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
-            let frameAlign: Alignment = isRight ? .leading : (isLeft ? .trailing : .center)
+            let hAlign: HorizontalAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
+            let tAlign: TextAlignment = isRight ? .leading : (isLeft ? .trailing : .center)
 
-            VStack(alignment: alignment, spacing: 1) {
+            // Anchor the edge nearest the polygon to the ring point, then keep
+            // the box fully on-canvas.
+            let rawCenterX = isRight ? vx + labelW / 2 : (isLeft ? vx - labelW / 2 : vx)
+            let centerX = min(max(rawCenterX, labelW / 2 + edge), size - labelW / 2 - edge)
+
+            VStack(alignment: hAlign, spacing: 1) {
                 Text(def.name)
-                    .font(.system(size: size * 0.034, weight: .medium))
+                    .font(.system(size: size * 0.033, weight: .medium))
                     .tracking(0.2)
                     .foregroundStyle(LZ.ink)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.75)
                 Text(String(format: "%.1f", Double(score)))
-                    .font(.system(size: size * 0.038, weight: .semibold).monospacedDigit())
+                    .font(.system(size: size * 0.04, weight: .semibold).monospacedDigit())
                     .foregroundStyle(def.color)
             }
-            .frame(width: 90, alignment: frameAlign)
-            .position(x: pt.x + (isRight ? 38 : (isLeft ? -38 : 0)),
-                      y: pt.y)
+            .multilineTextAlignment(tAlign)
+            .frame(width: labelW, alignment: Alignment(horizontal: hAlign, vertical: .center))
+            .contentShape(Rectangle())
+            .onTapGesture { onZoneTap?(z) }
+            .position(x: centerX, y: vy)
         }
     }
 
@@ -174,6 +197,14 @@ struct MapView: View {
         let vals = scores.values
         guard !vals.isEmpty else { return 0 }
         return Double(vals.reduce(0, +)) / Double(vals.count)
+    }
+
+    /// The lowest-scoring zone this week — surfaced as a gentle "needs care"
+    /// cue, mirroring the lock-screen widget. Never a scold, just a pointer.
+    private var lowestZone: ZoneDefinition? {
+        guard !scores.isEmpty else { return nil }
+        let lowest = ZoneID.allCases.min { (scores[$0] ?? 5) < (scores[$1] ?? 5) }
+        return lowest.map { ZoneRegistry.definition(for: $0) }
     }
 
     var body: some View {
@@ -275,7 +306,8 @@ struct MapView: View {
                 fill: LZ.teal,
                 fillOpacity: 0.16,
                 stroke: LZ.tealDeep,
-                ringColor: Color(hex: "#C2B79C")
+                ringColor: Color(hex: "#C2B79C"),
+                onZoneTap: onZoneTap
             )
             .padding(.top, 10)
             .padding(.bottom, 6)
@@ -303,6 +335,20 @@ struct MapView: View {
                 HStack {
                     Text("By zone").uppercaseCaption()
                     Spacer()
+                    if let low = lowestZone {
+                        Button { onZoneTap(low.id) } label: {
+                            HStack(spacing: 5) {
+                                Circle()
+                                    .fill(low.color)
+                                    .frame(width: 6, height: 6)
+                                Text("Needs care · \(low.name)")
+                                    .font(.system(size: 11, weight: .medium))
+                                    .foregroundStyle(LZ.inkSoft)
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Lowest zone: \(low.name). Open zone.")
+                    }
                 }
                 .padding(.bottom, 10)
 
