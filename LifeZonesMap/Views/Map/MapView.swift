@@ -1,4 +1,5 @@
 import SwiftUI
+import TipKit
 
 // MARK: - Shared radar geometry
 
@@ -128,6 +129,7 @@ struct RadarMap: View {
     var dotRadius: CGFloat = 5.5
 
     @State private var revealProgress: CGFloat = 0
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private let zones = ZoneID.allCases
     private let insetProportion: CGFloat = 0.18
@@ -226,9 +228,9 @@ struct RadarMap: View {
         }
         .frame(width: size, height: size)
         .onAppear {
-            if animateReveal {
-                // The grow-in: progress goes 0 → 1 over 0.55s ease-out so the
-                // polygon and nodes appear to expand outward from the center.
+            // Respect the system Reduce Motion accessibility setting — when
+            // it's on, skip the grow-in entirely and snap to full state.
+            if animateReveal && !reduceMotion {
                 withAnimation(.easeOut(duration: 0.55)) {
                     revealProgress = 1
                 }
@@ -331,6 +333,7 @@ struct MapView: View {
             }
             .accessibilityLabel("Mark today")
             .padding(.leading, DS.Spacing.s8)
+            .popoverTip(MarkTodayTip())
             Button(action: onSettingsTap) {
                 Image(systemName: "gearshape")
                     .font(.system(size: 16, weight: .regular))
@@ -458,6 +461,7 @@ struct MapView: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(showPreviousOverlay ? "Hide last week overlay" : "Show last week overlay")
+        .popoverTip(CompareLastWeekTip())
     }
 
     // MARK: - Zone list

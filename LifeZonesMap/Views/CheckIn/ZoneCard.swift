@@ -9,6 +9,9 @@ struct ZoneCard: View {
     var rated: Bool = false   // false → show "—" until user moves slider
     /// User's most-used custom tags for this zone, drawn from history.
     var personalTags: [String] = []
+    /// Optional suggestion chip (e.g. HealthKit-derived Vitality score).
+    /// Tapping it sets `score` directly.
+    var suggestion: ZoneCardSuggestion?
 
     @State private var noteExpanded = false
     @FocusState private var noteFocused: Bool
@@ -75,6 +78,34 @@ struct ZoneCard: View {
                     hapticsEnabled: hapticsEnabled
                 )
                 .frame(height: 22)
+
+                // Suggestion chip (e.g. HealthKit-derived Vitality)
+                if let suggestion {
+                    Button {
+                        score = suggestion.score
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "sparkles")
+                                .font(.system(size: 11, weight: .semibold))
+                            Text("Suggested \(suggestion.score)")
+                                .font(.system(size: 11.5, weight: .semibold).monospacedDigit())
+                            Text("·")
+                                .font(.system(size: 11, weight: .regular))
+                                .foregroundStyle(definition.color.opacity(0.6))
+                            Text(suggestion.detail)
+                                .font(.system(size: 11, weight: .regular))
+                                .lineLimit(1)
+                                .truncationMode(.tail)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 5)
+                        .background(Capsule().fill(definition.color.opacity(0.10)))
+                        .overlay(Capsule().strokeBorder(definition.color.opacity(0.4), lineWidth: 0.5))
+                        .foregroundStyle(definition.color)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel("Suggested \(suggestion.score). \(suggestion.detail). Tap to accept.")
+                }
 
                 // Tag pills (wrap) — seed tags first, then user's history-derived ones
                 FlowLayout(spacing: 6) {
@@ -204,6 +235,13 @@ struct LZSlider: View {
 }
 
 // MARK: - Tag pill
+
+/// Lightweight model passed into ZoneCard for any source that can suggest
+/// a score (HealthKit, in future also Calendar / Screen Time).
+struct ZoneCardSuggestion {
+    let score: Int
+    let detail: String   // e.g. "7.5h sleep, 8.4k steps"
+}
 
 struct TagPill: View {
     let label: String

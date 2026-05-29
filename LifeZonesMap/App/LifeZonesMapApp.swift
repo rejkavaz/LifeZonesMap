@@ -42,13 +42,20 @@ struct LifeZonesMapApp: App {
                 }
             }
         }
+
+        // Register TipKit hints (each shows once per install)
+        if #available(iOS 17.0, *) {
+            AppTips.configure()
+        }
     }
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(router)
-                .onAppear { seedIfNeeded() }
+            AppLockGate {
+                ContentView()
+                    .environment(router)
+                    .onAppear { seedIfNeeded() }
+            }
         }
         .modelContainer(container)
     }

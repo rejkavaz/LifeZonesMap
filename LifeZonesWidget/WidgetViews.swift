@@ -101,35 +101,64 @@ struct LifeZonesWidgetView: View {
 
     // MARK: - Lock screen rectangular
     private var lockScreenWidget: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            if let snap = entry.snapshot {
-                let needsCare = ZoneID.allCases
-                    .sorted { (snap.scores[$0.rawValue] ?? 5) < (snap.scores[$1.rawValue] ?? 5) }
-                    .prefix(3)
-
-                Text("Needs care")
-                    .font(.system(size: 9, weight: .bold))
-                    .tracking(1.6)
-                    .textCase(.uppercase)
-                    .opacity(0.85)
-
-                HStack(spacing: 8) {
-                    ForEach(Array(needsCare), id: \.self) { zone in
-                        let def = ZoneRegistry.definition(for: zone)
-                        let score = snap.scores[zone.rawValue] ?? 5
-                        HStack(spacing: 4) {
-                            Circle().fill(def.color).frame(width: 6, height: 6)
-                            Text(def.name).font(.system(size: 11, weight: .semibold))
-                            Text(String(format: "%.1f", Double(score)))
-                                .font(.system(size: 11, weight: .medium).monospacedDigit())
-                                .opacity(0.85)
-                        }
-                    }
-                }
+        Group {
+            if let snap = entry.snapshot, isCheckInDay(snap: snap) {
+                checkInDayLockView
+            } else if let snap = entry.snapshot {
+                needsCareLockView(snap: snap)
             } else {
                 Text("Check in to see your map").font(.caption2)
             }
         }
+    }
+
+    private var checkInDayLockView: some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 5) {
+                Image(systemName: "circle.hexagongrid.fill")
+                    .font(.system(size: 11, weight: .semibold))
+                Text("Tap to check in")
+                    .font(.system(size: 12, weight: .semibold))
+            }
+            Text("Your weekly map is waiting.")
+                .font(.system(size: 10))
+                .opacity(0.85)
+        }
+    }
+
+    private func needsCareLockView(snap: WidgetDataProvider.Snapshot) -> some View {
+        let needsCare = ZoneID.allCases
+            .sorted { (snap.scores[$0.rawValue] ?? 5) < (snap.scores[$1.rawValue] ?? 5) }
+            .prefix(3)
+        return VStack(alignment: .leading, spacing: 2) {
+            Text("Needs care")
+                .font(.system(size: 9, weight: .bold))
+                .tracking(1.6)
+                .textCase(.uppercase)
+                .opacity(0.85)
+            HStack(spacing: 8) {
+                ForEach(Array(needsCare), id: \.self) { zone in
+                    let def = ZoneRegistry.definition(for: zone)
+                    let score = snap.scores[zone.rawValue] ?? 5
+                    HStack(spacing: 4) {
+                        Circle().fill(def.color).frame(width: 6, height: 6)
+                        Text(def.name).font(.system(size: 11, weight: .semibold))
+                        Text(String(format: "%.1f", Double(score)))
+                            .font(.system(size: 11, weight: .medium).monospacedDigit())
+                            .opacity(0.85)
+                    }
+                }
+            }
+        }
+    }
+
+    /// True iff today is the user's configured check-in weekday AND they
+    /// haven't already done this week's check-in.
+    private func isCheckInDay(snap: WidgetDataProvider.Snapshot) -> Bool {
+        let weekday = Calendar.current.component(.weekday, from: entry.date)
+        let mondayOfThisWeek = entry.date.isoWeekMonday
+        let alreadyChecked = Calendar.current.isDate(snap.weekStart, inSameDayAs: mondayOfThisWeek)
+        return weekday == snap.checkInWeekday && !alreadyChecked
     }
 
     private var emptyHint: some View {

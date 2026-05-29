@@ -106,6 +106,34 @@ struct PracticesHubView: View {
                 )
             }
             .buttonStyle(.plain)
+
+            NavigationLink {
+                BehavioralActivationView()
+            } label: {
+                practiceRow(
+                    glyph: .focus,
+                    accent: LZ.zDeepWork,
+                    title: "Plan one small thing",
+                    cadence: "Weekly · 1 minute",
+                    summary: "Behavioral activation. Commit to a small pleasurable or mastery activity, regardless of mood.",
+                    citation: "Lewinsohn 1974; Jacobson 2001"
+                )
+            }
+            .buttonStyle(.plain)
+
+            NavigationLink {
+                NaikanReflectionView()
+            } label: {
+                practiceRow(
+                    glyph: .people,
+                    accent: LZ.zConnect,
+                    title: "Naikan reflection",
+                    cadence: "Occasional · 10 minutes",
+                    summary: "Three questions about one relationship: received, given, troubles caused.",
+                    citation: "Yoshimoto (Japan), 1940s"
+                )
+            }
+            .buttonStyle(.plain)
         }
     }
 

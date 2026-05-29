@@ -7,11 +7,27 @@ struct CheckInView: View {
     @State private var ratedZones: Set<ZoneID> = []
     @State private var showingSummary = false
     @State private var showingReflection = false
+    @State private var vitalitySuggestion: ZoneCardSuggestion?
 
     @Query(sort: \WeeklyCheckIn.weekStartDate, order: .reverse) private var history: [WeeklyCheckIn]
 
     private var prefs: UserPreferences? {
         try? modelContext.fetch(FetchDescriptor<UserPreferences>()).first
+    }
+
+    /// HealthKit-derived Vitality suggestion. Falls through gracefully if
+    /// permissions aren't granted or HealthKit isn't available (e.g. on a
+    /// sideloaded build without the entitlement).
+    private func loadVitalitySuggestion() async {
+        guard HealthKitService.isAvailable else { return }
+        let granted = await HealthKitService.shared.requestPermission()
+        guard granted else { return }
+        if let s = await HealthKitService.shared.suggestVitalityScore() {
+            vitalitySuggestion = ZoneCardSuggestion(
+                score: s.score,
+                detail: s.breakdown.prefix(2).joined(separator: ", ")
+            )
+        }
     }
 
     /// Returns the user's most-frequently used custom tags for a zone,
@@ -42,7 +58,13 @@ struct CheckInView: View {
                 floatingCTA
             }
         }
-        .onAppear { vm.setup(modelContext: modelContext) }
+        .onAppear {
+            vm.setup(modelContext: modelContext)
+            // Only fetch HealthKit if the user has opted in via Settings.
+            if prefs?.healthKitVitalityEnabled == true {
+                Task { await loadVitalitySuggestion() }
+            }
+        }
         .sheet(isPresented: $showingSummary, onDismiss: {
             // After they close the summary, surface a one-question reflection.
             if vm.submittedCheckIn != nil {
@@ -81,7 +103,8 @@ struct CheckInView: View {
                             note:        noteBinding(for: def.id),
                             hapticsEnabled: prefs?.enableHaptics ?? true,
                             rated: ratedZones.contains(def.id),
-                            personalTags: personalTags(for: def.id)
+                            personalTags: personalTags(for: def.id),
+                            suggestion: def.id == .vitality ? vitalitySuggestion : nil
                         )
                         .padding(.horizontal, 18)
                     }

@@ -267,6 +267,12 @@ final class UserPreferences {
     var onboardingComplete: Bool
     var notificationsEnabled: Bool
     var hasSeenMapTip: Bool
+    /// When true, the app gates content behind Face ID / Touch ID / passcode
+    /// on launch and after backgrounding.
+    var appLockEnabled: Bool
+    /// When true, the Check-In screen pulls a suggested Vitality score from
+    /// HealthKit (sleep + steps + mindful minutes). Off by default.
+    var healthKitVitalityEnabled: Bool
 
     init() {
         self.id = UUID()
@@ -280,8 +286,17 @@ final class UserPreferences {
         self.onboardingComplete = false
         self.notificationsEnabled = true
         self.hasSeenMapTip = false
+        self.appLockEnabled = false
+        self.healthKitVitalityEnabled = false
     }
 }
+
+// MARK: - Conformances
+
+// Identifiable conformance lets sheet(item:) and ForEach use ZoneInsight
+// directly. The class already has `var id: UUID` so this is purely a
+// declaration of intent.
+extension ZoneInsight: Identifiable {}
 
 // MARK: - Date + ISO Week helpers
 

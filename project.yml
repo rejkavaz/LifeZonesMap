@@ -39,6 +39,8 @@ targets:
       properties:
         CFBundleDisplayName: Life Zones
         NSMicrophoneUsageDescription: "Lets you record a short voice note for each weekly check-in. Stored only on your device."
+        NSHealthShareUsageDescription: "Optionally suggests a Vitality score for your weekly check-in based on sleep, steps, and mindful minutes. Read-only — Life Zones never writes to Health."
+        NSFaceIDUsageDescription: "Locks the app so your weekly check-ins, notes, photos, and voice recordings stay private."
         # SwiftUI WindowGroup needs the scene manifest or the app
         # silently fails to launch.
         UIApplicationSceneManifest:

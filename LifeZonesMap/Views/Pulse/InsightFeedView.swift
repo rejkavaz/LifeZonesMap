@@ -4,16 +4,26 @@ struct InsightFeedView: View {
     let insights: [ZoneInsight]
     var onDismiss: (ZoneInsight) -> Void = { _ in }
 
+    @State private var detailingInsight: ZoneInsight?
+
     var body: some View {
         VStack(spacing: 10) {
             if insights.isEmpty {
                 emptyState
             } else {
                 ForEach(insights.filter { !$0.dismissed }, id: \.id) { insight in
-                    InsightCard(insight: insight, onDismiss: { onDismiss(insight) })
-                        .padding(.horizontal, 18)
+                    Button {
+                        detailingInsight = insight
+                    } label: {
+                        InsightCard(insight: insight, onDismiss: { onDismiss(insight) })
+                    }
+                    .buttonStyle(.plain)
+                    .padding(.horizontal, 18)
                 }
             }
+        }
+        .sheet(item: $detailingInsight) { insight in
+            InsightDetailSheet(insight: insight)
         }
     }
 

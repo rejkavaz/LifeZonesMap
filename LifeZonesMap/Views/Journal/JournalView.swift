@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import TipKit
 
 /// The Journal tab — the qualitative surface of the app. Hosts:
 /// - A mood-drop bar at the top (one-word entries between check-ins)
@@ -46,6 +47,7 @@ struct JournalView: View {
                             .foregroundStyle(LZ.tealDeep)
                     }
                     .accessibilityLabel("Search")
+                    .popoverTip(JournalSearchTip())
                 }
             }
             .sheet(isPresented: $showingMoodEntry) {

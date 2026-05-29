@@ -25,6 +25,8 @@ struct SettingsView: View {
                 checkInSection
                 zonesSection
                 appearanceSection
+                privacySection
+                healthSection
                 historySection
                 insightsSection
                 dataSection
@@ -66,7 +68,13 @@ struct SettingsView: View {
         Section("Check-in schedule") {
             Picker("Reminder day", selection: Binding(
                 get: { prefs.checkInDayOfWeek },
-                set: { prefs.checkInDayOfWeek = $0; reschedule() }
+                set: {
+                    prefs.checkInDayOfWeek = $0
+                    reschedule()
+                    // Tell the widget so the lock-screen "Tap to check in"
+                    // state lights up on the right day.
+                    WidgetDataProvider.updateCheckInWeekday($0 + 1)
+                }
             )) {
                 ForEach(0..<7) { i in
                     Text(dayName(i)).tag(i)
@@ -121,6 +129,68 @@ struct SettingsView: View {
                 AppIconPickerView()
             } label: {
                 Label("App icon", systemImage: "app.badge")
+            }
+        }
+    }
+
+    private var privacySection: some View {
+        Section {
+            Toggle(isOn: Binding(
+                get: { prefs.appLockEnabled },
+                set: { newValue in
+                    if newValue {
+                        // Make sure they can actually authenticate before
+                        // turning it on — otherwise they'd lock themselves out.
+                        Task {
+                            let ok = await AppLockService.authenticate(
+                                reason: "Confirm to enable app lock for Life Zones."
+                            )
+                            if ok { prefs.appLockEnabled = true }
+                        }
+                    } else {
+                        prefs.appLockEnabled = false
+                    }
+                }
+            )) {
+                Label("Lock with \(AppLockService.biometryLabel)", systemImage: "lock")
+            }
+            .disabled(!AppLockService.isAvailable)
+        } header: {
+            Text("Privacy")
+        } footer: {
+            if AppLockService.isAvailable {
+                Text("Require \(AppLockService.biometryLabel) when the app opens or returns from the background.")
+            } else {
+                Text("Set up Face ID / Touch ID or a passcode on this device to enable app lock.")
+            }
+        }
+    }
+
+    private var healthSection: some View {
+        Section {
+            Toggle(isOn: Binding(
+                get: { prefs.healthKitVitalityEnabled },
+                set: { newValue in
+                    if newValue {
+                        Task {
+                            let granted = await HealthKitService.shared.requestPermission()
+                            prefs.healthKitVitalityEnabled = granted
+                        }
+                    } else {
+                        prefs.healthKitVitalityEnabled = false
+                    }
+                }
+            )) {
+                Label("Suggest Vitality from Health", systemImage: "heart.text.square")
+            }
+            .disabled(!HealthKitService.isAvailable)
+        } header: {
+            Text("Apple Health")
+        } footer: {
+            if HealthKitService.isAvailable {
+                Text("Read sleep, steps, and mindful minutes from the last 7 days to suggest a Vitality score during your check-in. Read-only — nothing is written back to Health.")
+            } else {
+                Text("Apple Health isn't available on this device.")
             }
         }
     }
